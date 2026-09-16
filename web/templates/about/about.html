@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}О нас{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/about/about.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="about-page">
+
+  <!-- Hero -->
+  <section class="about-hero">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+          <span class="about-label">О проекте</span>
+          <h1>Мы создаём этот проект<br><span>для людей</span></h1>
+          <p>Небольшая команда разработчиков, которая создаёт, поддерживает и постепенно развивает этот проект с заботой о каждом пользователе.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Кто мы -->
+  <section class="about-intro">
+    <div class="container">
+      <div class="row g-5 align-items-start">
+        <div class="col-md-4">
+          <h2 class="about-section-heading mb-0">Кто мы</h2>
+        </div>
+        <div class="col-md-8">
+          <div class="about-intro-text">
+            <p>Мы — разработчики, которым интересно создавать полезные и понятные цифровые продукты. Мы верим, что технологии должны работать на людей, а не наоборот.</p>
+            <p>Этот проект мы разрабатываем самостоятельно: от идеи и дизайна до серверной части и интерфейса. Каждая деталь здесь продумана, чтобы вам было удобно.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Наш подход -->
+  <section class="about-values">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <div class="about-section-heading">
+            <h2>Наш подход</h2>
+          </div>
+        </div>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="about-value">
+            <div class="about-value-number">01</div>
+            <h3><i class="bi bi-hand-thumbs-up me-2"></i>Просто</h3>
+            <p>Стараемся делать интерфейс понятным и не перегружать его ненужными элементами. Минимум кликов — максимум пользы.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="about-value">
+            <div class="about-value-number">02</div>
+            <h3><i class="bi bi-arrow-repeat me-2"></i>Постепенно</h3>
+            <p>Развиваем проект шаг за шагом, исправляем ошибки и добавляем новые возможности, опираясь на ваши отзывы.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="about-value">
+            <div class="about-value-number">03</div>
+            <h3><i class="bi bi-heart me-2"></i>С пользой</h3>
+            <p>Добавляем только то, что действительно может быть полезно пользователям. Каждая функция здесь — не для галочки, а для дела.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Команда -->
+  <section class="about-team">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <div class="about-section-heading">
+            <h2>Команда</h2>
+          </div>
+        </div>
+      </div>
+
+      <!-- Общая фотография команды -->
+      <div class="row justify-content-center mb-5">
+        <div class="col-lg-10">
+          <div class="team-photo-wrapper">
+            <img src="{% static 'img/команда.jpg' %}" alt="Команда Luceum" class="img-fluid rounded-4 shadow-sm">
+          </div>
+        </div>
+      </div>
+
+      <!-- Карточки участников -->
+      <div class="row g-3">
+        <div class="col-sm-6 col-lg-4">
+          <div class="about-team-card">
+            <div class="about-team-avatar">Da</div>
+            <div class="about-team-info">
+              <h3>Фазылзянов Дамир</h3>
+              <p>Backend / Test</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-lg-4">
+          <div class="about-team-card">
+            <div class="about-team-avatar">Xy</div>
+            <div class="about-team-info">
+              <h3>Хуснуллин Марсель</h3>
+              <p>Frontend / UI / Backend</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-lg-4">
+          <div class="about-team-card">
+            <div class="about-team-avatar">Kr</div>
+            <div class="about-team-info">
+              <h3>Крахмальников Илья</h3>
+              <p>Backend / DB</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <section class="about-footer">
+    <div class="container">
+      <div class="about-footer-content">
+        <h2>Мы продолжаем работать над проектом.</h2>
+        <p>Спасибо, что пользуетесь им. Ваша поддержка — наша главная мотивация.</p>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}

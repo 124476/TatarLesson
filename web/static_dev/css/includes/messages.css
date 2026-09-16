@@ -1,0 +1,174 @@
+/* ===== Контейнер ===== */
+.messages-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 380px;
+  width: calc(100% - 32px);
+  pointer-events: none;
+}
+
+/* ===== Карточка ===== */
+.message-item {
+  --msg-accent: #3b82f6;
+  --msg-bg: #ffffff;
+  --msg-border: rgba(0, 0, 0, 0.08);
+  --msg-text: #1e293b;
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px 16px 14px;
+  border-radius: 10px;
+  background: var(--msg-bg);
+  border: 1px solid var(--msg-border);
+  /* Яркая цветная плашка слева */
+  border-left: 5px solid var(--msg-accent);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12);
+  pointer-events: auto;
+  overflow: hidden;
+  box-sizing: border-box;
+
+  animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: transform 0.2s ease, opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease, padding 0.3s ease;
+}
+
+/* ===== Нейтральная темная тема без синевы ===== */
+[data-theme="dark"] .message-item,
+body.dark-theme .message-item {
+  --msg-bg: #18181b;
+  --msg-border: #27272a;
+  --msg-text: #f4f4f5;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.message-item:hover {
+  transform: translateY(-2px);
+}
+
+/* ===== Цвета плашек статусов ===== */
+.message-success { --msg-accent: #22c55e; }
+.message-error, .message-danger { --msg-accent: #ef4444; }
+.message-warning { --msg-accent: #f59e0b; }
+.message-info { --msg-accent: #3b82f6; }
+
+/* Иконка */
+.message-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--msg-accent);
+}
+
+/* Текст */
+.message-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.message-text {
+  display: block;
+  font-size: 13.5px;
+  line-height: 1.45;
+  font-weight: 500;
+  color: var(--msg-text);
+  word-break: break-word;
+}
+
+/* Четкая кнопка закрытия (крестик) */
+.message-close {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  padding: 6px;
+  margin: -4px -4px -4px 4px;
+  color: #a1a1aa;
+  cursor: pointer;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.message-close:hover {
+  color: var(--msg-text);
+  background: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="dark"] .message-close:hover,
+body.dark-theme .message-close:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* ===== Таймер прогресса ===== */
+.message-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="dark"] .message-progress,
+body.dark-theme .message-progress {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.message-progress-bar {
+  height: 100%;
+  width: 100%;
+  background: var(--msg-accent);
+  transform-origin: left;
+  animation: progressShrink 5s linear forwards;
+}
+
+/* Нативная CSS-пауза: при наведении полоска замирает, при уходе продолжается с того же места */
+.message-item:hover .message-progress-bar {
+  animation-play-state: paused !important;
+}
+
+/* ===== Анимации ===== */
+@keyframes progressShrink {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -15px, 0) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.message-item.slide-out {
+  opacity: 0 !important;
+  transform: translate3d(100%, 0, 0) !important;
+  max-height: 0 !important;
+  margin-top: -10px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  border-color: transparent !important;
+}
+
+/* Адаптив */
+@media (max-width: 576px) {
+  .messages-container {
+    top: 12px;
+    right: 12px;
+    left: 12px;
+    width: auto;
+    max-width: none;
+  }
+}

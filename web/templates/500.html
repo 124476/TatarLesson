@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Ошибка сервера{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/errors.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="error-page">
+  <div class="error-container">
+
+    {% comment %} Можно использовать картинку или просто код {% endcomment %}
+    <div class="error-code">500</div>
+
+    <h1 class="error-title">Что-то пошло не так</h1>
+    <p class="error-text">На сервере произошла временная ошибка.</p>
+    <p class="error-subtext">Пожалуйста, попробуйте обновить страницу или зайдите позже.</p>
+
+    <div class="error-actions">
+      <a href="{% url 'homepage:home' %}" class="btn btn-primary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+        </svg>
+        На главную
+      </a>
+      <button onclick="window.location.reload()" class="btn btn-secondary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+        Обновить
+      </button>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

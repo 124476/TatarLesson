@@ -1,0 +1,112 @@
+<div class="tab-card">
+  <h2 class="tab-title">Настройки профиля</h2>
+
+  <form method="post" class="profile-form">
+    {% csrf_token %}
+
+    {% if profile_form.non_field_errors %}
+      <div class="form-errors">
+        {{ profile_form.non_field_errors.0 }}
+      </div>
+    {% endif %}
+
+    <div class="form-group">
+      <label for="id_username">Имя пользователя</label>
+      {{ profile_form.username }}
+      {% if profile_form.username.errors %}
+        <div class="error">{{ profile_form.username.errors.0 }}</div>
+      {% endif %}
+    </div>
+
+    <div class="form-group">
+      <label for="id_first_name">Имя</label>
+      {{ profile_form.first_name }}
+      {% if profile_form.first_name.errors %}
+        <div class="error">{{ profile_form.first_name.errors.0 }}</div>
+      {% endif %}
+    </div>
+
+    <div class="form-group">
+      <label for="id_last_name">Фамилия</label>
+      {{ profile_form.last_name }}
+      {% if profile_form.last_name.errors %}
+        <div class="error">{{ profile_form.last_name.errors.0 }}</div>
+      {% endif %}
+    </div>
+
+    <div class="form-group">
+      <label>Email</label>
+      <div class="email-block">
+        <div class="email-details">
+          <span class="email-value">{{ user.email }}</span>
+          {% if user.profile.email_verified %}
+            <span class="status-badge verified">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              Подтвержден
+            </span>
+          {% else %}
+            <span class="status-badge unverified">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+              Не подтвержден
+            </span>
+          {% endif %}
+        </div>
+        <a href="{% url 'accounts:change_email' %}" class="btn-change-email">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+          Сменить
+        </a>
+      </div>
+    </div>
+
+    <button type="submit" class="btn-save">Сохранить изменения</button>
+  </form>
+
+  <div class="security-section">
+    <h4 class="section-title">Безопасность</h4>
+    <div class="security-item">
+      <div class="security-info">
+        <div class="security-header">
+          <strong>Пароль</strong>
+          {% if user.has_usable_password %}
+            <span class="status-badge verified">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              Установлен
+            </span>
+          {% else %}
+            <span class="status-badge unverified">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+              Не установлен
+            </span>
+          {% endif %}
+        </div>
+        <p class="text-muted">
+          {% if user.has_usable_password %}
+            Изменен: {% if user.last_login %}{{ user.last_login|date:"d.m.Y" }}{% else %}никогда{% endif %}
+          {% else %}
+            Пароль не установлен
+          {% endif %}
+        </p>
+      </div>
+      <a href="{% url 'accounts:password_change' %}" class="btn-change-password">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        {% if user.has_usable_password %}Сменить{% else %}Установить{% endif %}
+      </a>
+    </div>
+  </div>
+</div>

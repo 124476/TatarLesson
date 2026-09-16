@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: django-app
+    env: docker
+    plan: free
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: ON_RENDER
+        value: "True"
+      - key: DB_MODE
+        value: "url"
+      - key: DATABASE_URL
+        sync: false
+      - key: USE_S3_MEDIA
+        value: "True"
+      - key: AWS_STORAGE_BUCKET_NAME
+        sync: false
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: YANDEX_OAUTH2_KEY
+        sync: false
+      - key: YANDEX_OAUTH2_SECRET
+        sync: false

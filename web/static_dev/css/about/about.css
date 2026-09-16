@@ -1,0 +1,243 @@
+/* ===== Переменные ===== */
+:root {
+  --about-bg: #ffffff;
+  --about-text: #111;
+  --about-border: #f0f0f0;
+  --about-muted: #777;
+  --about-light-bg: #fafafa;
+  --about-hero-gradient: linear-gradient(180deg, #fafafa 0%, #ffffff 100%);
+  --about-card-bg: #ffffff;
+  --about-card-border: #eee;
+  --about-card-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  --about-avatar-bg: #111;
+  --about-avatar-color: #fff;
+  --about-number-color: #ddd;
+}
+
+[data-theme="dark"] {
+  --about-bg: #1a1a1e;
+  --about-text: #e8e8e8;
+  --about-border: #2a2a30;
+  --about-muted: #888;
+  --about-light-bg: #222;
+  --about-hero-gradient: linear-gradient(180deg, #222 0%, #1a1a1e 100%);
+  --about-card-bg: #24242a;
+  --about-card-border: #3a3a40;
+  --about-card-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  --about-avatar-bg: #3a3a40;
+  --about-avatar-color: #eee;
+  --about-number-color: #3a3a40;
+}
+
+/* ===== Основная обёртка ===== */
+.about-page {
+  background: var(--about-bg);
+  color: var(--about-text);
+  transition: background 0.3s, color 0.3s;
+}
+
+/* ===== Hero ===== */
+.about-hero {
+  padding: 100px 0 120px;
+  background: var(--about-hero-gradient);
+  border-bottom: 1px solid var(--about-border);
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.about-label {
+  display: inline-block;
+  margin-bottom: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--about-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.about-hero h1 {
+  margin-bottom: 20px;
+  font-size: 56px;
+  font-weight: 700;
+  letter-spacing: -2px;
+  line-height: 1.05;
+  color: var(--about-text);
+}
+
+.about-hero h1 span {
+  color: var(--about-muted);
+}
+
+.about-hero p {
+  max-width: 580px;
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--about-muted);
+}
+
+/* ===== Секции ===== */
+.about-intro,
+.about-values {
+  padding: 100px 0;
+  border-bottom: 1px solid var(--about-border);
+}
+
+.about-section-heading {
+  margin-bottom: 56px;
+}
+
+.about-section-heading h2 {
+  font-size: 34px;
+  font-weight: 600;
+  letter-spacing: -0.8px;
+  color: var(--about-text);
+}
+
+.about-intro-text p {
+  font-size: 17px;
+  line-height: 1.8;
+  color: var(--about-muted);
+}
+
+/* ===== Карточки ценностей ===== */
+.about-value {
+  padding-top: 32px;
+  border-top: 2px solid var(--about-border);
+  transition: border-color 0.3s;
+}
+
+.about-value-number {
+  margin-bottom: 20px;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--about-number-color);
+  letter-spacing: -0.5px;
+  transition: color 0.3s;
+}
+
+.about-value h3 {
+  margin-bottom: 10px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--about-text);
+}
+
+.about-value p {
+  max-width: 320px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--about-muted);
+}
+
+/* ===== Команда ===== */
+.about-team {
+  padding: 100px 0;
+  background: var(--about-light-bg);
+  border-bottom: 1px solid var(--about-border);
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.about-team-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  background: var(--about-card-bg);
+  border: 1px solid var(--about-card-border);
+  border-radius: 12px;
+  transition: all 0.25s ease;
+  height: 100%;
+}
+
+.about-team-card:hover {
+  border-color: var(--about-border);
+  box-shadow: var(--about-card-shadow);
+  transform: translateY(-2px);
+}
+
+.about-team-avatar {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--about-avatar-bg);
+  color: var(--about-avatar-color);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: background 0.3s, color 0.3s;
+}
+
+.about-team-info h3 {
+  margin-bottom: 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--about-text);
+}
+
+.about-team-info p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--about-muted);
+}
+
+/* ===== Footer ===== */
+.about-footer {
+  padding: 120px 0;
+  background: var(--about-hero-gradient);
+  transition: background 0.3s;
+}
+
+.about-footer-content {
+  max-width: 650px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.about-footer-content h2 {
+  margin-bottom: 12px;
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: -0.8px;
+  color: var(--about-text);
+}
+
+.about-footer-content p {
+  font-size: 17px;
+  color: var(--about-muted);
+}
+
+/* ===== Адаптив (сохраняем и улучшаем) ===== */
+@media (max-width: 1024px) {
+  .about-hero { padding: 80px 0 100px; }
+  .about-hero h1 { font-size: 46px; }
+  .about-intro { padding: 80px 0; }
+  .about-values { padding: 80px 0; }
+  .about-team { padding: 80px 0; }
+  .about-footer { padding: 100px 0; }
+}
+
+@media (max-width: 768px) {
+  .about-hero { padding: 60px 0 80px; }
+  .about-hero h1 { font-size: 38px; letter-spacing: -1.2px; }
+  .about-hero p { font-size: 16px; }
+  .about-intro { padding: 60px 0; }
+  .about-values { padding: 60px 0; }
+  .about-section-heading { margin-bottom: 40px; }
+  .about-section-heading h2 { font-size: 28px; }
+  .about-value { padding-top: 24px; }
+  .about-value-number { margin-bottom: 16px; }
+  .about-team { padding: 60px 0; }
+  .about-footer { padding: 80px 0; }
+  .about-footer-content h2 { font-size: 28px; }
+}
+
+@media (max-width: 480px) {
+  .about-hero { padding: 48px 0 60px; }
+  .about-hero h1 { font-size: 30px; letter-spacing: -0.8px; }
+  .about-hero p { font-size: 15px; }
+  .about-footer-content h2 { font-size: 24px; }
+  .about-footer-content p { font-size: 15px; }
+}

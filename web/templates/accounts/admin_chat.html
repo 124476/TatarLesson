@@ -1,0 +1,282 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Чаты поддержки{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/accounts/admin_chat.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-chat-container" id="adminChatContainer">
+  <div class="admin-chat-sidebar">
+    <div class="admin-chat-sidebar-header">
+      <h2><i class="bi bi-chat-dots me-2"></i>Обращения</h2>
+    </div>
+    <div class="chat-users-list" id="chatUsersList">
+      {% for data in users_data %}
+        <div class="chat-user-card" data-user-id="{{ data.user.id }}" onclick="openChat({{ data.user.id }}, this)">
+          <div class="chat-user-avatar">
+            {% if data.user.profile.get_avatar %}
+              <img src="{{ data.user.profile.get_avatar }}" alt="{{ data.user.username }}">
+            {% else %}
+              <div class="placeholder">{{ data.user.username|first|upper }}</div>
+            {% endif %}
+          </div>
+          <div class="chat-user-info">
+            <div class="chat-user-name">{{ data.user.username }}</div>
+            <div class="chat-user-last" id="user-last-msg-{{ data.user.id }}">{{ data.last_message|default:"Нет сообщений" }}</div>
+          </div>
+        </div>
+      {% empty %}
+        <div class="no-chats">Нет обращений</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="admin-chat-main">
+    <!-- Пустое состояние -->
+    <div class="admin-chat-empty" id="chatEmpty">
+      <div class="empty-icon">💬</div>
+      <h3>Выберите диалог</h3>
+      <p>Нажмите на пользователя слева, чтобы открыть переписку</p>
+    </div>
+
+    <!-- Окно чата -->
+    <div class="admin-chat-window" id="chatWindow" style="display: none;">
+      <div class="admin-chat-header">
+        <div class="admin-chat-header-user">
+          <img id="chatUserAvatar" class="admin-chat-header-avatar" src="" alt="" style="display: none;">
+          <div class="admin-chat-header-info">
+            <div class="admin-chat-header-name" id="chatUserName"></div>
+            <div class="admin-chat-header-status">Чат поддержки</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-chat-messages" id="chatMessages"></div>
+
+      <div class="admin-chat-input">
+        <input type="text" id="chatInput" placeholder="Введите ответ..." autocomplete="off" onkeydown="if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendAdminMessage(); }">
+        <button type="button" id="chatSendBtn" onclick="sendAdminMessage()" aria-label="Отправить сообщение">
+          <i class="bi bi-send fs-5"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  let currentUserId = null;
+  let lastMessageId = 0;
+  let isPollingActive = false;
+  let isFetching = false;
+  let currentAbortController = null;
+
+  function openChat(userId, element) {
+    if (currentUserId === userId) return;
+
+    stopLongPolling();
+
+    currentUserId = userId;
+    lastMessageId = 0;
+
+    document.querySelectorAll('.chat-user-card').forEach(card => card.classList.remove('active'));
+    element.classList.add('active');
+    document.getElementById('chatEmpty').style.display = 'none';
+    document.getElementById('chatWindow').style.display = 'flex';
+    document.getElementById('adminChatContainer').classList.add('chat-open');
+
+    const username = element.querySelector('.chat-user-name').textContent.trim();
+    document.getElementById('chatUserName').textContent = username;
+
+    const avatar = element.querySelector('.chat-user-avatar img');
+    const headerAvatar = document.getElementById('chatUserAvatar');
+    if (avatar) {
+      headerAvatar.src = avatar.src;
+      headerAvatar.style.display = 'block';
+    } else {
+      headerAvatar.style.display = 'none';
+    }
+
+    document.getElementById('chatMessages').innerHTML = '';
+    startLongPolling();
+    setTimeout(() => document.getElementById('chatInput')?.focus(), 100);
+  }
+
+  function startLongPolling() {
+    if (!currentUserId) return;
+    isPollingActive = true;
+    loadAdminMessages(true);
+  }
+
+  function stopLongPolling() {
+    isPollingActive = false;
+    isFetching = false;
+    if (currentAbortController) {
+      currentAbortController.abort();
+      currentAbortController = null;
+    }
+  }
+
+  function loadAdminMessages(isFirstLoad = false) {
+    if (!currentUserId || isFetching || !isPollingActive) return;
+    isFetching = true;
+
+    currentAbortController = new AbortController();
+
+    const activeUserId = currentUserId;
+    const url = isFirstLoad
+      ? `/auth/admin-chat/${activeUserId}/?last_id=0`
+      : `/auth/admin-chat/${activeUserId}/?last_id=${lastMessageId}`;
+
+    fetch(url, {
+      headers: { 'X-Requested-With': 'XMLHttpRequest' },
+      signal: currentAbortController.signal
+    })
+    .then(response => {
+      if (!response.ok) throw new Error('Ошибка загрузки сообщений');
+      return response.json();
+    })
+    .then(data => {
+      isFetching = false;
+      if (!isPollingActive || currentUserId !== activeUserId) return;
+
+      const messages = data.messages || [];
+      const newLastId = data.last_id || lastMessageId;
+
+      if (newLastId > lastMessageId) {
+        lastMessageId = newLastId;
+      }
+
+      renderAdminMessages(messages, isFirstLoad);
+
+      if (isPollingActive) {
+        loadAdminMessages(false);
+      }
+    })
+    .catch(error => {
+      isFetching = false;
+      if (error.name === 'AbortError') return;
+      console.error('Ошибка загрузки чата:', error);
+      if (isPollingActive) {
+        setTimeout(() => loadAdminMessages(false), 3000);
+      }
+    });
+  }
+
+  function renderAdminMessages(messages, isFirstLoad = false) {
+    const container = document.getElementById('chatMessages');
+
+    if (isFirstLoad && messages.length === 0) {
+      container.innerHTML = `
+        <div class="admin-chat-empty">
+          <div class="empty-icon">💬</div>
+          <h3>Нет сообщений</h3>
+          <p>Начните диалог с пользователем</p>
+        </div>
+      `;
+      return;
+    }
+
+    const emptyState = container.querySelector('.admin-chat-empty');
+    if (emptyState && messages.length > 0) {
+      emptyState.remove();
+    }
+
+    messages.forEach(msg => {
+      if (msg.id && container.querySelector(`[data-msg-id="${msg.id}"]`)) {
+        return;
+      }
+
+      const div = document.createElement('div');
+      div.className = `chat-message ${msg.is_admin ? 'admin' : 'user'}`;
+      if (msg.id) div.setAttribute('data-msg-id', msg.id);
+
+      div.innerHTML = `
+        <div class="chat-bubble">${escapeHtml(msg.message)}</div>
+        <div class="chat-time">${escapeHtml(msg.time)}</div>
+      `;
+      container.appendChild(div);
+
+      const lastMsgLabel = document.getElementById(`user-last-msg-${currentUserId}`);
+      if (lastMsgLabel) {
+        lastMsgLabel.textContent = msg.message;
+      }
+    });
+
+    if (messages.length > 0) {
+      setTimeout(() => {
+        container.scrollTop = container.scrollHeight;
+      }, 50);
+    }
+  }
+
+  function sendAdminMessage() {
+    if (!currentUserId) return;
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    if (!message) return;
+
+    const btn = document.getElementById('chatSendBtn');
+    input.disabled = true;
+    btn.disabled = true;
+
+    fetch(`/auth/admin-chat/${currentUserId}/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken'),
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: JSON.stringify({ message: message })
+    })
+    .then(response => {
+      if (!response.ok) throw new Error('Ошибка отправки');
+      return response.json();
+    })
+    .then(data => {
+      input.value = '';
+      if (data.message) {
+        renderAdminMessages([data.message], false);
+        if (data.message.id > lastMessageId) {
+          lastMessageId = data.message.id;
+        }
+      }
+    })
+    .catch(error => console.error('Ошибка отправки сообщения:', error))
+    .finally(() => {
+      input.disabled = false;
+      btn.disabled = false;
+      input.focus();
+    });
+  }
+
+  function getCookie(name) {
+    let value = '; ' + document.cookie;
+    let parts = value.split('; ' + name + '=');
+    if (parts.length === 2) {
+      return parts.pop().split(';').shift();
+    }
+    return null;
+  }
+
+  function escapeHtml(value) {
+    const div = document.createElement('div');
+    div.textContent = value ?? '';
+    return div.innerHTML;
+  }
+
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+      stopLongPolling();
+      currentUserId = null;
+      document.getElementById('chatWindow').style.display = 'none';
+      document.getElementById('chatEmpty').style.display = 'flex';
+      document.getElementById('adminChatContainer').classList.remove('chat-open');
+    }
+  });
+</script>
+{% endblock %}

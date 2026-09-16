@@ -1,0 +1,345 @@
+{% if user.is_authenticated and not user.is_staff %}
+
+<div class="chat-widget" id="chatWidget">
+  <button class="chat-toggle-btn" id="chatToggleBtn" onclick="toggleChat()" aria-label="Открыть чат поддержки">
+    <span class="chat-toggle-icon">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/>
+      </svg>
+    </span>
+    <span class="chat-toggle-content">
+      <span class="chat-toggle-title">Чат поддержки</span>
+      <span class="chat-toggle-subtitle">Мы на связи</span>
+    </span>
+    <span class="chat-toggle-badge" id="chatBadge" style="display:none">0</span>
+  </button>
+
+  <div class="chat-window" id="chatWindow">
+    <div class="chat-window-header">
+      <div class="chat-header-info">
+        <div class="chat-header-avatar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="chat-window-title">Поддержка</div>
+          <div class="chat-window-status">
+            <span class="online-dot"></span>
+            Обычно отвечаем быстро
+          </div>
+        </div>
+      </div>
+      <button class="chat-window-close" onclick="toggleChat()" aria-label="Закрыть чат">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6 6 18"/>
+          <path d="m6 6 12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="chat-window-body">
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-welcome">
+          <div class="chat-welcome-icon">
+            <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/>
+            </svg>
+          </div>
+          <div class="chat-welcome-title">Добро пожаловать 👋</div>
+          <div class="chat-welcome-text">Напишите нам, если у вас возник вопрос.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-window-footer">
+      <form class="chat-form" id="chatForm" onsubmit="sendMessage(event)">
+        {% csrf_token %}
+        <textarea class="chat-input" id="chatInput" placeholder="Напишите сообщение..." rows="1" maxlength="2000"></textarea>
+        <button type="submit" class="chat-send-btn" id="chatSendBtn" aria-label="Отправить сообщение">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </form>
+      <div class="chat-info">Обычно отвечаем с 9:00 до 18:00 МСК</div>
+    </div>
+  </div>
+</div>
+
+<!-- JS Логика чата -->
+<script>
+  let chatLoaded = false;
+  let chatOpen = false;
+  let longPollingActive = false;
+  let isFetching = false;
+  let lastMessageId = 0;
+  let isTyping = false;
+  let notificationTimeout = null;
+
+  // ===== Управление чатом =====
+  function toggleChat() {
+    chatOpen = !chatOpen;
+    const windowEl = document.getElementById('chatWindow');
+    const buttonEl = document.getElementById('chatToggleBtn');
+
+    if (chatOpen) {
+      windowEl.classList.add('show');
+      buttonEl.classList.add('hidden');
+      startLongPolling();
+      setTimeout(() => document.getElementById('chatInput')?.focus(), 200);
+      updateBadge(0);
+    } else {
+      windowEl.classList.remove('show');
+      buttonEl.classList.remove('hidden');
+      stopLongPolling();
+      hideTypingIndicator();
+    }
+  }
+
+  // ===== Long Polling Управление =====
+  function startLongPolling() {
+    if (!chatOpen) return;
+    longPollingActive = true;
+    const isFirst = !chatLoaded;
+    if (isFirst) chatLoaded = true;
+    loadMessages(isFirst);
+  }
+
+  function stopLongPolling() {
+    longPollingActive = false;
+  }
+
+  // ===== Загрузка сообщений (Long Polling) =====
+  function loadMessages(firstLoad = false) {
+    if (!chatOpen || isFetching) return;
+    isFetching = true;
+
+    const url = firstLoad
+      ? '/auth/chat/api/'
+      : `/auth/chat/api/?last_id=${lastMessageId}`;
+
+    fetch(url, {
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(response => {
+      if (!response.ok) throw new Error('Ошибка загрузки');
+      return response.json();
+    })
+    .then(data => {
+      isFetching = false;
+      if (!chatOpen) return;
+
+      const messages = data.messages || [];
+      const newLastId = data.last_id || lastMessageId;
+
+      if (newLastId > lastMessageId) {
+        lastMessageId = newLastId;
+      }
+
+      if (messages.length > 0) {
+        renderMessages(messages, firstLoad);
+        const hasSupport = messages.some(m => m.is_admin);
+        if (hasSupport && !firstLoad) {
+          clearTimeout(notificationTimeout);
+          notificationTimeout = setTimeout(hideTypingIndicator, 1500);
+        }
+      }
+
+      if (chatOpen && longPollingActive) {
+        loadMessages(false);
+      }
+    })
+    .catch(error => {
+      isFetching = false;
+      console.error('Ошибка загрузки чата:', error);
+      if (chatOpen && longPollingActive) {
+        setTimeout(() => loadMessages(false), 3000);
+      }
+    });
+  }
+
+  // ===== Рендер сообщений с дедупликацией =====
+  function renderMessages(newMessages, isFirstLoad = false) {
+    const container = document.getElementById('chatMessages');
+
+    const welcome = container.querySelector('.chat-welcome');
+    if (welcome && newMessages.length > 0) {
+      welcome.remove();
+    }
+
+    if (isFirstLoad) {
+      container.innerHTML = '';
+    }
+
+    newMessages.forEach(msg => {
+      // Защита от повторной отрисовки сообщений
+      if (msg.id && container.querySelector(`[data-msg-id="${msg.id}"]`)) {
+        return;
+      }
+
+      const isAdmin = msg.is_admin;
+      const div = document.createElement('div');
+      div.className = `chat-msg ${isAdmin ? 'support' : 'user'}`;
+      if (msg.id) div.setAttribute('data-msg-id', msg.id);
+
+      div.innerHTML = `
+        <div class="chat-msg-bubble">${escapeHtml(msg.message)}</div>
+        <div class="chat-msg-time">${escapeHtml(msg.time || '')}</div>
+      `;
+      container.appendChild(div);
+    });
+
+    setTimeout(() => {
+      const body = document.querySelector('.chat-window-body');
+      if (body) body.scrollTop = body.scrollHeight;
+    }, 50);
+  }
+
+  // ===== Отправка сообщения =====
+  function sendMessage(event) {
+    event.preventDefault();
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    if (!message) return;
+
+    const sendBtn = document.getElementById('chatSendBtn');
+    sendBtn.disabled = true;
+    const originalHTML = sendBtn.innerHTML;
+    sendBtn.innerHTML = '<div class="spinner-border spinner-border-sm" style="width:16px;height:16px;border-width:2px;"></div>';
+
+    fetch('/auth/chat/api/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken'),
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: JSON.stringify({ message: message })
+    })
+    .then(response => {
+      if (!response.ok) throw new Error('Ошибка отправки');
+      return response.json();
+    })
+    .then(data => {
+      input.value = '';
+      input.style.height = 'auto';
+      // Мгновенно отрисовываем отправленное сообщение
+      if (data.message) {
+        renderMessages([data.message], false);
+        if (data.message.id > lastMessageId) {
+          lastMessageId = data.message.id;
+        }
+      }
+    })
+    .catch(error => {
+      console.error('Ошибка отправки:', error);
+      showNotification('Не удалось отправить сообщение. Попробуйте еще раз.', 'error');
+    })
+    .finally(() => {
+      sendBtn.disabled = false;
+      sendBtn.innerHTML = originalHTML;
+      input.focus();
+    });
+  }
+
+  function hideTypingIndicator() {
+    isTyping = false;
+    const indicator = document.getElementById('typingIndicator');
+    if (indicator) indicator.remove();
+  }
+
+  // ===== Бейдж =====
+  function updateBadge(count) {
+    const badge = document.getElementById('chatBadge');
+    if (!badge) return;
+    if (count > 0) {
+      badge.textContent = count > 99 ? '99+' : count;
+      badge.style.display = 'flex';
+      badge.classList.add('visible');
+    } else {
+      badge.style.display = 'none';
+      badge.classList.remove('visible');
+    }
+  }
+
+  // ===== Уведомления =====
+  function showNotification(text, type = 'info') {
+    const div = document.createElement('div');
+    div.style.cssText = `
+      position: fixed; top: 24px; right: 24px; z-index: 9999;
+      padding: 12px 20px; border-radius: 12px;
+      background: ${type === 'error' ? '#ffebeb' : '#e6f9e6'};
+      border: 1px solid ${type === 'error' ? '#ffcccc' : '#b8e6b8'};
+      color: ${type === 'error' ? '#cc0000' : '#1a4d1a'};
+      font-size: 13px; font-weight: 500;
+      box-shadow: 0 4px 16px rgba(0,0,0,.08);
+      animation: msgFadeIn .2s ease;
+      display: flex; align-items: center; gap: 10px;
+    `;
+    div.innerHTML = `<span>${text}</span>`;
+    document.body.appendChild(div);
+    setTimeout(() => {
+      div.style.opacity = '0';
+      div.style.transform = 'translateY(-20px)';
+      div.style.transition = 'opacity .2s ease, transform .2s ease';
+      setTimeout(() => div.remove(), 200);
+    }, 3000);
+  }
+
+  // ===== Утилиты =====
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text ?? '';
+    return div.innerHTML;
+  }
+
+  function getCookie(name) {
+    let value = null;
+    if (document.cookie) {
+      const cookies = document.cookie.split(';');
+      for (let cookie of cookies) {
+        cookie = cookie.trim();
+        if (cookie.startsWith(name + '=')) {
+          value = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return value;
+  }
+
+  // ===== События =====
+  document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('chatInput');
+    if (input) {
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          document.getElementById('chatForm')?.requestSubmit();
+        }
+      });
+      input.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+      });
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && chatOpen) {
+        toggleChat();
+      }
+    });
+
+    document.addEventListener('click', function(e) {
+      const widget = document.getElementById('chatWidget');
+      const btn = document.getElementById('chatToggleBtn');
+      if (chatOpen && widget && !widget.contains(e.target) && !btn.contains(e.target)) {
+        toggleChat();
+      }
+    });
+  });
+</script>
+
+{% endif %}

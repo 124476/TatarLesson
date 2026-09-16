@@ -1,0 +1,226 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Рабочая панель{% endblock %}
+
+{% block dashboard_content %}
+<div class="dashboard-home">
+
+  <!-- Приветствие -->
+  <div class="dashboard-header">
+    <h1>Привет, {{ user.username }}!</h1>
+    <p>Сегодня отличный день, чтобы выучить новое татарское слово.</p>
+  </div>
+
+  <!-- 🎲 Случайное слово -->
+  <div class="dashboard-section">
+    <div class="section-label">🎲 Случайное слово</div>
+    {% if random_word %}
+    <div class="daily-word-card" id="randomWordCard"
+         data-word="{{ random_word.tatar }}"
+         data-translation="{{ random_word.russian }}">
+      <div class="daily-word-main">
+        <div class="daily-word-tatar">{{ random_word.tatar }}</div>
+        <div class="daily-word-russian">{{ random_word.russian }}</div>
+        {% if random_word.transcription %}
+        <div class="daily-word-transcription">[{{ random_word.transcription }}]</div>
+        {% endif %}
+      </div>
+
+      <div class="daily-word-actions">
+        <button class="daily-btn" onclick="playWord('{{ random_word.tatar }}')">
+          <i class="bi bi-volume-up-fill"></i>
+        </button>
+        <button class="daily-btn" onclick="startRecording()">
+          <i class="bi bi-mic-fill"></i>
+        </button>
+      </div>
+
+      {% if random_word.example_tt %}
+      <div class="daily-word-example">
+        <p class="example-tt">{{ random_word.example_tt }}</p>
+        <p class="example-ru">{{ random_word.example_ru }}</p>
+      </div>
+      {% endif %}
+
+      <div id="recordResult" class="record-result"></div>
+    </div>
+    {% else %}
+    <div class="empty-block">
+      <i class="bi bi-book"></i>
+      <p>Слова пока не добавлены в базу</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Быстрые действия -->
+  <div class="dashboard-section">
+    <div class="section-label">Быстрые действия</div>
+    <div class="row g-3">
+      <div class="col-md-4 col-sm-6">
+        <a href="{% url 'dashboard:lesson_builder' %}" class="action-card">
+          <i class="bi bi-plus-circle"></i>
+          <span>Создать урок</span>
+        </a>
+      </div>
+      <div class="col-md-4 col-sm-6">
+        <a href="{% url 'dashboard:lessons' %}" class="action-card">
+          <i class="bi bi-book"></i>
+          <span>Мои уроки</span>
+        </a>
+      </div>
+      <div class="col-md-4 col-sm-6">
+        <a href="{% url 'dashboard:leaderboard' %}" class="action-card">
+          <i class="bi bi-trophy"></i>
+          <span>Лидерборд</span>
+        </a>
+      </div>
+      <div class="col-md-4 col-sm-6">
+        <a href="{% url 'dashboard:dictionary' %}" class="action-card">
+          <i class="bi bi-journal-text"></i>
+          <span>Словарь</span>
+        </a>
+      </div>
+      <div class="col-md-4 col-sm-6">
+        <a href="#" onclick="openJoinModal(event)" class="action-card">
+          <i class="bi bi-box-arrow-in-right"></i>
+          <span>Войти по коду</span>
+        </a>
+      </div>
+      <div class="col-md-4 col-sm-6">
+        <a href="{% url 'dashboard:test_api' %}" class="action-card">
+          <i class="bi bi-speedometer2"></i>
+          <span>Тест API</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Топ-5 -->
+  <div class="dashboard-section">
+    <div class="section-label">Топ-5 за неделю</div>
+    <div id="topList" class="top-list">
+      <div class="top-loading">Загрузка...</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Модалка ввода кода -->
+<div class="modal-overlay" id="joinModal" style="display:none">
+  <div class="modal-box">
+    <h3>Введите код урока</h3>
+    <input type="text" id="lessonCodeInput" maxlength="6" placeholder="000000"
+           class="code-input" inputmode="numeric">
+    <div class="modal-actions">
+      <button onclick="closeJoinModal()" class="btn-ghost">Отмена</button>
+      <button onclick="joinLesson()" class="btn-primary">Войти</button>
+    </div>
+    <p id="joinError" class="error-text"></p>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const API_BASE = '/lessons/api';
+
+function playWord(text) {
+  const url = `${API_BASE}/synthesize/?text=${encodeURIComponent(text)}&speaker=alsu`;
+  const audio = new Audio(url);
+  audio.play().catch(err => {
+    console.error('Ошибка озвучки:', err);
+    showToast('Озвучка недоступна');
+  });
+}
+
+let mediaRecorder, audioChunks = [];
+
+async function startRecording() {
+  const result = document.getElementById('recordResult');
+  result.innerHTML = '<i class="bi bi-mic-fill text-danger"></i> Говорите...';
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
+
+    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+    mediaRecorder.onstop = async () => {
+      const blob = new Blob(audioChunks, { type: 'audio/webm' });
+      const form = new FormData();
+      form.append('audio', blob, 'voice.webm');
+
+      const res = await fetch(`${API_BASE}/recognize/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': getCookie('csrftoken') },
+        body: form,
+      });
+      const data = await res.json();
+
+      if (data.text) {
+        result.innerHTML = `<i class="bi bi-check-circle-fill text-success"></i> Распознано: <strong>${data.text}</strong>`;
+      } else {
+        result.innerHTML = '<i class="bi bi-x-circle text-danger"></i> Не удалось распознать. Попробуйте ещё раз.';
+      }
+    };
+
+    mediaRecorder.start();
+    setTimeout(() => mediaRecorder.stop(), 3000);
+  } catch (e) {
+    result.innerHTML = '<i class="bi bi-x-circle text-danger"></i> Нет доступа к микрофону';
+  }
+}
+
+function showToast(text) {
+  const div = document.createElement('div');
+  div.style.cssText = `position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: #111; color: #fff; padding: 12px 22px; border-radius: 12px;
+    font-size: 14px; z-index: 9999; box-shadow: 0 8px 24px rgba(0,0,0,.2);`;
+  div.textContent = text;
+  document.body.appendChild(div);
+  setTimeout(() => div.remove(), 2500);
+}
+
+function getCookie(name) {
+  for (let c of document.cookie.split(';')) {
+    c = c.trim();
+    if (c.startsWith(name + '=')) return decodeURIComponent(c.slice(name.length + 1));
+  }
+  return '';
+}
+
+function openJoinModal(e) { e.preventDefault(); document.getElementById('joinModal').style.display = 'flex'; }
+function closeJoinModal() { document.getElementById('joinModal').style.display = 'none'; }
+async function joinLesson() {
+  const code = document.getElementById('lessonCodeInput').value.trim();
+  const res = await fetch('/lessons/join/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': getCookie('csrftoken') },
+    body: 'code=' + encodeURIComponent(code),
+  });
+  const data = await res.json();
+  if (data.status === 'ok') window.location.href = data.url;
+  else document.getElementById('joinError').textContent = data.error || 'Ошибка';
+}
+
+// Топ-5
+fetch('/gamification/api/top/')
+  .then(r => r.json())
+  .then(data => {
+    const list = document.getElementById('topList');
+    if (!data.users || !data.users.length) {
+      list.innerHTML = '<div class="top-empty">Пока нет данных</div>';
+      return;
+    }
+    list.innerHTML = data.users.map((u, i) => `
+      <div class="top-item">
+        <span class="top-rank">${['🥇','🥈','🥉'][i] || (i+1)}</span>
+        <span class="top-name">${u.username}</span>
+        <span class="top-points">${u.points}</span>
+      </div>
+    `).join('');
+  });
+</script>
+{% endblock %}

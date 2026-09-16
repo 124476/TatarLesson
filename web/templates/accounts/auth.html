@@ -1,0 +1,256 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Авторизация</title>
+  <link rel="stylesheet" href="{% static 'css/accounts/auth.css' %}">
+  <link rel="stylesheet" href="{% static 'css/includes/messages.css' %}">
+  <link rel="icon" type="image" href="{% static 'img/favicon.svg' %}">
+  <script src="{% static 'js/messages.js' %}"></script>
+  <script>
+    (function() {
+      const theme = localStorage.getItem('site-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+</head>
+<body>
+
+<div class="auth-page">
+  <!-- Верхний бар -->
+  <header class="auth-topbar">
+    <a href="/" class="auth-home">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      <span>На главную</span>
+    </a>
+
+    <button type="button" class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Переключить тему">
+      <svg class="theme-icon sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+      <svg class="theme-icon moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+    </button>
+  </header>
+
+  {% include "includes/messages.html" %}
+
+  <!-- Главный контейнер -->
+  <div class="auth-container {% if active_tab == 'register' %}is-register{% endif %}" id="authContainer">
+
+    <!-- Панели с формами (под шторкой) -->
+    <div class="auth-forms-wrapper">
+
+      <!-- Вход (Левая часть) -->
+      <div class="auth-form-panel login-panel">
+        <div class="auth-form-content">
+          <div class="auth-header">
+            <span class="auth-label">Аккаунт</span>
+            <h1>С возвращением</h1>
+            <p class="auth-subtitle">Войдите в свой аккаунт, чтобы продолжить работу.</p>
+          </div>
+
+          <form method="post" class="auth-form">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="login">
+
+            {% if login_form.non_field_errors %}
+              <div class="auth-error">{{ login_form.non_field_errors.0 }}</div>
+            {% endif %}
+
+            <div class="auth-field">
+              <label>Имя пользователя</label>
+              {{ login_form.username }}
+              {% if login_form.username.errors %}
+                <div class="auth-field-error">{{ login_form.username.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <div class="auth-field">
+              <label>Пароль</label>
+              {{ login_form.password }}
+              {% if login_form.password.errors %}
+                <div class="auth-field-error">{{ login_form.password.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <div class="auth-forgot">
+              <a href="{% url 'accounts:password_reset' %}" class="auth-forgot-link">Забыли пароль?</a>
+            </div>
+
+            <button type="submit" class="auth-submit">Войти</button>
+          </form>
+
+          <div class="auth-divider"><span>или войти через</span></div>
+
+          <div class="auth-socials">
+            <a href="{% url 'social:begin' 'yandex-oauth2' %}" class="auth-social-btn yandex">
+              <img src="{% static 'img/yandex_icon.svg' %}" alt="Яндекс" width="20" height="20">
+              Яндекс
+            </a>
+            <a href="{% url 'social:begin' 'github' %}" class="auth-social-btn github">
+              <img src="{% static 'img/github_icon.svg' %}" alt="GitHub" width="20" height="20">
+              GitHub
+            </a>
+            <a href="{% url 'social:begin' 'google-oauth2' %}" class="auth-social-btn google">
+              <img src="{% static 'img/google_icon.svg' %}" alt="Google" width="20" height="20">
+              Google
+            </a>
+          </div>
+
+          <div class="auth-mobile-switch">
+            Нет аккаунта? <button type="button" onclick="toggleAuthMode()">Зарегистрироваться</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Регистрация (Правая часть) -->
+      <div class="auth-form-panel register-panel">
+        <div class="auth-form-content">
+          <div class="auth-header">
+            <span class="auth-label">Регистрация</span>
+            <h1>Создать аккаунт</h1>
+            <p class="auth-subtitle">Заполните форму, чтобы получить доступ.</p>
+          </div>
+
+          <form method="post" class="auth-form" id="register-form">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="register">
+
+            {% if register_form.non_field_errors %}
+              <div class="auth-error">{{ register_form.non_field_errors.0 }}</div>
+            {% endif %}
+
+            <div class="auth-field register-field visible" id="register-username">
+              <label>Имя пользователя</label>
+              {{ register_form.username }}
+              {% if register_form.username.errors %}
+                <div class="auth-field-error">{{ register_form.username.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <div class="auth-field register-field" id="register-email">
+              <label>Email</label>
+              {{ register_form.email }}
+              {% if register_form.email.errors %}
+                <div class="auth-field-error">{{ register_form.email.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <div class="auth-field register-field" id="register-password">
+              <label>Пароль</label>
+              {{ register_form.password1 }}
+              <div class="auth-hint">Минимум 8 символов</div>
+              {% if register_form.password1.errors %}
+                <div class="auth-field-error">{{ register_form.password1.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <div class="auth-field register-field" id="register-password-confirm">
+              <label>Повторите пароль</label>
+              {{ register_form.password2 }}
+              {% if register_form.password2.errors %}
+                <div class="auth-field-error">{{ register_form.password2.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <div class="register-submit-wrapper" id="register-submit">
+              <button type="submit" class="auth-submit">Зарегистрироваться</button>
+            </div>
+          </form>
+
+          <div class="auth-mobile-switch">
+            Уже есть аккаунт? <button type="button" onclick="toggleAuthMode()">Войти</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Подвижная Шторка (Curtain Overlay) -->
+    <div class="auth-curtain-container">
+      <div class="auth-curtain">
+        <div class="auth-curtain-decor-1"></div>
+        <div class="auth-curtain-decor-2"></div>
+
+        <!-- Содержимое шторки для окна входа -->
+        <div class="auth-curtain-panel curtain-login">
+          <div class="curtain-line"></div>
+          <span class="curtain-badge">Новый пользователь?</span>
+          <h2>Начните свой<br>путь здесь.</h2>
+          <p>Создайте аккаунт и откройте доступ ко всем возможностям платформы всего за пару шагов.</p>
+          <button class="curtain-btn" onclick="toggleAuthMode()">Зарегистрироваться</button>
+        </div>
+
+        <!-- Содержимое шторки для окна регистрации -->
+        <div class="auth-curtain-panel curtain-register">
+          <div class="curtain-line"></div>
+          <span class="curtain-badge">Авторизация</span>
+          <h2>Снова рады<br>вас видеть.</h2>
+          <p>Войдите под своей учетной записью, чтобы продолжить работу и просмотреть личные данные.</p>
+          <button class="curtain-btn" onclick="toggleAuthMode()">Войти</button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const container = document.getElementById('authContainer');
+
+  function toggleAuthMode() {
+    container.classList.toggle('is-register');
+  }
+
+  // Поочередное раскрытие полей формы регистрации
+  const usernameField = document.getElementById('register-username');
+  const emailField = document.getElementById('register-email');
+  const passwordField = document.getElementById('register-password');
+  const passwordConfirmField = document.getElementById('register-password-confirm');
+  const submitField = document.getElementById('register-submit');
+
+  const usernameInput = usernameField?.querySelector('input');
+  const emailInput = emailField?.querySelector('input');
+  const passwordInput = passwordField?.querySelector('input');
+  const passwordConfirmInput = passwordConfirmField?.querySelector('input');
+
+  function showField(field) {
+    if (field && !field.classList.contains('visible')) {
+      field.classList.add('visible');
+    }
+  }
+
+  usernameInput?.addEventListener('input', () => {
+    if (usernameInput.value.trim().length > 0) showField(emailField);
+  });
+
+  emailInput?.addEventListener('input', () => {
+    if (emailInput.value.trim().length > 0) showField(passwordField);
+  });
+
+  passwordInput?.addEventListener('input', () => {
+    if (passwordInput.value.length > 0) showField(passwordConfirmField);
+  });
+
+  passwordConfirmInput?.addEventListener('input', () => {
+    if (passwordConfirmInput.value.length > 0) showField(submitField);
+  });
+
+  {% if active_tab == 'register' %}
+    document.addEventListener('DOMContentLoaded', () => {
+      [usernameField, emailField, passwordField, passwordConfirmField, submitField].forEach(field => showField(field));
+    });
+  {% endif %}
+
+  // Переключение темы
+  function toggleTheme() {
+    const html = document.documentElement;
+    const current = html.getAttribute('data-theme');
+    const next = current === 'light' ? 'dark' : 'light';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('site-theme', next);
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Новости{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/news/list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="news-page">
+  <div class="container news-container">
+    <!-- Заголовок -->
+    <div class="row align-items-end mb-4">
+      <div class="col-md-7">
+        <span class="news-label">Обновления</span>
+        <h1 class="news-title">Новости</h1>
+      </div>
+      <div class="col-md-5">
+        <p class="news-description">Последние обновления и события проекта</p>
+      </div>
+    </div>
+
+    <!-- Сетка новостей -->
+    <div class="row g-4">
+      {% for news in news_list %}
+        <div class="col-sm-6 col-lg-4">
+          <a href="{% url 'news:detail' news.pk %}" class="news-card">
+            <div class="news-card-image">
+              {% if news.image %}
+                <img src="{{ news.image.url }}" alt="{{ news.title }}" loading="lazy">
+              {% else %}
+                <div class="news-card-placeholder"><span>Новости</span></div>
+              {% endif %}
+            </div>
+            <div class="news-card-body">
+              <div class="news-card-meta">
+                <span>{{ news.created_at|date:"d.m.Y" }}</span>
+                <span class="news-card-arrow">↗</span>
+              </div>
+              <h2>{{ news.title }}</h2>
+            </div>
+          </a>
+        </div>
+      {% empty %}
+        <div class="col-12">
+          <div class="news-empty">
+            <div class="news-empty-icon">📰</div>
+            <h2>Новостей пока нет</h2>
+            <p>Здесь появятся обновления проекта.</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

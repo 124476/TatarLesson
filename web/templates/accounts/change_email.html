@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Смена email{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/accounts/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="auth-badge primary">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+          <polyline points="22,6 12,13 2,6"/>
+        </svg>
+      </div>
+      <h3 class="auth-title">Смена email</h3>
+      <p class="auth-subtitle">Введите новый email. На него придёт письмо с подтверждением.</p>
+    </div>
+
+    <div class="auth-body">
+      <div class="auth-callout info">
+        <div>
+          <strong>Текущий email:</strong>
+          <span>{{ user.email }}</span>
+        </div>
+      </div>
+
+      {% if form.errors %}
+        <div class="auth-callout danger">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="flex-shrink-0">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <div>
+            {% for field, errors in form.errors.items %}
+              {% for error in errors %}
+                <div>{{ error }}</div>
+              {% endfor %}
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="auth-field">
+          <label for="id_new_email" class="auth-label">Новый email</label>
+          <input type="email" name="new_email" id="id_new_email"
+                 class="auth-input {% if form.new_email.errors %}is-invalid{% endif %}"
+                 placeholder="Введите новый email" required>
+          {% if form.new_email.errors %}
+            <div class="auth-field-error">
+              {% for error in form.new_email.errors %}
+                <div>{{ error }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="auth-actions">
+          <a href="{% url 'accounts:profile' %}" class="btn auth-btn-secondary">Отмена</a>
+          <button type="submit" class="btn auth-btn-primary">
+            Отправить подтверждение
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

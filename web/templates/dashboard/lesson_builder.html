@@ -1,0 +1,331 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Конструктор урока{% endblock %}
+
+{% block dashboard_content %}
+<div class="dashboard-home" id="builderApp"
+     data-lesson-id="{{ lesson.id|default:'' }}"
+     data-save-url="{% url 'lessons:lesson_save' %}">
+
+  <div class="dashboard-header">
+    <h1>{% if lesson %}Редактирование урока{% else %}Новый урок{% endif %}</h1>
+    <p>Соберите урок из блоков</p>
+  </div>
+
+  <!-- Настройки урока -->
+  <div style="background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:16px;padding:24px;margin-bottom:24px;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;">
+      <div>
+        <label style="display:block;font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">Название урока</label>
+        <input type="text" id="lessonTitle" value="{{ lesson.title|default:'' }}" placeholder="Например: Семья"
+               style="width:100%;padding:11px 14px;border:1px solid var(--border-color);border-radius:10px;background:var(--bg-page);color:var(--text-primary);outline:none;">
+      </div>
+
+      <div>
+        <label style="display:block;font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">Лимит времени (мин)</label>
+        <input type="number" id="lessonTime" value="{{ lesson.time_limit|default:15 }}" min="1" max="120"
+               style="width:100%;padding:11px 14px;border:1px solid var(--border-color);border-radius:10px;background:var(--bg-page);color:var(--text-primary);outline:none;">
+      </div>
+
+      <div>
+        <label style="display:block;font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">Публичный</label>
+        <label style="display:flex;align-items:center;gap:10px;padding:11px 0;">
+          <input type="checkbox" id="lessonPublic" {% if lesson.is_public %}checked{% endif %} style="width:18px;height:18px;accent-color:#0B6E4F;">
+          <span style="font-size:14px;color:var(--text-secondary);">Доступен всем</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Палитра блоков -->
+  <div style="margin-bottom:24px;">
+    <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:14px;">Доступные блоки</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;">
+      <div class="block-chip" data-type="audio" style="padding:14px 16px;background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:12px;cursor:pointer;display:flex;align-items:center;gap:10px;"><i class="bi bi-headphones" style="color:#0B6E4F;font-size:20px;"></i>Аудирование</div>
+      <div class="block-chip" data-type="translate" style="padding:14px 16px;background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:12px;cursor:pointer;display:flex;align-items:center;gap:10px;"><i class="bi bi-translate" style="color:#0B6E4F;font-size:20px;"></i>Перевод</div>
+      <div class="block-chip" data-type="build" style="padding:14px 16px;background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:12px;cursor:pointer;display:flex;align-items:center;gap:10px;"><i class="bi bi-puzzle" style="color:#0B6E4F;font-size:20px;"></i>Собери слово</div>
+      <div class="block-chip" data-type="pairs" style="padding:14px 16px;background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:12px;cursor:pointer;display:flex;align-items:center;gap:10px;"><i class="bi bi-link-45deg" style="color:#0B6E4F;font-size:20px;"></i>Найди пару</div>
+      <div class="block-chip" data-type="quick" style="padding:14px 16px;background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:12px;cursor:pointer;display:flex;align-items:center;gap:10px;"><i class="bi bi-stopwatch" style="color:#0B6E4F;font-size:20px;"></i>Быстрый раунд</div>
+    </div>
+  </div>
+
+  <!-- Список блоков урока -->
+  <div style="margin-bottom:24px;">
+    <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:14px;">Мой урок</div>
+    <div id="blocksList" style="display:flex;flex-direction:column;gap:10px;">
+      {% if blocks %}
+        {% for block in blocks %}
+          <div class="block-item" data-type="{{ block.type }}" data-config='{{ block.config|safe }}'
+               style="display:flex;align-items:center;gap:14px;padding:16px 18px;background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:14px;">
+            <div style="width:42px;height:42px;display:flex;align-items:center;justify-content:center;background:rgba(11,110,79,.08);border-radius:12px;color:#0B6E4F;font-size:20px;">
+              <i class="bi bi-stack"></i>
+            </div>
+            <div style="flex:1;">
+              <div style="font-weight:600;">{{ block.get_type_display }}</div>
+              <div style="font-size:12px;color:var(--text-muted);">
+                {{ block.config.correct }}{% if block.config.word %} · {{ block.config.word }}{% endif %}{% if block.config.pairs %} · {{ block.config.pairs|length }} пар{% endif %}
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <input type="number" class="points-input" value="{{ block.points }}" min="1" max="100"
+                     style="width:60px;padding:6px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-page);color:var(--text-primary);text-align:center;">
+              <span style="font-size:13px;color:var(--text-secondary);">баллов</span>
+            </div>
+            <button class="btn-remove" style="width:34px;height:34px;border:1px solid var(--border-color);border-radius:8px;background:transparent;color:var(--text-secondary);cursor:pointer;">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div id="blocksEmpty" style="padding:48px 20px;text-align:center;border:2px dashed var(--border-color);border-radius:16px;color:var(--text-muted);">
+          <i class="bi bi-arrow-down-circle" style="font-size:40px;display:block;margin-bottom:12px;opacity:.5;"></i>
+          Нажмите на блок выше, чтобы добавить его
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Кнопки -->
+  <div style="display:flex;gap:10px;">
+    <button onclick="saveLesson()" style="padding:12px 22px;background:#0B6E4F;color:#fff;border:none;border-radius:12px;font-weight:600;cursor:pointer;">
+      <i class="bi bi-check-lg"></i> Сохранить
+    </button>
+    <a href="{% url 'dashboard:lessons' %}" style="padding:12px 22px;border:1px solid var(--border-color);border-radius:12px;color:var(--text-secondary);text-decoration:none;font-weight:600;">
+      Назад
+    </a>
+  </div>
+</div>
+
+<!-- МОДАЛКА НАСТРОЙКИ БЛОКА -->
+<div class="modal-overlay" id="blockModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center;z-index:2000;padding:20px;">
+  <div style="background:var(--bg-sidebar);border-radius:20px;max-width:560px;width:100%;max-height:85vh;display:flex;flex-direction:column;overflow:hidden;">
+
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border-color);">
+      <h3 id="blockModalTitle" style="margin:0;font-size:18px;">Настройка блока</h3>
+      <button onclick="closeBlockModal()" style="width:32px;height:32px;border-radius:8px;background:transparent;border:none;color:var(--text-secondary);cursor:pointer;">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div style="padding:20px 24px;overflow-y:auto;flex:1;">
+
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">
+          Правильный ответ / перевод на русский *
+        </label>
+        <input type="text" id="modalCorrect" placeholder="Например: Книга"
+               style="width:100%;padding:11px 14px;border:1px solid var(--border-color);border-radius:10px;background:var(--bg-page);color:var(--text-primary);outline:none;">
+        <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">
+          Используется в «Перевод», «Быстрый раунд», а также как подсказка в «Собери слово»
+        </div>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">
+          Слово на татарском
+        </label>
+        <input type="text" id="modalWord" placeholder="Например: Китап"
+               style="width:100%;padding:11px 14px;border:1px solid var(--border-color);border-radius:10px;background:var(--bg-page);color:var(--text-primary);outline:none;">
+        <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">
+          Обязательно для «Аудирование» и «Собери слово» — это слово озвучивается и собирается
+        </div>
+      </div>
+
+      <div id="pairsField" style="margin-bottom:16px;display:none;">
+        <label style="display:block;font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">
+          Пары: татарский:русский (через запятую)
+        </label>
+        <textarea id="modalPairs" rows="4" placeholder="Китап:Книга, Өстәл:Стол, Урындык:Стул"
+                  style="width:100%;padding:11px 14px;border:1px solid var(--border-color);border-radius:10px;background:var(--bg-page);color:var(--text-primary);outline:none;font-family:inherit;resize:vertical;"></textarea>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">
+          Каждая пара на новой строке или через запятую. Разделитель — двоеточие.
+        </div>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">
+          Баллов
+        </label>
+        <input type="number" id="modalPoints" value="10" min="1" max="100"
+               style="width:100%;padding:11px 14px;border:1px solid var(--border-color);border-radius:10px;background:var(--bg-page);color:var(--text-primary);outline:none;">
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;justify-content:flex-end;padding:16px 24px;border-top:1px solid var(--border-color);">
+      <button onclick="closeBlockModal()" style="padding:10px 18px;border:1px solid var(--border-color);border-radius:10px;background:transparent;color:var(--text-secondary);cursor:pointer;font-weight:600;">Отмена</button>
+      <button onclick="applyBlockConfig()" style="padding:10px 18px;background:#0B6E4F;color:#fff;border:none;border-radius:10px;font-weight:600;cursor:pointer;">Добавить</button>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const BLOCK_TYPES = {
+  audio:     { name: '🎧 Аудирование',  icon: 'headphones',  hasPairs: false },
+  translate: { name: '📖 Перевод',      icon: 'translate',   hasPairs: false },
+  build:     { name: '🧩 Собери слово', icon: 'puzzle',      hasPairs: false },
+  pairs:     { name: '🔗 Найди пару',   icon: 'link-45deg', hasPairs: true },
+  quick:     { name: '⏱️ Быстрый раунд',icon: 'stopwatch',   hasPairs: false },
+};
+
+let currentBlockType = null;
+
+document.querySelectorAll('.block-chip').forEach(chip => {
+  chip.addEventListener('click', () => openBlockModal(chip.dataset.type));
+});
+
+function openBlockModal(type) {
+  currentBlockType = type;
+  const info = BLOCK_TYPES[type];
+
+  document.getElementById('blockModalTitle').textContent = info.name;
+  document.getElementById('modalCorrect').value = '';
+  document.getElementById('modalWord').value = '';
+  document.getElementById('modalPairs').value = '';
+  document.getElementById('modalPoints').value = 10;
+
+  document.getElementById('pairsField').style.display = info.hasPairs ? 'block' : 'none';
+
+  document.getElementById('blockModal').style.display = 'flex';
+}
+
+function closeBlockModal() {
+  document.getElementById('blockModal').style.display = 'none';
+  currentBlockType = null;
+}
+
+function applyBlockConfig() {
+  if (!currentBlockType) return;
+
+  const info = BLOCK_TYPES[currentBlockType];
+  const correct = document.getElementById('modalCorrect').value.trim();
+  const word = document.getElementById('modalWord').value.trim();
+  const pairsRaw = document.getElementById('modalPairs').value.trim();
+  const points = parseInt(document.getElementById('modalPoints').value) || 10;
+
+  // Для pairs — нужны пары, а не single correct
+  if (currentBlockType === 'pairs') {
+    if (!pairsRaw) { alert('Введите хотя бы одну пару'); return; }
+  } else {
+    if (!correct) { alert('Введите правильный ответ'); return; }
+  }
+
+  const config = { points };
+
+  if (currentBlockType === 'pairs') {
+    const pairs = pairsRaw.split(/[,\n]+/).map(p => {
+      const [tt, ru] = p.split(':').map(s => (s || '').trim());
+      return [tt, ru];
+    }).filter(p => p[0] && p[1]);
+
+    if (!pairs.length) { alert('Пары заполнены неверно'); return; }
+    config.pairs = pairs;
+  } else {
+    config.correct = correct;
+    if (word) config.word = word;
+  }
+
+  const empty = document.getElementById('blocksEmpty');
+  if (empty) empty.remove();
+
+  const list = document.getElementById('blocksList');
+  const item = document.createElement('div');
+  item.className = 'block-item';
+  item.dataset.type = currentBlockType;
+  item.dataset.config = JSON.stringify(config);
+  item.style.cssText = 'display:flex;align-items:center;gap:14px;padding:16px 18px;background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:14px;';
+
+  let preview = '';
+  if (currentBlockType === 'pairs') {
+    preview = config.pairs.length + ' пар';
+  } else {
+    preview = correct + (word ? ' · ' + word : '');
+  }
+
+  item.innerHTML = `
+    <div style="width:42px;height:42px;display:flex;align-items:center;justify-content:center;background:rgba(11,110,79,.08);border-radius:12px;color:#0B6E4F;font-size:20px;">
+      <i class="bi bi-${info.icon}"></i>
+    </div>
+    <div style="flex:1;">
+      <div style="font-weight:600;">${info.name}</div>
+      <div style="font-size:12px;color:var(--text-muted);">${preview}</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;">
+      <input type="number" class="points-input" value="${points}" min="1" max="100"
+             style="width:60px;padding:6px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-page);color:var(--text-primary);text-align:center;">
+      <span style="font-size:13px;color:var(--text-secondary);">баллов</span>
+    </div>
+    <button class="btn-remove" style="width:34px;height:34px;border:1px solid var(--border-color);border-radius:8px;background:transparent;color:var(--text-secondary);cursor:pointer;">
+      <i class="bi bi-trash"></i>
+    </button>
+  `;
+  list.appendChild(item);
+  closeBlockModal();
+}
+
+document.addEventListener('click', e => {
+  if (e.target.closest('.btn-remove')) {
+    e.target.closest('.block-item').remove();
+    if (!document.querySelectorAll('.block-item').length) {
+      document.getElementById('blocksList').innerHTML = `<div id="blocksEmpty" style="padding:48px 20px;text-align:center;border:2px dashed var(--border-color);border-radius:16px;color:var(--text-muted);">
+        <i class="bi bi-arrow-down-circle" style="font-size:40px;display:block;margin-bottom:12px;opacity:.5;"></i>
+        Нажмите на блок выше, чтобы добавить его
+      </div>`;
+    }
+  }
+});
+
+function saveLesson() {
+  const app = document.getElementById('builderApp');
+  const lessonId = app.dataset.lessonId || null;
+  const title = document.getElementById('lessonTitle').value.trim();
+  if (!title) { alert('Введите название урока'); return; }
+
+  const blocks = [];
+  document.querySelectorAll('.block-item').forEach((item, i) => {
+    const config = JSON.parse(item.dataset.config || '{}');
+    config.points = parseInt(item.querySelector('.points-input').value) || 10;
+    blocks.push({
+      type: item.dataset.type,
+      order_index: i,
+      points: config.points,
+      config: config,
+    });
+  });
+
+  fetch(app.dataset.saveUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie('csrftoken'),
+    },
+    body: JSON.stringify({
+      lesson_id: lessonId,
+      title: title,
+      time_limit: parseInt(document.getElementById('lessonTime').value) || 15,
+      is_public: document.getElementById('lessonPublic').checked,
+      blocks: blocks,
+    }),
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.status === 'ok') {
+      window.location.href = '/dashboard/lessons/';
+    } else {
+      alert('Ошибка сохранения');
+    }
+  });
+}
+
+function getCookie(name) {
+  for (let c of document.cookie.split(';')) {
+    c = c.trim();
+    if (c.startsWith(name + '=')) return decodeURIComponent(c.slice(name.length + 1));
+  }
+  return '';
+}
+</script>
+{% endblock %}

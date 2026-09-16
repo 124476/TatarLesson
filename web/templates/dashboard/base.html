@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/dashboard/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+  <div class="dashboard-overlay" id="dashboardOverlay"></div>
+
+  <aside class="dashboard-sidebar" id="dashboardSidebar">
+    <button class="mobile-edge-toggle" id="mobileEdgeToggle" aria-label="Открыть панель">
+      <i class="bi bi-chevron-right"></i>
+    </button>
+
+    <div class="dashboard-sidebar-inner">
+      <div class="dashboard-sidebar-header">
+        <div class="dashboard-sidebar-brand">
+          <span class="brand-text">TatarLesson</span>
+        </div>
+        <button class="dashboard-sidebar-toggle" id="toggleBtn" aria-label="Свернуть панель">
+          <i class="bi bi-chevron-left" id="toggleIcon"></i>
+        </button>
+      </div>
+
+      <nav class="dashboard-nav">
+        <a href="{% url 'dashboard:home' %}"
+           class="dashboard-nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+          <i class="bi bi-grid"></i>
+          <span class="link-text">Главная</span>
+          <span class="tooltip">Главная</span>
+        </a>
+
+        <a href="{% url 'dashboard:lessons' %}"
+           class="dashboard-nav-link {% if request.resolver_match.url_name == 'lessons' %}active{% endif %}">
+          <i class="bi bi-book"></i>
+          <span class="link-text">Мои уроки</span>
+          <span class="tooltip">Мои уроки</span>
+        </a>
+
+        <a href="{% url 'dashboard:lesson_builder' %}"
+           class="dashboard-nav-link {% if request.resolver_match.url_name == 'lesson_builder' %}active{% endif %}">
+          <i class="bi bi-plus-square"></i>
+          <span class="link-text">Создать урок</span>
+          <span class="tooltip">Создать урок</span>
+        </a>
+
+        <a href="{% url 'dashboard:leaderboard' %}"
+           class="dashboard-nav-link {% if request.resolver_match.url_name == 'leaderboard' %}active{% endif %}">
+          <i class="bi bi-trophy"></i>
+          <span class="link-text">Лидерборд</span>
+          <span class="tooltip">Лидерборд</span>
+        </a>
+
+        <a href="{% url 'dashboard:dictionary' %}"
+           class="dashboard-nav-link {% if request.resolver_match.url_name == 'dictionary' %}active{% endif %}">
+          <i class="bi bi-journal-text"></i>
+          <span class="link-text">Словарь</span>
+          <span class="tooltip">Словарь</span>
+        </a>
+      </nav>
+    </div>
+  </aside>
+
+  <main class="dashboard-content" id="dashboardContent">
+    {% block dashboard_content %}{% endblock %}
+  </main>
+</div>
+
+<script>
+(function() {
+  const sidebar = document.getElementById('dashboardSidebar');
+  const toggleBtn = document.getElementById('toggleBtn');
+  const toggleIcon = document.getElementById('toggleIcon');
+  const mobileEdgeToggle = document.getElementById('mobileEdgeToggle');
+  const overlay = document.getElementById('dashboardOverlay');
+
+  function isMobile() {
+    return window.innerWidth <= 768;
+  }
+
+  function setDesktopCollapsed(collapsed) {
+    sidebar.classList.toggle('collapsed', collapsed);
+    localStorage.setItem('dashboardSidebarCollapsed', String(collapsed));
+    if (toggleIcon) {
+      toggleIcon.className = collapsed ? 'bi bi-chevron-right' : 'bi bi-chevron-left';
+    }
+  }
+
+  function setMobileOpen(open) {
+    sidebar.classList.toggle('mobile-open', open);
+    overlay.classList.toggle('visible', open);
+    document.body.classList.toggle('drawer-open', open);
+  }
+
+  function init() {
+    if (isMobile()) {
+      setMobileOpen(false);
+      sidebar.classList.remove('collapsed');
+    } else {
+      setMobileOpen(false);
+      const isCollapsed = localStorage.getItem('dashboardSidebarCollapsed') === 'true';
+      setDesktopCollapsed(isCollapsed);
+    }
+  }
+
+  toggleBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (!isMobile()) {
+      const isCollapsed = sidebar.classList.contains('collapsed');
+      setDesktopCollapsed(!isCollapsed);
+    }
+  });
+
+  if (mobileEdgeToggle) {
+    mobileEdgeToggle.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const isOpen = sidebar.classList.contains('mobile-open');
+      setMobileOpen(!isOpen);
+    });
+  }
+
+  overlay.addEventListener('click', function() {
+    setMobileOpen(false);
+  });
+
+  let resizeTimer;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(init, 200);
+  });
+
+  init();
+})();
+</script>
+{% endblock %}

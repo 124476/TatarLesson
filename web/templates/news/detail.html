@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ news.title }}{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/news/detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="news-detail-page">
+  <div class="container">
+    <article class="news-detail mx-auto" style="max-width: 800px;">
+      <a href="{% url 'news:list' %}" class="news-back">
+        <span>←</span>
+        Все новости
+      </a>
+
+      <header class="news-detail-header py-3">
+        <span class="news-detail-label">Новости</span>
+        <h1>{{ news.title }}</h1>
+        <time class="news-date">{{ news.created_at|date:"d.m.Y H:i" }}</time>
+      </header>
+
+      {% if news.image %}
+        <div class="news-detail-image">
+          <img src="{{ news.image.url }}" alt="{{ news.title }}">
+        </div>
+      {% endif %}
+
+      <div class="news-text">{{ news.text|safe }}</div>
+    </article>
+  </div>
+</div>
+{% endblock %}

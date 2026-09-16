@@ -1,0 +1,115 @@
+from apps.accounts import views
+
+from django.contrib.auth.views import (
+    PasswordResetCompleteView,
+    PasswordResetConfirmView,
+    PasswordResetDoneView,
+)
+from django.urls import path
+
+app_name = "accounts"
+
+urlpatterns = [
+    path(
+        "",
+        views.AuthView.as_view(),
+        name="auth",
+    ),
+    path(
+        "profile/",
+        views.ProfileView.as_view(),
+        name="profile",
+    ),
+    path(
+        "logout/",
+        views.LogoutView.as_view(),
+        name="logout",
+    ),
+    path(
+        "notifications/api/",
+        views.NotificationsListAPIView.as_view(),
+        name="notifications_api",
+    ),
+    path(
+        "notifications/read-all/",
+        views.MarkAllReadView.as_view(),
+        name="notifications_read_all",
+    ),
+    path(
+        "chat/api/",
+        views.ChatAPIView.as_view(),
+        name="chat_api",
+    ),
+    path(
+        "admin-chat/",
+        views.AdminChatListView.as_view(),
+        name="admin_chat",
+    ),
+    path(
+        "admin-chat/<int:user_id>/",
+        views.AdminChatMessagesAPIView.as_view(),
+        name="admin_chat_messages",
+    ),
+    path(
+        "disconnect/<str:provider>/",
+        views.DisconnectAccountView.as_view(),
+        name="disconnect_account",
+    ),
+    path(
+        "disconnect/<str:provider>/confirm/",
+        views.DisconnectConfirmView.as_view(),
+        name="disconnect_confirm",
+    ),
+    path(
+        "set-password/",
+        views.SetPasswordView.as_view(),
+        name="set_password",
+    ),
+    path(
+        "password-change/",
+        views.PasswordChangeView.as_view(),
+        name="password_change",
+    ),
+    path(
+        "change-email/",
+        views.ChangeEmailView.as_view(),
+        name="change_email",
+    ),
+    path(
+        "confirm-email-change/<str:token>/",
+        views.ConfirmEmailChangeView.as_view(),
+        name="confirm_email_change",
+    ),
+    path(
+        "password-reset/",
+        views.CustomPasswordResetView.as_view(),
+        name="password_reset",
+    ),
+    path(
+        "password-reset/done/",
+        PasswordResetDoneView.as_view(
+            template_name="accounts/password_reset_done.html",
+        ),
+        name="password_reset_done",
+    ),
+    path(
+        "password-reset/<uidb64>/<token>/",
+        PasswordResetConfirmView.as_view(
+            template_name="accounts/password_reset_confirm.html",
+            success_url="/auth/password-reset/complete/",
+        ),
+        name="password_reset_confirm",
+    ),
+    path(
+        "password-reset/complete/",
+        PasswordResetCompleteView.as_view(
+            template_name="accounts/password_reset_complete.html",
+        ),
+        name="password_reset_complete",
+    ),
+    path(
+        "verify-email/<str:token>/",
+        views.VerifyEmailView.as_view(),
+        name="verify_email",
+    ),
+]

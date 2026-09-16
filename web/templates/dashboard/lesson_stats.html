@@ -1,0 +1,42 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Статистика: {{ lesson.title }}{% endblock %}
+
+{% block dashboard_content %}
+<div class="dashboard-home">
+  <div class="dashboard-header">
+    <h1>Статистика: {{ lesson.title }}</h1>
+    <p>Код урока: <strong style="font-family:monospace;color:#0B6E4F;">{{ lesson.code }}</strong></p>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:32px;">
+    <div style="background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:16px;padding:20px;text-align:center;">
+      <div style="font-size:28px;font-weight:700;color:#0B6E4F;">{{ total_students }}</div>
+      <div style="font-size:13px;color:var(--text-secondary);">Всего учеников</div>
+    </div>
+    <div style="background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:16px;padding:20px;text-align:center;">
+      <div style="font-size:28px;font-weight:700;color:#16a34a;">{{ finished }}</div>
+      <div style="font-size:13px;color:var(--text-secondary);">Завершили</div>
+    </div>
+    <div style="background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:16px;padding:20px;text-align:center;">
+      <div style="font-size:28px;font-weight:700;color:#f59e0b;">{{ in_progress }}</div>
+      <div style="font-size:13px;color:var(--text-secondary);">В процессе</div>
+    </div>
+  </div>
+
+  <div style="background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:16px;padding:24px;">
+    <h3 style="margin:0 0 16px;font-size:18px;">Топ учеников</h3>
+    {% if top %}
+      {% for p in top %}
+        <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border-color);">
+          <span>{{ forloop.counter }}. {{ p.user.username }}</span>
+          <strong style="color:#0B6E4F;">{{ p.score }} баллов</strong>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p style="color:var(--text-muted);">Пока нет данных</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

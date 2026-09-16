@@ -1,0 +1,161 @@
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeNotifications()"></div>
+
+<div class="drawer" id="notificationsDrawer" role="dialog" aria-label="Уведомления">
+  <div class="drawer-header">
+    <div class="drawer-title-wrapper">
+      <h2>Уведомления</h2>
+      <span class="drawer-subtitle">Последние события вашего аккаунта</span>
+    </div>
+    <button class="btn-close" onclick="closeNotifications()" aria-label="Закрыть">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 6 6 18"/>
+        <path d="m6 6 12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="drawer-tabs">
+    <button class="drawer-tab active" onclick="filterNotifications('all', this)">Все</button>
+    <button class="drawer-tab" onclick="filterNotifications('unread', this)">Непрочитанные</button>
+  </div>
+
+  <div class="drawer-list" id="notificationsList">
+    <div class="notifications-empty">Загрузка...</div>
+  </div>
+
+  <div class="drawer-footer">
+    <button class="btn-read-all" onclick="markAllRead()">Прочитать все</button>
+  </div>
+</div>
+
+<script>
+  let currentFilter = 'all';
+
+  function openNotifications() {
+    const overlay = document.getElementById('drawerOverlay');
+    const drawer = document.getElementById('notificationsDrawer');
+
+    overlay?.classList.add('show');
+    drawer?.classList.add('show');
+    document.body.classList.add('drawer-open');
+
+    if (typeof loadNotifications === 'function') {
+      loadNotifications(currentFilter);
+    }
+  }
+
+  function closeNotifications() {
+    document.getElementById('drawerOverlay')?.classList.remove('show');
+    document.getElementById('notificationsDrawer')?.classList.remove('show');
+    document.body.classList.remove('drawer-open');
+  }
+
+  function filterNotifications(filter, element) {
+    document.querySelectorAll('.drawer-tab').forEach(tab => tab.classList.remove('active'));
+    element.classList.add('active');
+    loadNotifications(filter);
+  }
+
+  function loadNotifications(filter) {
+    currentFilter = filter;
+    const list = document.getElementById('notificationsList');
+    list.innerHTML = `<div class="notifications-empty">Загрузка...</div>`;
+
+    // Таймаут на случай долгого ответа
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 сек
+
+    fetch('/auth/notifications/api/?filter=' + encodeURIComponent(filter), {
+      headers: { 'X-Requested-With': 'XMLHttpRequest' },
+      signal: controller.signal
+    })
+    .then(response => {
+      clearTimeout(timeoutId);
+      if (!response.ok) throw new Error('Ошибка загрузки');
+      return response.json();
+    })
+    .then(data => {
+      if (!data.notifications || data.notifications.length === 0) {
+        list.innerHTML = `<div class="notifications-empty">Уведомлений пока нет</div>`;
+        updateBadge(data.unread_count || 0);
+        return;
+      }
+      list.innerHTML = data.notifications.map(notification => {
+        const isUnread = !notification.is_read;
+        return `
+          <a href="${escapeHtml(notification.link || '#')}" class="notification-card ${isUnread ? 'unread' : ''}">
+            <div class="notification-left">
+              <span class="notification-icon">${isUnread ? '●' : '✓'}</span>
+              <div class="notification-content">
+                <span class="notification-title">${escapeHtml(notification.title || '')}</span>
+                ${notification.description ? `<span class="notification-description">${escapeHtml(notification.description)}</span>` : ''}
+              </div>
+            </div>
+            <div class="notification-right">
+              <span class="notification-time">${escapeHtml(notification.created_at || '')}</span>
+              ${isUnread ? '<span class="unread-dot"></span>' : ''}
+            </div>
+          </a>
+        `;
+      }).join('');
+      updateBadge(data.unread_count || 0);
+    })
+    .catch(error => {
+      clearTimeout(timeoutId);
+      console.error(error);
+      list.innerHTML = `<div class="notifications-empty">Не удалось загрузить уведомления</div>`;
+    });
+}
+
+  function markAllRead() {
+    fetch('/auth/notifications/read-all/', {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': getCookie('csrftoken'),
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    .then(response => {
+      if (!response.ok) throw new Error('Не удалось отметить уведомления');
+      return response;
+    })
+    .then(() => loadNotifications(currentFilter))
+    .catch(error => console.error(error));
+  }
+
+  function updateBadge(count) {
+    const badge = document.getElementById('notifBadge');
+    if (!badge) return;
+    if (count > 0) {
+      badge.textContent = count > 99 ? '99+' : count;
+      badge.style.display = 'flex';
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+
+  function escapeHtml(value) {
+    const div = document.createElement('div');
+    div.textContent = value ?? '';
+    return div.innerHTML;
+  }
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie) {
+      const cookies = document.cookie.split(';');
+      for (let cookie of cookies) {
+        cookie = cookie.trim();
+        if (cookie.startsWith(name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') closeNotifications();
+  });
+</script>

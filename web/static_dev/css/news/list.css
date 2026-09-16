@@ -1,0 +1,217 @@
+/* ===== Переменные ===== */
+:root {
+  --news-page-bg: #ffffff;
+  --news-text: #111;
+  --news-muted: #888;
+  --news-border: #eee;
+  --news-card-bg: #ffffff;
+  --news-card-shadow: 0 8px 28px rgba(0, 0, 0, 0.06);
+  --news-card-hover-shadow: 0 12px 40px rgba(0, 0, 0, 0.10);
+  --news-card-hover-border: #e4e4e4;
+  --news-placeholder-bg: #f5f5f5;
+  --news-placeholder-color: #aaa;
+  --news-arrow-color: #aaa;
+  --news-arrow-hover: #111;
+  --news-empty-border: #eee;
+  --news-empty-icon: #ccc;
+}
+
+[data-theme="dark"] {
+  --news-page-bg: #1a1a1e;
+  --news-text: #e8e8e8;
+  --news-muted: #888;
+  --news-border: #2a2a30;
+  --news-card-bg: #24242a;
+  --news-card-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+  --news-card-hover-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  --news-card-hover-border: #3a3a40;
+  --news-placeholder-bg: #2a2a30;
+  --news-placeholder-color: #666;
+  --news-arrow-color: #555;
+  --news-arrow-hover: #ddd;
+  --news-empty-border: #2a2a30;
+  --news-empty-icon: #444;
+}
+
+/* ===== Основная обёртка ===== */
+.news-page {
+  background: var(--news-page-bg);
+  transition: background 0.3s;
+  min-height: 60vh;
+}
+
+.news-container {
+  padding: 56px 20px 80px;
+}
+
+/* ===== Заголовок ===== */
+.news-label {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--news-muted);
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.news-title {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 600;
+  letter-spacing: -0.8px;
+  color: var(--news-text);
+}
+
+.news-description {
+  color: var(--news-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ===== Карточки ===== */
+.news-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--news-card-bg);
+  border: 1px solid var(--news-border);
+  border-radius: 12px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.news-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--news-card-hover-border);
+  box-shadow: var(--news-card-hover-shadow);
+  text-decoration: none;
+}
+
+.news-card-image {
+  position: relative;
+  height: 210px;
+  overflow: hidden;
+  background: var(--news-placeholder-bg);
+}
+
+.news-card-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.news-card:hover .news-card-image img {
+  transform: scale(1.04);
+}
+
+.news-card-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--news-placeholder-color);
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.news-card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 20px;
+}
+
+.news-card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  color: var(--news-muted);
+  font-size: 13px;
+}
+
+.news-card-arrow {
+  color: var(--news-arrow-color);
+  font-size: 17px;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.news-card:hover .news-card-arrow {
+  color: var(--news-arrow-hover);
+  transform: translate(2px, -2px);
+}
+
+.news-card-body h2 {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.4;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  color: var(--news-text);
+}
+
+/* ===== Пустое состояние ===== */
+.news-empty {
+  padding: 80px 20px;
+  text-align: center;
+  border: 1px solid var(--news-empty-border);
+  border-radius: 12px;
+  background: var(--news-card-bg);
+}
+
+.news-empty-icon {
+  margin-bottom: 16px;
+  color: var(--news-empty-icon);
+  font-size: 32px;
+}
+
+.news-empty h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--news-text);
+}
+
+.news-empty p {
+  margin: 0;
+  color: var(--news-muted);
+  font-size: 14px;
+}
+
+/* ===== Адаптив (Bootstrap берёт на себя сетку, но оставляем для отступов) ===== */
+@media (max-width: 768px) {
+  .news-container {
+    padding: 40px 16px 60px;
+  }
+  .news-title {
+    font-size: 30px;
+  }
+  .news-description {
+    margin-top: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .news-container {
+    padding-top: 32px;
+  }
+  .news-title {
+    font-size: 28px;
+  }
+  .news-card-image {
+    height: 190px;
+  }
+  .news-card-body {
+    padding: 18px;
+  }
+  .news-card-body h2 {
+    font-size: 17px;
+  }
+}

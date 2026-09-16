@@ -1,0 +1,57 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Мои уроки{% endblock %}
+
+{% block dashboard_content %}
+<div class="dashboard-home">
+  <div class="dashboard-header">
+    <h1>Мои уроки</h1>
+    <p>Создавайте уроки из блоков и делитесь с классом</p>
+  </div>
+
+  <div style="margin-bottom: 24px;">
+    <a href="{% url 'dashboard:lesson_builder' %}"
+       style="display:inline-flex;align-items:center;gap:8px;padding:12px 22px;background:#0B6E4F;color:#fff;border-radius:12px;font-weight:600;text-decoration:none;">
+      <i class="bi bi-plus-lg"></i> Создать урок
+    </a>
+  </div>
+
+  {% if lessons %}
+    <div class="lessons-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;">
+      {% for lesson in lessons %}
+        <div style="background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:16px;padding:22px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <span style="font-family:monospace;font-weight:700;color:#0B6E4F;letter-spacing:2px;">{{ lesson.code }}</span>
+            <span style="font-size:12px;color:var(--text-muted);">{{ lesson.get_status_display|default:"" }}</span>
+          </div>
+
+          <h3 style="margin:0 0 12px;font-size:18px;">{{ lesson.title }}</h3>
+
+          <div style="display:flex;gap:14px;font-size:13px;color:var(--text-secondary);margin-bottom:16px;">
+            <span><i class="bi bi-stack"></i> {{ lesson.blocks.count }} блоков</span>
+            <span><i class="bi bi-star"></i> {{ lesson.total_points }} баллов</span>
+          </div>
+
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <a href="{% url 'dashboard:lesson_edit' lesson.pk %}"
+               style="padding:8px 14px;border:1px solid var(--border-color);border-radius:10px;color:var(--text-secondary);text-decoration:none;font-size:13px;">
+              <i class="bi bi-pencil"></i> Изменить
+            </a>
+            <a href="{% url 'dashboard:lesson_stats' lesson.pk %}"
+               style="padding:8px 14px;border:1px solid var(--border-color);border-radius:10px;color:var(--text-secondary);text-decoration:none;font-size:13px;">
+              <i class="bi bi-bar-chart"></i> Статистика
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div style="padding:60px 20px;text-align:center;border:2px dashed var(--border-color);border-radius:20px;">
+      <i class="bi bi-journal-plus" style="font-size:48px;color:#0B6E4F;opacity:.4;display:block;margin-bottom:16px;"></i>
+      <h2 style="font-size:20px;margin:0 0 8px;">У вас пока нет уроков</h2>
+      <p style="color:var(--text-secondary);margin:0;">Нажмите «Создать урок», чтобы начать</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

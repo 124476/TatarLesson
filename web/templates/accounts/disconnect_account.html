@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Отключение {{ provider_name }}{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/accounts/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-header">
+      <h3 class="auth-title">Отключение {{ provider_name }}</h3>
+      <p class="auth-subtitle">Вы действительно хотите отвязать вход через {{ provider_name }}?</p>
+    </div>
+
+    <div class="auth-body">
+      <div class="auth-info-block">
+        <h6 class="auth-info-title">Что изменится:</h6>
+        <ul class="auth-list">
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Вход через {{ provider_name }} станет недоступен
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Все данные вашего профиля сохранятся
+          </li>
+        </ul>
+      </div>
+
+      {% if not user.has_usable_password %}
+        <div class="auth-callout danger">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="flex-shrink-0 mt-1">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          <div>
+            <strong>Пароль не установлен!</strong>
+            <span>Вы потеряете доступ к аккаунту. Сначала <a href="{% url 'accounts:set_password' %}">установите пароль</a>.</span>
+          </div>
+        </div>
+      {% endif %}
+
+      <form method="post" action="{% url 'accounts:disconnect_confirm' provider %}">
+        {% csrf_token %}
+        <div class="auth-actions">
+          <a href="{% url 'accounts:profile' %}" class="btn auth-btn-secondary">Отмена</a>
+          <button type="submit" class="btn auth-btn-danger">
+            Отключить {{ provider_name }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

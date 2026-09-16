@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>{% block title %}{% endblock %}</title>
+
+  <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.css' %}">
+  <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap-icons.css' %}">
+  <link rel="stylesheet" href="{% static 'css/animate.min.css' %}"/>
+  <link rel="stylesheet" href="{% static 'css/all.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/fonts.css' %}">
+  <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+  <link rel="stylesheet" href="{% static 'css/includes/header.css' %}">
+  <link rel="stylesheet" href="{% static 'css/includes/chat_widget.css' %}">
+  <link rel="stylesheet" href="{% static 'css/includes/messages.css' %}">
+
+  {% block extra_css %}{% endblock %}
+
+  <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'js/theme.js' %}"></script>
+  <script src="{% static 'js/chart.js' %}"></script>
+  <script src="{% static 'js/messages.js' %}"></script>
+
+  <script>
+    (function() {
+      const theme = localStorage.getItem('site-theme') ||
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+
+  <link rel="icon" type="image" href="{% static 'img/favicon.svg' %}"/>
+</head>
+
+<body>
+  {% include "includes/messages.html" %}
+
+  {% include "includes/header.html" %}
+
+  <main class="main">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% include "includes/chat_widget.html" %}
+  {% include "includes/footer.html" %}
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
