@@ -1,14 +1,14 @@
 __all__ = ()
 
 import random
+import json
 
-from apps.gamification.models import Duel
 from apps.lessons.models import Answer, Lesson, LessonProgress
 from apps.words.models import Word
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from django.db.models import Count, Q, Sum
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, TemplateView
 
@@ -20,10 +20,9 @@ class DashboardHomeView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         count = Word.objects.count()
-        if count:
-            ctx["random_word"] = Word.objects.all()[random.randint(0, count - 1)]
-        else:
-            ctx["random_word"] = None
+        ctx["random_word"] = (
+            Word.objects.all()[random.randint(0, count - 1)] if count else None
+        )
         return ctx
 
 
@@ -39,7 +38,11 @@ class LessonsListView(LoginRequiredMixin, ListView):
             .prefetch_related("blocks")
             .annotate(
                 total_students=Count("progress", distinct=True),
-                finished_count=Count("progress", filter=Q(progress__is_finished=True), distinct=True),
+                finished_count=Count(
+                    "progress",
+                    filter=Q(progress__is_finished=True),
+                    distinct=True,
+                ),
             )
         )
 
@@ -51,10 +54,21 @@ class LessonBuilderView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         lesson_id = self.kwargs.get("pk")
+
+        # Все слова из словаря — для выпадающего списка
+        ctx["all_words"] = Word.objects.all().order_by("theme", "tatar")
+
         if lesson_id:
-            lesson = get_object_or_404(Lesson, pk=lesson_id, author=self.request.user)
+            lesson = get_object_or_404(
+                Lesson, pk=lesson_id, author=self.request.user,
+            )
             ctx["lesson"] = lesson
-            ctx["blocks"] = lesson.blocks.prefetch_related("words").all()
+
+            blocks = list(lesson.blocks.prefetch_related("words").all())
+            for block in blocks:
+                block.config_json = json.dumps(block.config or {}, ensure_ascii=False)
+            ctx["blocks"] = blocks
+
         return ctx
 
 
@@ -64,111 +78,141 @@ class LessonStatsView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        lesson = get_object_or_404(Lesson, pk=self.kwargs["pk"], author=self.request.user)
+        lesson = get_object_or_404(
+            Lesson, pk=self.kwargs["pk"], author=self.request.user,
+        )
         progress = LessonProgress.objects.filter(lesson=lesson).select_related("user")
-
         ctx["lesson"] = lesson
         ctx["total_students"] = progress.count()
         ctx["finished"] = progress.filter(is_finished=True).count()
         ctx["in_progress"] = progress.filter(is_finished=False).count()
         ctx["top"] = progress.order_by("-score")[:10]
+        return ctx
 
-        block_stats = (
-            Answer.objects
-            .filter(block__lesson=lesson)
-            .values("block__type", "block__id")
-            .annotate(total=Count("id"), correct=Count("id", filter=Q(is_correct=True)))
+
+class WordsView(LoginRequiredMixin, TemplateView):
+    template_name = "dashboard/words.html"
+    login_url = "accounts:auth"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        search = self.request.GET.get("q", "").strip()
+        theme = self.request.GET.get("theme", "").strip()
+
+        words = Word.objects.all()
+        if search:
+            from django.db.models import Q
+            words = words.filter(
+                Q(tatar__icontains=search) | Q(russian__icontains=search)
+            )
+        if theme:
+            words = words.filter(theme=theme)
+
+        ctx["words"] = words.order_by("theme", "tatar")
+        ctx["themes"] = Word.THEMES
+        ctx["search"] = search
+        ctx["selected_theme"] = theme
+        ctx["is_admin"] = self.request.user.is_staff
+        return ctx
+
+
+class CompetitionsView(LoginRequiredMixin, TemplateView):
+    template_name = "dashboard/competitions.html"
+    login_url = "accounts:auth"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["competitions"] = (
+            Lesson.objects
+            .filter(is_competition=True)
+            .filter(Q(is_public=True) | Q(author=self.request.user))
+            .order_by("-created_at")[:50]
         )
-        for b in block_stats:
-            b["accuracy"] = round(b["correct"] / b["total"] * 100) if b["total"] else 0
-        ctx["block_stats"] = block_stats
+        ctx["is_admin"] = self.request.user.is_staff
         return ctx
 
+from django.http import JsonResponse
+from django.views import View
 
-class LeaderboardView(LoginRequiredMixin, TemplateView):
-    template_name = "dashboard/leaderboard.html"
+
+class AddWordView(LoginRequiredMixin, View):
+    """API: добавление слова. Только для админа."""
     login_url = "accounts:auth"
 
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        class_id = self.request.GET.get("class_id")
-        qs = User.objects.filter(is_staff=False, is_active=True)
-        if class_id:
-            qs = qs.filter(profile__class_group_id=class_id)
-        ctx["leaders"] = qs.order_by("-profile__points")[:50]
-        ctx["my_points"] = self.request.user.profile.points
-        ctx["my_streak"] = self.request.user.profile.streak
-        return ctx
+    def post(self, request, *args, **kwargs):
+        if not request.user.is_staff:
+            return JsonResponse({"error": "Forbidden"}, status=403)
 
+        import json
+        data = json.loads(request.body)
 
-class DictionaryView(LoginRequiredMixin, TemplateView):
-    template_name = "dashboard/dictionary.html"
-    login_url = "accounts:auth"
+        tatar = data.get("tatar", "").strip()
+        russian = data.get("russian", "").strip()
+        transcription = data.get("transcription", "").strip()
+        example_tt = data.get("example_tt", "").strip()
+        example_ru = data.get("example_ru", "").strip()
+        theme = data.get("theme", "family").strip()
 
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        word_ids = (
-            Answer.objects
-            .filter(user=self.request.user)
-            .values_list("block__words__id", flat=True)
-            .distinct()
+        if not tatar or not russian:
+            return JsonResponse({"error": "Заполните слово и перевод"}, status=400)
+
+        # Проверка на дубликат
+        if Word.objects.filter(tatar__iexact=tatar).exists():
+            return JsonResponse({"error": "Такое слово уже есть"}, status=400)
+
+        word = Word.objects.create(
+            tatar=tatar,
+            russian=russian,
+            transcription=transcription,
+            example_tt=example_tt,
+            example_ru=example_ru,
+            theme=theme,
         )
-        ctx["words"] = Word.objects.filter(id__in=word_ids).order_by("theme", "tatar")
-        themes = {}
-        for w in ctx["words"]:
-            themes.setdefault(w.get_theme_display(), []).append(w)
-        ctx["themes"] = themes
-        return ctx
+
+        return JsonResponse({
+            "status": "ok",
+            "id": word.id,
+            "word": {
+                "tatar": word.tatar,
+                "russian": word.russian,
+                "transcription": word.transcription,
+                "theme": word.theme,
+                "theme_display": word.get_theme_display(),
+            },
+        })
 
 
-class DuelView(LoginRequiredMixin, TemplateView):
-    template_name = "dashboard/duel.html"
+class UpdateWordView(LoginRequiredMixin, View):
+    """API: редактирование слова. Только для админа."""
     login_url = "accounts:auth"
 
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        duel = get_object_or_404(Duel, pk=self.kwargs["pk"])
-        if self.request.user not in (duel.player1, duel.player2):
-            from django.core.exceptions import PermissionDenied
-            raise PermissionDenied
-        ctx["duel"] = duel
-        return ctx
+    def post(self, request, pk, *args, **kwargs):
+        if not request.user.is_staff:
+            return JsonResponse({"error": "Forbidden"}, status=403)
+
+        import json
+        data = json.loads(request.body)
+        word = get_object_or_404(Word, pk=pk)
+
+        word.tatar = data.get("tatar", word.tatar).strip()
+        word.russian = data.get("russian", word.russian).strip()
+        word.transcription = data.get("transcription", word.transcription).strip()
+        word.example_tt = data.get("example_tt", word.example_tt).strip()
+        word.example_ru = data.get("example_ru", word.example_ru).strip()
+        word.theme = data.get("theme", word.theme)
+        word.save()
+
+        return JsonResponse({"status": "ok"})
 
 
-# ===== Тест API =====
-class TestAPIView(LoginRequiredMixin, TemplateView):
-    template_name = "dashboard/test_api.html"
+class DeleteWordView(LoginRequiredMixin, View):
+    """API: удаление слова. Только для админа."""
     login_url = "accounts:auth"
 
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        from apps.lessons.api import TatSoftAPI
+    def post(self, request, pk, *args, **kwargs):
+        if not request.user.is_staff:
+            return JsonResponse({"error": "Forbidden"}, status=403)
 
-        # TTS
-        try:
-            audio = TatSoftAPI.synthesize("Ат")
-            ctx["tts_status"] = f"OK ({len(audio)} байт)" if audio else "FAIL"
-            ctx["tts_ok"] = bool(audio)
-        except Exception as e:
-            ctx["tts_status"] = f"ERROR: {e}"
-            ctx["tts_ok"] = False
-
-        # MT
-        try:
-            result = TatSoftAPI.translate("Привет", "ru", "tt")
-            ctx["mt_status"] = f"OK: {result}" if result else "FAIL"
-            ctx["mt_ok"] = bool(result)
-        except Exception as e:
-            ctx["mt_status"] = f"ERROR: {e}"
-            ctx["mt_ok"] = False
-
-        # Morph
-        try:
-            morph = TatSoftAPI.morphology("Мин китап укыйм")
-            ctx["morph_status"] = f"OK ({len(morph) if morph else 0} элементов)" if morph else "FAIL"
-            ctx["morph_ok"] = bool(morph)
-        except Exception as e:
-            ctx["morph_status"] = f"ERROR: {e}"
-            ctx["morph_ok"] = False
-
-        return ctx
+        word = get_object_or_404(Word, pk=pk)
+        word.delete()
+        return JsonResponse({"status": "ok"})

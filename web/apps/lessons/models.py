@@ -9,28 +9,26 @@ from django.db import models
 
 class Lesson(BaseModel):
     title = models.CharField(max_length=255, verbose_name="Название")
-    author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="lessons",
-    )
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="lessons")
     class_group = models.ForeignKey(
-        "accounts.ClassGroup",
-        on_delete=models.SET_NULL,
-        null=True, blank=True,
-        related_name="lessons",
-        verbose_name="Класс",
+        "accounts.ClassGroup", on_delete=models.SET_NULL,
+        null=True, blank=True, related_name="lessons", verbose_name="Класс",
     )
-    is_public = models.BooleanField(
-        default=False, verbose_name="Публичный (для самостоятельного обучения)",
+    is_public = models.BooleanField(default=False, verbose_name="Публичный")
+    is_competition = models.BooleanField(default=False, verbose_name="Соревнование")
+    allow_retry = models.BooleanField(
+        default=True,
+        verbose_name="Разрешить повторное прохождение",
+        help_text="Если выключено, ученик может пройти урок только один раз",
     )
-    code = models.CharField(
-        max_length=6, unique=True, blank=True, verbose_name="Код урока",
+    show_answers_after = models.BooleanField(
+        default=False,
+        verbose_name="Показывать правильные ответы после завершения",
+        help_text="Ученик увидит свои ответы и правильные после прохождения",
     )
-    time_limit = models.PositiveIntegerField(
-        default=15, verbose_name="Лимит времени (мин)",
-    )
-    leaderboard_on = models.BooleanField(
-        default=True, verbose_name="Показывать лидерборд",
-    )
+    code = models.CharField(max_length=6, unique=True, blank=True, verbose_name="Код урока")
+    time_limit = models.PositiveIntegerField(default=15, verbose_name="Лимит времени (мин)")
+    leaderboard_on = models.BooleanField(default=True, verbose_name="Показывать лидерборд")
 
     class Meta:
         verbose_name = "Урок"
@@ -56,14 +54,10 @@ class Block(BaseModel):
     TYPES = (
         ("audio", "🎧 Аудирование"),
         ("translate", "📖 Перевод"),
-        ("speak", "🎙️ Произношение"),
         ("build", "🧩 Собери слово"),
         ("pairs", "🔗 Найди пару"),
-        ("gap", "📝 Вставь пропуск"),
-        ("dialog", "💬 Диалог"),
-        ("crossword", "🧩 Кроссворд"),
         ("quick", "⏱️ Быстрый раунд"),
-        ("creative", "🎨 Творческое"),
+        ("gap", "📝 Вставь пропуск"),
     )
 
     lesson = models.ForeignKey(

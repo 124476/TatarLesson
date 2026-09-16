@@ -13,9 +13,9 @@
     <p>Соберите урок из блоков</p>
   </div>
 
-  <!-- Настройки урока -->
+  <!-- ==================== НАСТРОЙКИ УРОКА ==================== -->
   <div style="background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:16px;padding:24px;margin-bottom:24px;">
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;">
       <div>
         <label style="display:block;font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">Название урока</label>
         <input type="text" id="lessonTitle" value="{{ lesson.title|default:'' }}" placeholder="Например: Семья"
@@ -27,18 +27,32 @@
         <input type="number" id="lessonTime" value="{{ lesson.time_limit|default:15 }}" min="1" max="120"
                style="width:100%;padding:11px 14px;border:1px solid var(--border-color);border-radius:10px;background:var(--bg-page);color:var(--text-primary);outline:none;">
       </div>
+    </div>
 
-      <div>
-        <label style="display:block;font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">Публичный</label>
-        <label style="display:flex;align-items:center;gap:10px;padding:11px 0;">
-          <input type="checkbox" id="lessonPublic" {% if lesson.is_public %}checked{% endif %} style="width:18px;height:18px;accent-color:#0B6E4F;">
-          <span style="font-size:14px;color:var(--text-secondary);">Доступен всем</span>
-        </label>
-      </div>
+    <div style="display:flex;gap:24px;flex-wrap:wrap;margin-top:20px;padding-top:20px;border-top:1px solid var(--border-color);">
+      <label style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text-secondary);cursor:pointer;">
+        <input type="checkbox" id="lessonPublic" {% if lesson.is_public %}checked{% endif %} style="width:18px;height:18px;accent-color:#0B6E4F;">
+        Публичный (доступен всем)
+      </label>
+
+      <label style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text-secondary);cursor:pointer;">
+        <input type="checkbox" id="lessonCompetition" {% if lesson.is_competition %}checked{% endif %} style="width:18px;height:18px;accent-color:#0B6E4F;">
+        Отметить как соревнование
+      </label>
+
+      <label style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text-secondary);cursor:pointer;">
+        <input type="checkbox" id="lessonRetry" {% if not lesson or lesson.allow_retry %}checked{% endif %} style="width:18px;height:18px;accent-color:#0B6E4F;">
+        Разрешить повторное прохождение
+      </label>
+
+      <label style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text-secondary);cursor:pointer;">
+        <input type="checkbox" id="lessonShowAnswers" {% if lesson.show_answers_after %}checked{% endif %} style="width:18px;height:18px;accent-color:#0B6E4F;">
+        Показывать правильные ответы после завершения
+      </label>
     </div>
   </div>
 
-  <!-- Палитра блоков -->
+  <!-- ==================== ПАЛИТРА БЛОКОВ ==================== -->
   <div style="margin-bottom:24px;">
     <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:14px;">Доступные блоки</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;">
@@ -47,24 +61,29 @@
       <div class="block-chip" data-type="build" style="padding:14px 16px;background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:12px;cursor:pointer;display:flex;align-items:center;gap:10px;"><i class="bi bi-puzzle" style="color:#0B6E4F;font-size:20px;"></i>Собери слово</div>
       <div class="block-chip" data-type="pairs" style="padding:14px 16px;background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:12px;cursor:pointer;display:flex;align-items:center;gap:10px;"><i class="bi bi-link-45deg" style="color:#0B6E4F;font-size:20px;"></i>Найди пару</div>
       <div class="block-chip" data-type="quick" style="padding:14px 16px;background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:12px;cursor:pointer;display:flex;align-items:center;gap:10px;"><i class="bi bi-stopwatch" style="color:#0B6E4F;font-size:20px;"></i>Быстрый раунд</div>
+      <div class="block-chip" data-type="gap" style="padding:14px 16px;background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:12px;cursor:pointer;display:flex;align-items:center;gap:10px;"><i class="bi bi-input-cursor-text" style="color:#0B6E4F;font-size:20px;"></i>Вставь пропуск</div>
     </div>
   </div>
 
-  <!-- Список блоков урока -->
+  <!-- ==================== СПИСОК БЛОКОВ ==================== -->
   <div style="margin-bottom:24px;">
     <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:14px;">Мой урок</div>
+
     <div id="blocksList" style="display:flex;flex-direction:column;gap:10px;">
       {% if blocks %}
         {% for block in blocks %}
-          <div class="block-item" data-type="{{ block.type }}" data-config='{{ block.config|safe }}'
+          <div class="block-item" data-type="{{ block.type }}" data-config-id="block-config-{{ block.id }}"
                style="display:flex;align-items:center;gap:14px;padding:16px 18px;background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:14px;">
+
+            <script type="application/json" id="block-config-{{ block.id }}">{{ block.config_json|safe }}</script>
+
             <div style="width:42px;height:42px;display:flex;align-items:center;justify-content:center;background:rgba(11,110,79,.08);border-radius:12px;color:#0B6E4F;font-size:20px;">
               <i class="bi bi-stack"></i>
             </div>
             <div style="flex:1;">
               <div style="font-weight:600;">{{ block.get_type_display }}</div>
               <div style="font-size:12px;color:var(--text-muted);">
-                {{ block.config.correct }}{% if block.config.word %} · {{ block.config.word }}{% endif %}{% if block.config.pairs %} · {{ block.config.pairs|length }} пар{% endif %}
+                {% if block.config.pairs %}{{ block.config.pairs|length }} пар{% else %}{{ block.config.word }}{% if block.config.correct %} → {{ block.config.correct }}{% endif %}{% endif %}
               </div>
             </div>
             <div style="display:flex;align-items:center;gap:6px;">
@@ -86,75 +105,134 @@
     </div>
   </div>
 
-  <!-- Кнопки -->
-  <div style="display:flex;gap:10px;">
-    <button onclick="saveLesson()" style="padding:12px 22px;background:#0B6E4F;color:#fff;border:none;border-radius:12px;font-weight:600;cursor:pointer;">
+  <!-- ==================== КНОПКИ ==================== -->
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+    <button type="button" onclick="saveLesson()" id="saveLessonBtn"
+            style="padding:12px 22px;background:#0B6E4F;color:#fff;border:none;border-radius:12px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;">
       <i class="bi bi-check-lg"></i> Сохранить
     </button>
-    <a href="{% url 'dashboard:lessons' %}" style="padding:12px 22px;border:1px solid var(--border-color);border-radius:12px;color:var(--text-secondary);text-decoration:none;font-weight:600;">
+    <a href="{% url 'dashboard:lessons' %}"
+       style="padding:12px 22px;border:1px solid var(--border-color);border-radius:12px;color:var(--text-secondary);text-decoration:none;font-weight:600;">
       Назад
     </a>
+    <span id="saveError" style="color:#dc2626;font-size:14px;"></span>
   </div>
 </div>
 
 <!-- МОДАЛКА НАСТРОЙКИ БЛОКА -->
-<div class="modal-overlay" id="blockModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center;z-index:2000;padding:20px;">
-  <div style="background:var(--bg-sidebar);border-radius:20px;max-width:560px;width:100%;max-height:85vh;display:flex;flex-direction:column;overflow:hidden;">
+<div class="modal-overlay" id="blockModal">
+  <div class="modal-box">
 
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border-color);">
-      <h3 id="blockModalTitle" style="margin:0;font-size:18px;">Настройка блока</h3>
-      <button onclick="closeBlockModal()" style="width:32px;height:32px;border-radius:8px;background:transparent;border:none;color:var(--text-secondary);cursor:pointer;">
+    <div class="modal-header">
+      <h3 id="blockModalTitle">Настройка блока</h3>
+      <button type="button" class="modal-close" onclick="closeBlockModal()" aria-label="Закрыть">
         <i class="bi bi-x-lg"></i>
       </button>
     </div>
 
-    <div style="padding:20px 24px;overflow-y:auto;flex:1;">
+    <div class="modal-body">
 
-      <div style="margin-bottom:16px;">
-        <label style="display:block;font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">
-          Правильный ответ / перевод на русский *
-        </label>
-        <input type="text" id="modalCorrect" placeholder="Например: Книга"
-               style="width:100%;padding:11px 14px;border:1px solid var(--border-color);border-radius:10px;background:var(--bg-page);color:var(--text-primary);outline:none;">
-        <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">
-          Используется в «Перевод», «Быстрый раунд», а также как подсказка в «Собери слово»
+      <!-- ====== ДЛЯ ОБЫЧНЫХ БЛОКОВ (2 КОЛОНКИ) ====== -->
+      <div id="normalFields">
+
+        <div class="block-form-grid">
+
+          <!-- Колонка 1 -->
+          <div class="block-form-col">
+            <div class="block-form-hint">
+              <label><i class="bi bi-book"></i> Выбрать слово из словаря</label>
+              <select id="dictionarySelect" class="block-form-input">
+                <option value="">— Или введите слово вручную —</option>
+                {% regroup all_words by get_theme_display as themes_list %}
+                {% for theme in themes_list %}
+                  <optgroup label="{{ theme.grouper }}">
+                    {% for word in theme.list %}
+                      <option value="{{ word.id }}"
+                              data-tatar="{{ word.tatar }}"
+                              data-russian="{{ word.russian }}"
+                              data-transcription="{{ word.transcription }}"
+                              data-example-tt="{{ word.example_tt }}"
+                              data-example-ru="{{ word.example_ru }}">
+                        {{ word.tatar }} — {{ word.russian }}{% if word.transcription %} [{{ word.transcription }}]{% endif %}
+                      </option>
+                    {% endfor %}
+                  </optgroup>
+                {% endfor %}
+              </select>
+              <div class="block-form-subhint">
+                Выберите — поля ниже заполнятся автоматически
+              </div>
+            </div>
+
+            <div class="block-form-field">
+              <label>Что показать ученику *</label>
+              <input type="text" id="modalWord" placeholder="Например: Китап" class="block-form-input">
+              <div class="block-form-subhint">Обычно — татарское слово</div>
+            </div>
+          </div>
+
+          <!-- Колонка 2 -->
+          <div class="block-form-col">
+            <div class="block-form-field">
+              <label>Правильный ответ *</label>
+              <input type="text" id="modalCorrect" placeholder="Например: Книга" class="block-form-input">
+              <div class="block-form-subhint">Ученик НЕ увидит это до ответа</div>
+            </div>
+
+            <div class="block-form-field">
+              <label>Баллов</label>
+              <input type="number" id="modalPoints" value="10" min="1" max="100" class="block-form-input">
+            </div>
+          </div>
+
         </div>
       </div>
 
-      <div style="margin-bottom:16px;">
-        <label style="display:block;font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">
-          Слово на татарском
-        </label>
-        <input type="text" id="modalWord" placeholder="Например: Китап"
-               style="width:100%;padding:11px 14px;border:1px solid var(--border-color);border-radius:10px;background:var(--bg-page);color:var(--text-primary);outline:none;">
-        <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">
-          Обязательно для «Аудирование» и «Собери слово» — это слово озвучивается и собирается
+      <!-- ====== ДЛЯ «НАЙДИ ПАРУ» ====== -->
+      <div id="pairsField" style="display:none;">
+
+        <div class="block-form-hint" style="margin-bottom:20px;">
+          <label><i class="bi bi-book"></i> Добавить пару из словаря</label>
+          <div class="block-form-row">
+            <select id="dictionaryPairsSelect" class="block-form-input">
+              <option value="">— Выберите слово —</option>
+              {% regroup all_words by get_theme_display as themes_list %}
+              {% for theme in themes_list %}
+                <optgroup label="{{ theme.grouper }}">
+                  {% for word in theme.list %}
+                    <option value="{{ word.id }}"
+                            data-tatar="{{ word.tatar }}"
+                            data-russian="{{ word.russian }}">
+                      {{ word.tatar }} — {{ word.russian }}
+                    </option>
+                  {% endfor %}
+                </optgroup>
+              {% endfor %}
+            </select>
+            <button type="button" class="block-form-btn-add" onclick="addPairFromDictionary()">
+              <i class="bi bi-plus-lg"></i> Добавить
+            </button>
+          </div>
+        </div>
+
+        <label class="block-form-label">Пары слов (татарский → русский)</label>
+        <div id="pairsList" class="pairs-list"></div>
+
+        <button type="button" class="block-form-btn-dashed" onclick="addPairRow()">
+          <i class="bi bi-plus-lg"></i> Добавить пустую пару
+        </button>
+
+        <div class="block-form-field" style="margin-top:20px;">
+          <label>Баллов</label>
+          <input type="number" id="modalPointsPairs" value="10" min="1" max="100" class="block-form-input">
         </div>
       </div>
 
-      <div id="pairsField" style="margin-bottom:16px;display:none;">
-        <label style="display:block;font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">
-          Пары: татарский:русский (через запятую)
-        </label>
-        <textarea id="modalPairs" rows="4" placeholder="Китап:Книга, Өстәл:Стол, Урындык:Стул"
-                  style="width:100%;padding:11px 14px;border:1px solid var(--border-color);border-radius:10px;background:var(--bg-page);color:var(--text-primary);outline:none;font-family:inherit;resize:vertical;"></textarea>
-        <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">
-          Каждая пара на новой строке или через запятую. Разделитель — двоеточие.
-        </div>
-      </div>
-
-      <div style="margin-bottom:16px;">
-        <label style="display:block;font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">
-          Баллов
-        </label>
-        <input type="number" id="modalPoints" value="10" min="1" max="100"
-               style="width:100%;padding:11px 14px;border:1px solid var(--border-color);border-radius:10px;background:var(--bg-page);color:var(--text-primary);outline:none;">
-      </div>
     </div>
 
-    <div style="display:flex;gap:10px;justify-content:flex-end;padding:16px 24px;border-top:1px solid var(--border-color);">
-      <button onclick="closeBlockModal()" style="padding:10px 18px;border:1px solid var(--border-color);border-radius:10px;background:transparent;color:var(--text-secondary);cursor:pointer;font-weight:600;">Отмена</button>
-      <button onclick="applyBlockConfig()" style="padding:10px 18px;background:#0B6E4F;color:#fff;border:none;border-radius:10px;font-weight:600;cursor:pointer;">Добавить</button>
+    <div class="modal-footer">
+      <button type="button" class="modal-btn-secondary" onclick="closeBlockModal()">Отмена</button>
+      <button type="button" class="modal-btn-primary" onclick="applyBlockConfig()">Добавить</button>
     </div>
   </div>
 </div>
@@ -164,30 +242,46 @@
 {% block extra_js %}
 <script>
 const BLOCK_TYPES = {
-  audio:     { name: '🎧 Аудирование',  icon: 'headphones',  hasPairs: false },
-  translate: { name: '📖 Перевод',      icon: 'translate',   hasPairs: false },
-  build:     { name: '🧩 Собери слово', icon: 'puzzle',      hasPairs: false },
-  pairs:     { name: '🔗 Найди пару',   icon: 'link-45deg', hasPairs: true },
-  quick:     { name: '⏱️ Быстрый раунд',icon: 'stopwatch',   hasPairs: false },
+  audio:     { name: '🎧 Аудирование',  icon: 'headphones',       hasPairs: false },
+  translate: { name: '📖 Перевод',      icon: 'translate',        hasPairs: false },
+  build:     { name: '🧩 Собери слово', icon: 'puzzle',           hasPairs: false },
+  pairs:     { name: '🔗 Найди пару',   icon: 'link-45deg',       hasPairs: true },
+  quick:     { name: '⏱️ Быстрый раунд',icon: 'stopwatch',        hasPairs: false },
+  gap:       { name: '📝 Вставь пропуск',icon: 'input-cursor-text',hasPairs: false },
 };
 
 let currentBlockType = null;
+let blockCounter = 0;
 
 document.querySelectorAll('.block-chip').forEach(chip => {
   chip.addEventListener('click', () => openBlockModal(chip.dataset.type));
 });
 
+// =================== ОТКРЫТИЕ МОДАЛКИ ===================
 function openBlockModal(type) {
   currentBlockType = type;
   const info = BLOCK_TYPES[type];
 
   document.getElementById('blockModalTitle').textContent = info.name;
-  document.getElementById('modalCorrect').value = '';
   document.getElementById('modalWord').value = '';
-  document.getElementById('modalPairs').value = '';
+  document.getElementById('modalCorrect').value = '';
   document.getElementById('modalPoints').value = 10;
+  document.getElementById('pairsList').innerHTML = '';
 
+  // Сброс выпадающих списков
+  const dictSelect = document.getElementById('dictionarySelect');
+  if (dictSelect) dictSelect.value = '';
+  const dictPairsSelect = document.getElementById('dictionaryPairsSelect');
+  if (dictPairsSelect) dictPairsSelect.value = '';
+
+  // Показать/скрыть нужные поля
+  document.getElementById('normalFields').style.display = info.hasPairs ? 'none' : 'block';
   document.getElementById('pairsField').style.display = info.hasPairs ? 'block' : 'none';
+
+  if (info.hasPairs) {
+    addPairRow();
+    addPairRow();
+  }
 
   document.getElementById('blockModal').style.display = 'flex';
 }
@@ -197,55 +291,134 @@ function closeBlockModal() {
   currentBlockType = null;
 }
 
+// =================== АВТОЗАПОЛНЕНИЕ ИЗ СЛОВАРЯ ===================
+document.getElementById('dictionarySelect')?.addEventListener('change', function () {
+  if (!this.value) return;
+
+  const opt = this.options[this.selectedIndex];
+  const tatar = opt.dataset.tatar || '';
+  const russian = opt.dataset.russian || '';
+  const type = currentBlockType;
+
+  if (type === 'build') {
+    // Показать перевод, собрать татарское
+    document.getElementById('modalWord').value = russian;
+    document.getElementById('modalCorrect').value = tatar;
+  } else {
+    // audio, translate, quick, gap — показать татарское, ответ русский
+    document.getElementById('modalWord').value = tatar;
+    document.getElementById('modalCorrect').value = russian;
+  }
+
+  this.value = '';
+});
+
+// =================== ПАРЫ ===================
+function addPairRow(tt = '', ru = '') {
+  const list = document.getElementById('pairsList');
+  const row = document.createElement('div');
+  row.style.cssText = 'display:flex;gap:8px;align-items:center;';
+  row.innerHTML = `
+    <input type="text" class="pair-tt" placeholder="Татарский" value="${escapeAttr(tt)}"
+           style="flex:1;padding:10px 12px;border:1px solid var(--border-color);border-radius:10px;background:var(--bg-page);color:var(--text-primary);outline:none;">
+    <span style="color:var(--text-muted);">→</span>
+    <input type="text" class="pair-ru" placeholder="Русский" value="${escapeAttr(ru)}"
+           style="flex:1;padding:10px 12px;border:1px solid var(--border-color);border-radius:10px;background:var(--bg-page);color:var(--text-primary);outline:none;">
+    <button type="button" onclick="this.parentElement.remove()"
+            style="width:36px;height:36px;border:1px solid var(--border-color);border-radius:8px;background:transparent;color:#dc2626;cursor:pointer;flex-shrink:0;">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  `;
+  list.appendChild(row);
+}
+
+function addPairFromDictionary() {
+  const select = document.getElementById('dictionaryPairsSelect');
+  if (!select.value) {
+    showToast('Выберите слово из словаря', 'error');
+    return;
+  }
+
+  const opt = select.options[select.selectedIndex];
+  const tatar = opt.dataset.tatar || '';
+  const russian = opt.dataset.russian || '';
+
+  // Если в списке только пустые строки — очищаем и добавляем
+  const existing = document.querySelectorAll('#pairsList > div');
+  if (existing.length && [...existing].every(r =>
+    !r.querySelector('.pair-tt').value && !r.querySelector('.pair-ru').value
+  )) {
+    document.getElementById('pairsList').innerHTML = '';
+  }
+
+  addPairRow(tatar, russian);
+  select.value = '';
+}
+
+// =================== ПРИМЕНЕНИЕ КОНФИГА БЛОКА ===================
 function applyBlockConfig() {
   if (!currentBlockType) return;
-
   const info = BLOCK_TYPES[currentBlockType];
-  const correct = document.getElementById('modalCorrect').value.trim();
-  const word = document.getElementById('modalWord').value.trim();
-  const pairsRaw = document.getElementById('modalPairs').value.trim();
   const points = parseInt(document.getElementById('modalPoints').value) || 10;
-
-  // Для pairs — нужны пары, а не single correct
-  if (currentBlockType === 'pairs') {
-    if (!pairsRaw) { alert('Введите хотя бы одну пару'); return; }
-  } else {
-    if (!correct) { alert('Введите правильный ответ'); return; }
-  }
 
   const config = { points };
 
-  if (currentBlockType === 'pairs') {
-    const pairs = pairsRaw.split(/[,\n]+/).map(p => {
-      const [tt, ru] = p.split(':').map(s => (s || '').trim());
-      return [tt, ru];
-    }).filter(p => p[0] && p[1]);
-
-    if (!pairs.length) { alert('Пары заполнены неверно'); return; }
+  if (info.hasPairs) {
+    const pairs = [];
+    document.querySelectorAll('#pairsList > div').forEach(row => {
+      const tt = row.querySelector('.pair-tt').value.trim();
+      const ru = row.querySelector('.pair-ru').value.trim();
+      if (tt && ru) pairs.push([tt, ru]);
+    });
+    if (pairs.length < 2) {
+      showToast('Добавьте минимум 2 пары', 'error');
+      return;
+    }
     config.pairs = pairs;
   } else {
+    const word = document.getElementById('modalWord').value.trim();
+    const correct = document.getElementById('modalCorrect').value.trim();
+
+    if (!word) {
+      showToast('Введите, что показать ученику', 'error');
+      return;
+    }
+    if (!correct) {
+      showToast('Введите правильный ответ', 'error');
+      return;
+    }
+
+    config.word = word;
     config.correct = correct;
-    if (word) config.word = word;
   }
 
   const empty = document.getElementById('blocksEmpty');
   if (empty) empty.remove();
 
+  const newId = 'block-config-new-' + (blockCounter++);
+
   const list = document.getElementById('blocksList');
   const item = document.createElement('div');
   item.className = 'block-item';
   item.dataset.type = currentBlockType;
-  item.dataset.config = JSON.stringify(config);
-  item.style.cssText = 'display:flex;align-items:center;gap:14px;padding:16px 18px;background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:14px;';
+  item.dataset.configId = newId;
+
+  const jsonScript = document.createElement('script');
+  jsonScript.type = 'application/json';
+  jsonScript.id = newId;
+  jsonScript.textContent = JSON.stringify(config);
+  item.appendChild(jsonScript);
 
   let preview = '';
-  if (currentBlockType === 'pairs') {
+  if (info.hasPairs) {
     preview = config.pairs.length + ' пар';
   } else {
-    preview = correct + (word ? ' · ' + word : '');
+    preview = config.word + ' → ' + config.correct;
   }
 
-  item.innerHTML = `
+  const content = document.createElement('div');
+  content.style.cssText = 'display:flex;align-items:center;gap:14px;width:100%;';
+  content.innerHTML = `
     <div style="width:42px;height:42px;display:flex;align-items:center;justify-content:center;background:rgba(11,110,79,.08);border-radius:12px;color:#0B6E4F;font-size:20px;">
       <i class="bi bi-${info.icon}"></i>
     </div>
@@ -258,14 +431,18 @@ function applyBlockConfig() {
              style="width:60px;padding:6px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-page);color:var(--text-primary);text-align:center;">
       <span style="font-size:13px;color:var(--text-secondary);">баллов</span>
     </div>
-    <button class="btn-remove" style="width:34px;height:34px;border:1px solid var(--border-color);border-radius:8px;background:transparent;color:var(--text-secondary);cursor:pointer;">
+    <button type="button" class="btn-remove" style="width:34px;height:34px;border:1px solid var(--border-color);border-radius:8px;background:transparent;color:var(--text-secondary);cursor:pointer;">
       <i class="bi bi-trash"></i>
     </button>
   `;
+  item.appendChild(content);
+
+  item.style.cssText = 'display:flex;align-items:center;gap:14px;padding:16px 18px;background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:14px;';
   list.appendChild(item);
   closeBlockModal();
 }
 
+// =================== УДАЛЕНИЕ БЛОКА ===================
 document.addEventListener('click', e => {
   if (e.target.closest('.btn-remove')) {
     e.target.closest('.block-item').remove();
@@ -278,16 +455,45 @@ document.addEventListener('click', e => {
   }
 });
 
+// =================== СОХРАНЕНИЕ УРОКА ===================
 function saveLesson() {
   const app = document.getElementById('builderApp');
   const lessonId = app.dataset.lessonId || null;
   const title = document.getElementById('lessonTitle').value.trim();
-  if (!title) { alert('Введите название урока'); return; }
+
+  const saveBtn = document.getElementById('saveLessonBtn');
+  const errorBox = document.getElementById('saveError');
+  errorBox.textContent = '';
+
+  if (!title) {
+    errorBox.textContent = 'Введите название урока';
+    return;
+  }
 
   const blocks = [];
+  let parseError = false;
+
   document.querySelectorAll('.block-item').forEach((item, i) => {
-    const config = JSON.parse(item.dataset.config || '{}');
-    config.points = parseInt(item.querySelector('.points-input').value) || 10;
+    const configId = item.dataset.configId;
+    let config = {};
+
+    if (configId) {
+      const scriptEl = document.getElementById(configId);
+      if (scriptEl) {
+        try {
+          config = JSON.parse(scriptEl.textContent || '{}');
+        } catch (e) {
+          console.error('Ошибка парсинга config блока', configId, e);
+          parseError = true;
+        }
+      }
+    }
+
+    if (parseError) return;
+
+    const pointsInput = item.querySelector('.points-input');
+    config.points = parseInt(pointsInput?.value) || 10;
+
     blocks.push({
       type: item.dataset.type,
       order_index: i,
@@ -295,6 +501,20 @@ function saveLesson() {
       config: config,
     });
   });
+
+  if (parseError) {
+    errorBox.textContent = 'Ошибка в данных блока. Обновите страницу.';
+    return;
+  }
+
+  if (!blocks.length) {
+    errorBox.textContent = 'Добавьте хотя бы один блок';
+    return;
+  }
+
+  saveBtn.disabled = true;
+  const originalText = saveBtn.innerHTML;
+  saveBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Сохранение...';
 
   fetch(app.dataset.saveUrl, {
     method: 'POST',
@@ -307,6 +527,9 @@ function saveLesson() {
       title: title,
       time_limit: parseInt(document.getElementById('lessonTime').value) || 15,
       is_public: document.getElementById('lessonPublic').checked,
+      is_competition: document.getElementById('lessonCompetition').checked,
+      allow_retry: document.getElementById('lessonRetry').checked,
+      show_answers_after: document.getElementById('lessonShowAnswers').checked,
       blocks: blocks,
     }),
   })
@@ -315,9 +538,47 @@ function saveLesson() {
     if (data.status === 'ok') {
       window.location.href = '/dashboard/lessons/';
     } else {
-      alert('Ошибка сохранения');
+      errorBox.textContent = data.error || 'Ошибка сохранения';
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = originalText;
     }
+  })
+  .catch(e => {
+    errorBox.textContent = 'Ошибка сети: ' + e.message;
+    saveBtn.disabled = false;
+    saveBtn.innerHTML = originalText;
   });
+}
+
+// =================== УТИЛИТЫ ===================
+function escapeAttr(text) {
+  return String(text ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function showToast(message, type = 'info') {
+  let container = document.getElementById('toastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+  }
+  const toast = document.createElement('div');
+  toast.className = `app-toast app-toast-${type}`;
+  const icon = type === 'success' ? 'check-circle-fill'
+             : type === 'error' ? 'x-circle-fill'
+             : 'info-circle-fill';
+  toast.innerHTML = `<i class="bi bi-${icon}"></i><span>${message}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => toast.classList.add('show'), 10);
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
 }
 
 function getCookie(name) {

@@ -11,16 +11,19 @@
 {% block content %}
 <div class="container home-page">
 
-  <!-- Hero -->
+  <!-- ==================== HERO ==================== -->
   <section class="hero-section">
     <div class="hero-content">
       <div class="section-label">Изучай татарский играя</div>
+
       <h1 class="hero-title">
         Tatar<span>Lesson</span>
       </h1>
+
       <p class="hero-subtitle">
-        Интерактивные уроки, живые задания и соревнования.
-        Учись сам, играй с классом, слушай и говори по-татарски.
+        Интерактивные уроки из блоков, живая озвучка слов
+        и соревнования. Учись сам или веди класс —
+        всё в одном месте.
       </p>
 
       <div class="hero-buttons">
@@ -28,7 +31,7 @@
           <a href="{% url 'dashboard:home' %}" class="btn-primary">
             <i class="bi bi-play-fill"></i> Открыть панель
           </a>
-          <a href="#" onclick="openJoinModal(event)" class="btn-ghost">
+          <a href="#" onclick="openJoinModal(event); return false;" class="btn-ghost">
             <i class="bi bi-box-arrow-in-right"></i> Войти по коду
           </a>
         {% else %}
@@ -44,64 +47,71 @@
 
     <div class="hero-visual">
       <div class="hero-card">
-        <div class="hero-card-line">📚 Уроки</div>
-        <div class="hero-card-line">🎙️ Произношение</div>
-        <div class="hero-card-line">🏆 Лидерборд</div>
-        <div class="hero-card-line">⚔️ Дуэли</div>
+        <div class="hero-card-line">📚 Уроки из блоков</div>
+        <div class="hero-card-line">🔊 Озвучка слов</div>
+        <div class="hero-card-line">🏆 Соревнования</div>
+        <div class="hero-card-line">📖 Общий словарь</div>
       </div>
     </div>
   </section>
 
-  <!-- Возможности -->
+  <!-- ==================== ВОЗМОЖНОСТИ ==================== -->
   <section class="features-section">
     <div class="section-label">Возможности</div>
+
     <div class="features-grid">
       <div class="feature-card">
         <div class="feature-icon">📚</div>
         <h3>Уроки из блоков</h3>
-        <p>Учитель собирает урок за минуту: аудирование, перевод, произношение, игры.</p>
+        <p>Учитель собирает урок за минуту: аудирование, перевод, сборка слов, пары и викторина.</p>
       </div>
+
       <div class="feature-card">
-        <div class="feature-icon">🎙️</div>
-        <h3>Живое произношение</h3>
-        <p>Слушай слова голосом и повторяй — приложение распознаёт твою речь.</p>
+        <div class="feature-icon">🔊</div>
+        <h3>Озвучка слов</h3>
+        <p>Слушай татарские слова голосом — приложение произносит их правильно.</p>
       </div>
+
       <div class="feature-card">
         <div class="feature-icon">🏆</div>
         <h3>Соревнования</h3>
-        <p>Лидерборд, очки, стрики и дуэли с другими учениками.</p>
+        <p>Создавай публичные уроки-турниры — ученики соревнуются и получают баллы.</p>
       </div>
+
       <div class="feature-card">
-        <div class="feature-icon">📱</div>
-        <h3>Работает везде</h3>
-        <p>Открывается на телефоне, планшете и компьютере — без установки.</p>
+        <div class="feature-icon">📖</div>
+        <h3>Общий словарь</h3>
+        <p>Единая база татарских слов с переводом и примерами. Доступна всем ученикам.</p>
       </div>
     </div>
   </section>
 
-  <!-- Быстрый старт -->
+  <!-- ==================== БЫСТРЫЙ СТАРТ ==================== -->
   <section class="quick-section">
     <div class="section-label">Быстрый старт</div>
+
     <div class="row g-3">
       <div class="col-md-4">
-        <a href="{% url 'dashboard:lessons' %}" class="quick-card">
-          <div class="quick-icon"><i class="bi bi-person-workspace"></i></div>
-          <h3>Я учитель</h3>
-          <p>Создай урок из блоков</p>
+        <a href="{% url 'dashboard:lesson_builder' %}" class="quick-card">
+          <div class="quick-icon"><i class="bi bi-plus-circle"></i></div>
+          <h3>Создать урок</h3>
+          <p>Собери урок из блоков за минуту</p>
         </a>
       </div>
+
       <div class="col-md-4">
-        <a href="#" onclick="openJoinModal(event)" class="quick-card">
+        <a href="#" onclick="openJoinModal(event); return false;" class="quick-card">
           <div class="quick-icon"><i class="bi bi-mortarboard"></i></div>
-          <h3>Я ученик</h3>
-          <p>Введи код урока</p>
+          <h3>Войти по коду</h3>
+          <p>Открой урок по коду учителя</p>
         </a>
       </div>
+
       <div class="col-md-4">
-        <a href="{% url 'dashboard:leaderboard' %}" class="quick-card">
+        <a href="{% url 'dashboard:competitions' %}" class="quick-card">
           <div class="quick-icon"><i class="bi bi-trophy"></i></div>
-          <h3>Лидерборд</h3>
-          <p>Соревнуйся с другими</p>
+          <h3>Соревнования</h3>
+          <p>Публичные уроки и турниры</p>
         </a>
       </div>
     </div>
@@ -109,15 +119,24 @@
 
 </div>
 
-<!-- Модалка ввода кода урока -->
-<div class="modal-overlay" id="joinModal" style="display:none">
+<!-- ==================== МОДАЛКА: ВВОД КОДА ==================== -->
+<div class="modal-overlay" id="joinModal">
   <div class="modal-box">
     <h3>Введите код урока</h3>
-    <input type="text" id="lessonCodeInput" maxlength="6" placeholder="000000" class="code-input" inputmode="numeric">
+
+    <input type="text"
+           id="lessonCodeInput"
+           maxlength="6"
+           placeholder="000000"
+           class="code-input"
+           inputmode="numeric"
+           autocomplete="off">
+
     <div class="modal-actions">
-      <button onclick="closeJoinModal()" class="btn-ghost">Отмена</button>
-      <button onclick="joinLesson()" class="btn-primary">Войти</button>
+      <button type="button" onclick="closeJoinModal()" class="btn-ghost">Отмена</button>
+      <button type="button" onclick="joinLesson()" class="btn-primary">Войти</button>
     </div>
+
     <p id="joinError" class="error-text"></p>
   </div>
 </div>
@@ -135,32 +154,64 @@ function getCookie(name) {
 }
 
 function openJoinModal(e) {
-  e.preventDefault();
+  if (e) e.preventDefault();
+
   {% if user.is_authenticated %}
-    document.getElementById('joinModal').style.display = 'flex';
+    const modal = document.getElementById('joinModal');
+    modal.classList.add('open');
+    setTimeout(() => document.getElementById('lessonCodeInput').focus(), 100);
   {% else %}
     window.location.href = '{% url "accounts:auth" %}';
   {% endif %}
 }
+
 function closeJoinModal() {
-  document.getElementById('joinModal').style.display = 'none';
+  document.getElementById('joinModal').classList.remove('open');
+  document.getElementById('lessonCodeInput').value = '';
+  document.getElementById('joinError').textContent = '';
 }
+
 async function joinLesson() {
-  const code = document.getElementById('lessonCodeInput').value.trim();
-  const res = await fetch('/lessons/join/', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'X-CSRFToken': getCookie('csrftoken'),
-    },
-    body: 'code=' + encodeURIComponent(code),
-  });
-  const data = await res.json();
-  if (data.status === 'ok') {
-    window.location.href = data.url;
-  } else {
-    document.getElementById('joinError').textContent = data.error || 'Ошибка';
+  const codeInput = document.getElementById('lessonCodeInput');
+  const errorBox = document.getElementById('joinError');
+  const code = codeInput.value.trim();
+
+  errorBox.textContent = '';
+
+  if (!code) {
+    errorBox.textContent = 'Введите код урока';
+    return;
+  }
+
+  try {
+    const res = await fetch('/lessons/join/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-CSRFToken': getCookie('csrftoken'),
+      },
+      body: 'code=' + encodeURIComponent(code),
+    });
+
+    const data = await res.json();
+
+    if (data.status === 'ok') {
+      window.location.href = data.url;
+    } else {
+      errorBox.textContent = data.error || 'Урок не найден';
+    }
+  } catch (e) {
+    errorBox.textContent = 'Ошибка сети. Попробуйте позже.';
   }
 }
+
+// Закрытие по Escape и клику по фону
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeJoinModal();
+});
+
+document.getElementById('joinModal')?.addEventListener('click', function (e) {
+  if (e.target === this) closeJoinModal();
+});
 </script>
 {% endblock %}

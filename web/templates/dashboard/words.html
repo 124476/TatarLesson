@@ -1,0 +1,392 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Словарь{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/dashboard/modal_words.css' %}">
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="dashboard-home">
+
+  <div class="dashboard-header">
+    <h1>📖 Словарь</h1>
+    <p>Все слова, добавленные в базу</p>
+  </div>
+
+  <!-- Поиск + фильтр + кнопки -->
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px;">
+    <form method="get" style="display:flex;gap:12px;flex:1;min-width:240px;">
+      <input type="text" name="q" value="{{ search }}" placeholder="Поиск по слову..."
+             style="flex:1;padding:11px 14px;border:1px solid var(--border-color);border-radius:10px;background:var(--bg-sidebar);color:var(--text-primary);outline:none;">
+      <select name="theme" style="padding:11px 14px;border:1px solid var(--border-color);border-radius:10px;background:var(--bg-sidebar);color:var(--text-primary);outline:none;">
+        <option value="">Все темы</option>
+        {% for code, name in themes %}
+          <option value="{{ code }}" {% if selected_theme == code %}selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" style="padding:11px 20px;background:#0B6E4F;color:#fff;border:none;border-radius:10px;font-weight:600;cursor:pointer;">
+        Найти
+      </button>
+    </form>
+
+    {% if is_admin %}
+      <button onclick="openAddWordModal()"
+              style="padding:11px 20px;background:#0B6E4F;color:#fff;border:none;border-radius:10px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+        <i class="bi bi-plus-lg"></i> Добавить слово
+      </button>
+    {% endif %}
+  </div>
+
+  {% if words %}
+    <div id="wordsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;">
+      {% for word in words %}
+        <div class="word-card" data-word-id="{{ word.id }}"
+             style="background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:14px;padding:18px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+            <div class="word-tatar" style="font-size:20px;font-weight:700;color:#0B6E4F;">{{ word.tatar }}</div>
+            <span class="word-theme" style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;">
+              {{ word.get_theme_display }}
+            </span>
+          </div>
+          <div class="word-russian" style="font-size:15px;color:var(--text-secondary);">{{ word.russian }}</div>
+          {% if word.transcription %}
+            <div class="word-transcription" style="font-size:13px;color:var(--text-muted);font-style:italic;margin-top:4px;">[{{ word.transcription }}]</div>
+          {% endif %}
+          {% if word.example_tt %}
+            <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border-color);font-size:13px;color:var(--text-secondary);">
+              {{ word.example_tt }}
+            </div>
+          {% endif %}
+
+          <div style="display:flex;gap:8px;margin-top:12px;">
+            <button onclick="playWord('{{ word.tatar|escapejs }}')"
+                    style="flex:1;padding:8px 12px;border:1px solid var(--border-color);border-radius:8px;background:transparent;color:var(--text-secondary);cursor:pointer;font-size:13px;">
+              <i class="bi bi-volume-up"></i> Слушать
+            </button>
+            {% if is_admin %}
+              <button onclick="openEditWordModal({{ word.id }}, '{{ word.tatar|escapejs }}', '{{ word.russian|escapejs }}', '{{ word.transcription|escapejs }}', '{{ word.example_tt|escapejs }}', '{{ word.example_ru|escapejs }}', '{{ word.theme }}')"
+                      style="padding:8px 12px;border:1px solid var(--border-color);border-radius:8px;background:transparent;color:var(--text-secondary);cursor:pointer;font-size:13px;">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button onclick="openDeleteWordModal({{ word.id }}, '{{ word.tatar|escapejs }}')"
+                      style="padding:8px 12px;border:1px solid var(--border-color);border-radius:8px;background:transparent;color:#dc2626;cursor:pointer;font-size:13px;">
+                <i class="bi bi-trash"></i>
+              </button>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div id="wordsEmpty" style="padding:60px 20px;text-align:center;border:2px dashed var(--border-color);border-radius:20px;color:var(--text-muted);">
+      <i class="bi bi-journal" style="font-size:48px;display:block;margin-bottom:16px;opacity:.4;"></i>
+      <p>Слова не найдены</p>
+      {% if is_admin %}
+        <button onclick="openAddWordModal()" style="background:none;border:none;color:#0B6E4F;cursor:pointer;font-size:14px;">
+          Добавить первое слово →
+        </button>
+      {% endif %}
+    </div>
+  {% endif %}
+
+</div>
+
+<!-- МОДАЛКА: добавить/редактировать слово -->
+<div class="word-modal-overlay" id="wordModal">
+  <div class="word-modal-box">
+
+    <div class="word-modal-header">
+      <h3 id="wordModalTitle">Добавить слово</h3>
+      <button class="word-modal-close" onclick="closeWordModal()" aria-label="Закрыть">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="word-modal-body">
+      <input type="hidden" id="wordId" value="">
+
+      <div class="word-modal-grid">
+
+        <div class="word-modal-field">
+          <label>Татарское слово *</label>
+          <input type="text" id="wordTatar" placeholder="Китап" class="word-modal-input">
+        </div>
+
+        <div class="word-modal-field">
+          <label>Русский перевод *</label>
+          <input type="text" id="wordRussian" placeholder="Книга" class="word-modal-input">
+        </div>
+
+        <div class="word-modal-field">
+          <label>Транскрипция</label>
+          <input type="text" id="wordTranscription" placeholder="kitap" class="word-modal-input">
+        </div>
+
+        <div class="word-modal-field">
+          <label>Тема</label>
+          <select id="wordTheme" class="word-modal-input">
+            {% for code, name in themes %}
+              <option value="{{ code }}">{{ name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="word-modal-field word-modal-field-full">
+          <label>Пример на татарском</label>
+          <input type="text" id="wordExampleTt" placeholder="Мин китап укыйм" class="word-modal-input">
+        </div>
+
+        <div class="word-modal-field word-modal-field-full">
+          <label>Пример на русском</label>
+          <input type="text" id="wordExampleRu" placeholder="Я читаю книгу" class="word-modal-input">
+        </div>
+
+      </div>
+
+      <p id="wordError" class="word-modal-error"></p>
+    </div>
+
+    <div class="word-modal-footer">
+      <button class="word-modal-btn-secondary" onclick="closeWordModal()">Отмена</button>
+      <button class="word-modal-btn-primary" id="wordSaveBtn" onclick="saveWord()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- МОДАЛКА: подтверждение удаления -->
+<div class="word-modal-overlay" id="deleteModal">
+  <div class="word-modal-box word-modal-box-sm">
+
+    <div class="word-modal-header">
+      <h3>Удалить слово?</h3>
+      <button class="word-modal-close" onclick="closeDeleteModal()" aria-label="Закрыть">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="word-modal-body">
+      <p style="margin:0;font-size:15px;color:var(--text-secondary);line-height:1.6;">
+        Вы собираетесь удалить слово <strong id="deleteWordName" style="color:var(--text-primary);"></strong>.
+      </p>
+      <p style="margin:8px 0 0;font-size:13px;color:var(--text-muted);">
+        Это действие нельзя отменить.
+      </p>
+    </div>
+
+    <div class="word-modal-footer">
+      <button class="word-modal-btn-secondary" onclick="closeDeleteModal()">Отмена</button>
+      <button class="word-modal-btn-danger" id="deleteConfirmBtn" onclick="confirmDeleteWord()">Удалить</button>
+    </div>
+  </div>
+</div>
+
+<!-- КОНТЕЙНЕР ДЛЯ ТОСТОВ -->
+<div id="toastContainer" class="toast-container"></div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const API_BASE = '/lessons/api';
+const ADD_URL = '{% url "dashboard:word_add" %}';
+
+// ===== ТОСТЫ (вместо alert) =====
+function showToast(message, type = 'success') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `app-toast app-toast-${type}`;
+
+  const icon = type === 'success' ? 'check-circle-fill'
+             : type === 'error'   ? 'x-circle-fill'
+             : 'info-circle-fill';
+
+  toast.innerHTML = `
+    <i class="bi bi-${icon}"></i>
+    <span>${message}</span>
+  `;
+
+  container.appendChild(toast);
+
+  setTimeout(() => toast.classList.add('show'), 10);
+
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+// ===== ОЗВУЧКА =====
+function playWord(text) {
+  const url = `${API_BASE}/synthesize/?text=${encodeURIComponent(text)}&speaker=alsu`;
+  new Audio(url).play().catch(() => {
+    showToast('Озвучка недоступна', 'error');
+  });
+}
+
+// ===== МОДАЛКА: добавить/редактировать =====
+function openAddWordModal() {
+  document.getElementById('wordModalTitle').textContent = 'Добавить слово';
+  document.getElementById('wordId').value = '';
+  document.getElementById('wordTatar').value = '';
+  document.getElementById('wordRussian').value = '';
+  document.getElementById('wordTranscription').value = '';
+  document.getElementById('wordExampleTt').value = '';
+  document.getElementById('wordExampleRu').value = '';
+  document.getElementById('wordTheme').value = 'family';
+  document.getElementById('wordError').textContent = '';
+  document.getElementById('wordModal').classList.add('open');
+  setTimeout(() => document.getElementById('wordTatar').focus(), 100);
+}
+
+function openEditWordModal(id, tatar, russian, transcription, exampleTt, exampleRu, theme) {
+  document.getElementById('wordModalTitle').textContent = 'Редактировать слово';
+  document.getElementById('wordId').value = id;
+  document.getElementById('wordTatar').value = tatar;
+  document.getElementById('wordRussian').value = russian;
+  document.getElementById('wordTranscription').value = transcription || '';
+  document.getElementById('wordExampleTt').value = exampleTt || '';
+  document.getElementById('wordExampleRu').value = exampleRu || '';
+  document.getElementById('wordTheme').value = theme || 'family';
+  document.getElementById('wordError').textContent = '';
+  document.getElementById('wordModal').classList.add('open');
+  setTimeout(() => document.getElementById('wordTatar').focus(), 100);
+}
+
+function closeWordModal() {
+  document.getElementById('wordModal').classList.remove('open');
+}
+
+// ===== СОХРАНЕНИЕ =====
+async function saveWord() {
+  const id = document.getElementById('wordId').value;
+  const btn = document.getElementById('wordSaveBtn');
+  const errorEl = document.getElementById('wordError');
+
+  const data = {
+    tatar: document.getElementById('wordTatar').value.trim(),
+    russian: document.getElementById('wordRussian').value.trim(),
+    transcription: document.getElementById('wordTranscription').value.trim(),
+    example_tt: document.getElementById('wordExampleTt').value.trim(),
+    example_ru: document.getElementById('wordExampleRu').value.trim(),
+    theme: document.getElementById('wordTheme').value,
+  };
+
+  if (!data.tatar || !data.russian) {
+    errorEl.textContent = 'Заполните слово и перевод';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Сохранение...';
+  errorEl.textContent = '';
+
+  try {
+    const url = id ? '/dashboard/words/' + id + '/update/' : ADD_URL;
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken'),
+      },
+      body: JSON.stringify(data),
+    });
+
+    const result = await res.json();
+
+    if (result.status === 'ok') {
+      showToast(id ? 'Слово обновлено' : 'Слово добавлено', 'success');
+      closeWordModal();
+      setTimeout(() => window.location.reload(), 500);
+    } else {
+      errorEl.textContent = result.error || 'Ошибка сохранения';
+      btn.disabled = false;
+      btn.textContent = 'Сохранить';
+    }
+  } catch (e) {
+    errorEl.textContent = 'Ошибка: ' + e.message;
+    btn.disabled = false;
+    btn.textContent = 'Сохранить';
+  }
+}
+
+// ===== МОДАЛКА: удаление =====
+let deleteWordId = null;
+
+function openDeleteWordModal(id, tatar) {
+  deleteWordId = id;
+  document.getElementById('deleteWordName').textContent = tatar;
+  document.getElementById('deleteModal').classList.add('open');
+}
+
+function closeDeleteModal() {
+  deleteWordId = null;
+  document.getElementById('deleteModal').classList.remove('open');
+}
+
+async function confirmDeleteWord() {
+  if (!deleteWordId) return;
+
+  const btn = document.getElementById('deleteConfirmBtn');
+  btn.disabled = true;
+  btn.textContent = 'Удаление...';
+
+  try {
+    const res = await fetch('/dashboard/words/' + deleteWordId + '/delete/', {
+      method: 'POST',
+      headers: { 'X-CSRFToken': getCookie('csrftoken') },
+    });
+    const result = await res.json();
+
+    if (result.status === 'ok') {
+      const card = document.querySelector(`.word-card[data-word-id="${deleteWordId}"]`);
+      if (card) {
+        card.style.transition = 'opacity 0.3s, transform 0.3s';
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.9)';
+        setTimeout(() => card.remove(), 300);
+      }
+      closeDeleteModal();
+      showToast('Слово удалено', 'success');
+    } else {
+      closeDeleteModal();
+      showToast(result.error || 'Не удалось удалить', 'error');
+    }
+  } catch (e) {
+    closeDeleteModal();
+    showToast('Ошибка: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Удалить';
+  }
+}
+
+// ===== Закрытие модалок =====
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeWordModal();
+    closeDeleteModal();
+  }
+});
+
+// Клик по фону закрывает модалку
+document.getElementById('wordModal')?.addEventListener('click', function(e) {
+  if (e.target === this) closeWordModal();
+});
+
+document.getElementById('deleteModal')?.addEventListener('click', function(e) {
+  if (e.target === this) closeDeleteModal();
+});
+
+function getCookie(name) {
+  for (let c of document.cookie.split(';')) {
+    c = c.trim();
+    if (c.startsWith(name + '=')) return decodeURIComponent(c.slice(name.length + 1));
+  }
+  return '';
+}
+</script>
+{% endblock %}

@@ -70,13 +70,13 @@
         </a>
       </div>
       <div class="col-md-4 col-sm-6">
-        <a href="{% url 'dashboard:leaderboard' %}" class="action-card">
+        <a href="{% url 'dashboard:competitions' %}" class="action-card">
           <i class="bi bi-trophy"></i>
-          <span>Лидерборд</span>
+          <span>Соревнования</span>
         </a>
       </div>
       <div class="col-md-4 col-sm-6">
-        <a href="{% url 'dashboard:dictionary' %}" class="action-card">
+        <a href="{% url 'dashboard:words' %}" class="action-card">
           <i class="bi bi-journal-text"></i>
           <span>Словарь</span>
         </a>
@@ -87,20 +87,14 @@
           <span>Войти по коду</span>
         </a>
       </div>
-      <div class="col-md-4 col-sm-6">
-        <a href="{% url 'dashboard:test_api' %}" class="action-card">
-          <i class="bi bi-speedometer2"></i>
-          <span>Тест API</span>
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <!-- Топ-5 -->
-  <div class="dashboard-section">
-    <div class="section-label">Топ-5 за неделю</div>
-    <div id="topList" class="top-list">
-      <div class="top-loading">Загрузка...</div>
+      {% if user.is_staff %}
+        <div class="col-md-4 col-sm-6">
+          <a href="/admin/" class="action-card">
+            <i class="bi bi-gear"></i>
+            <span>Админ-панель</span>
+          </a>
+        </div>
+      {% endif %}
     </div>
   </div>
 
@@ -162,7 +156,7 @@ async function startRecording() {
       if (data.text) {
         result.innerHTML = `<i class="bi bi-check-circle-fill text-success"></i> Распознано: <strong>${data.text}</strong>`;
       } else {
-        result.innerHTML = '<i class="bi bi-x-circle text-danger"></i> Не удалось распознать. Попробуйте ещё раз.';
+        result.innerHTML = '<i class="bi bi-x-circle text-danger"></i> Не удалось распознать';
       }
     };
 
@@ -204,23 +198,5 @@ async function joinLesson() {
   if (data.status === 'ok') window.location.href = data.url;
   else document.getElementById('joinError').textContent = data.error || 'Ошибка';
 }
-
-// Топ-5
-fetch('/gamification/api/top/')
-  .then(r => r.json())
-  .then(data => {
-    const list = document.getElementById('topList');
-    if (!data.users || !data.users.length) {
-      list.innerHTML = '<div class="top-empty">Пока нет данных</div>';
-      return;
-    }
-    list.innerHTML = data.users.map((u, i) => `
-      <div class="top-item">
-        <span class="top-rank">${['🥇','🥈','🥉'][i] || (i+1)}</span>
-        <span class="top-name">${u.username}</span>
-        <span class="top-points">${u.points}</span>
-      </div>
-    `).join('');
-  });
 </script>
 {% endblock %}

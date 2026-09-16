@@ -10,8 +10,9 @@ urlpatterns = [
     path("lessons/create/", views.LessonBuilderView.as_view(), name="lesson_builder"),
     path("lessons/<int:pk>/edit/", views.LessonBuilderView.as_view(), name="lesson_edit"),
     path("lessons/<int:pk>/stats/", views.LessonStatsView.as_view(), name="lesson_stats"),
-    path("leaderboard/", views.LeaderboardView.as_view(), name="leaderboard"),
-    path("dictionary/", views.DictionaryView.as_view(), name="dictionary"),
-    path("duel/<int:pk>/", views.DuelView.as_view(), name="duel"),
-    path("test-api/", views.TestAPIView.as_view(), name="test_api"),
+    path("words/", views.WordsView.as_view(), name="words"),
+    path("words/add/", views.AddWordView.as_view(), name="word_add"),
+    path("words/<int:pk>/update/", views.UpdateWordView.as_view(), name="word_update"),
+    path("words/<int:pk>/delete/", views.DeleteWordView.as_view(), name="word_delete"),
+    path("competitions/", views.CompetitionsView.as_view(), name="competitions"),
 ]

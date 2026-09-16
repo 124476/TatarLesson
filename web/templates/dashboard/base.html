@@ -47,15 +47,15 @@
           <span class="tooltip">Создать урок</span>
         </a>
 
-        <a href="{% url 'dashboard:leaderboard' %}"
-           class="dashboard-nav-link {% if request.resolver_match.url_name == 'leaderboard' %}active{% endif %}">
+        <a href="{% url 'dashboard:competitions' %}"
+           class="dashboard-nav-link {% if request.resolver_match.url_name == 'competitions' %}active{% endif %}">
           <i class="bi bi-trophy"></i>
-          <span class="link-text">Лидерборд</span>
-          <span class="tooltip">Лидерборд</span>
+          <span class="link-text">Соревнования</span>
+          <span class="tooltip">Соревнования</span>
         </a>
 
-        <a href="{% url 'dashboard:dictionary' %}"
-           class="dashboard-nav-link {% if request.resolver_match.url_name == 'dictionary' %}active{% endif %}">
+        <a href="{% url 'dashboard:words' %}"
+           class="dashboard-nav-link {% if request.resolver_match.url_name == 'words' %}active{% endif %}">
           <i class="bi bi-journal-text"></i>
           <span class="link-text">Словарь</span>
           <span class="tooltip">Словарь</span>
