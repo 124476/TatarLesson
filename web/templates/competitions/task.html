@@ -1,0 +1,425 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ task.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width:900px;">
+
+  {% if error %}
+    <div class="alert alert-warning">{{ error }}</div>
+  {% else %}
+
+    <a href="{% url 'competitions:detail' competition.pk %}" class="text-decoration-none text-muted small">
+      ← К соревнованию
+    </a>
+
+    <div class="d-flex justify-content-between align-items-center mt-3 mb-4 flex-wrap gap-3">
+      <h1 class="fw-bold mb-0">{{ task.title }}</h1>
+      <div class="text-muted small">
+        <span class="badge bg-success-subtle text-success">{{ task.points }} баллов</span>
+        <span class="badge bg-secondary-subtle text-secondary">
+          Попыток: {{ attempts_left }} / {{ task.max_attempts }}
+        </span>
+      </div>
+    </div>
+
+    {% if not competition.is_upcoming %}
+      {% include "competitions/_tabs_nav.html" with active_tab="tasks" my_submissions_count=my_submissions_all.count %}
+
+      <div class="tab-content">
+
+        <!-- ============== TASK ============== -->
+        <div class="tab-pane fade show active" id="tab-tasks">
+
+          <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+              <div style="white-space:pre-wrap;line-height:1.7;">{{ task.statement }}</div>
+            </div>
+          </div>
+
+          {% if status == 'running' and user.is_authenticated and attempts_left > 0 %}
+            <div class="card border-0 shadow-sm">
+              <div class="card-body p-4">
+                <h5 class="mb-3">Отправить решение</h5>
+
+                {% if task.task_type == 'text' %}
+                  <input type="text" id="answerInput" class="form-control form-control-lg"
+                         placeholder="Введите ответ">
+
+                {% elif task.task_type == 'choice' %}
+                  <div id="options">
+                    {% for opt in task.options %}
+                      <div class="form-check mb-2 p-3 border rounded-3">
+                        <input class="form-check-input" type="radio" name="answer"
+                               value="{{ opt.text }}" id="opt{{ forloop.counter }}">
+                        <label class="form-check-label w-100" for="opt{{ forloop.counter }}">
+                          {{ opt.text }}
+                        </label>
+                      </div>
+                    {% endfor %}
+                  </div>
+
+                {% elif task.task_type == 'multiple_choice' %}
+                  <div id="options">
+                    {% for opt in task.options %}
+                      <div class="form-check mb-2 p-3 border rounded-3">
+                        <input class="form-check-input" type="checkbox" name="answer"
+                               value="{{ opt.text }}" id="opt{{ forloop.counter }}">
+                        <label class="form-check-label w-100" for="opt{{ forloop.counter }}">
+                          {{ opt.text }}
+                        </label>
+                      </div>
+                    {% endfor %}
+                  </div>
+                  <div class="form-text">Выберите все правильные варианты</div>
+
+                {% elif task.task_type == 'build' %}
+                  <p class="text-muted mb-2">
+                    Подсказка: <strong>{{ task.build_hint }}</strong>
+                  </p>
+                  <p class="text-muted small mb-3">Собери слово из букв:</p>
+                  <div class="p-4 bg-light rounded-3 text-center mb-3">
+                    <div id="buildTarget" class="fs-3 fw-bold text-success" style="letter-spacing:8px;min-height:40px;"></div>
+                  </div>
+                  <div id="buildLetters" class="d-flex flex-wrap gap-2 justify-content-center"></div>
+
+                {% elif task.task_type == 'pairs' %}
+                  <p class="text-muted small mb-3">
+                    Соедини линиями пары: татарское слово → русский перевод
+                  </p>
+                  <div class="pairs-wrap position-relative">
+                    <svg class="pairs-svg position-absolute w-100 h-100"
+                         style="inset:0;pointer-events:none;z-index:2;overflow:visible;">
+                      <defs>
+                        <marker id="arrow-{{ task.id }}" markerWidth="10" markerHeight="10"
+                                refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
+                          <path d="M0,0 L6,3 L0,6 z" fill="#0B6E4F"></path>
+                        </marker>
+                      </defs>
+                    </svg>
+                    <div class="pairs-grid position-relative d-grid"
+                         style="grid-template-columns:1fr 1fr;gap:64px;z-index:1;"></div>
+                  </div>
+
+                {% elif task.task_type == 'voice' %}
+                  <p class="text-muted mb-3">
+                    Произнеси слово вслух: <strong>{{ task.voice_text|default:task.correct_answer }}</strong>
+                  </p>
+                  <button type="button" class="btn btn-success mb-3" onclick="playVoice()">
+                    🔊 Послушать образец
+                  </button>
+                  <div>
+                    <button type="button" class="btn btn-lg btn-success rounded-pill px-5" id="voiceBtn">
+                      🎙️ Говорить
+                    </button>
+                  </div>
+                  <div id="voiceResult" class="mt-3 small"></div>
+                {% endif %}
+
+                {% if task.task_type != 'voice' %}
+                  <button type="button" class="btn btn-success btn-lg mt-4" id="submitBtn" onclick="submitSolution()">
+                    Отправить
+                  </button>
+                {% endif %}
+
+                <div id="submitResult" class="mt-3"></div>
+              </div>
+            </div>
+
+          {% elif status == 'running' and not user.is_authenticated %}
+            <div class="alert alert-info">
+              <a href="{% url 'accounts:auth' %}?next={{ request.path }}" class="alert-link">Войдите</a>,
+              чтобы отправить решение.
+            </div>
+          {% elif attempts_left <= 0 %}
+            <div class="alert alert-secondary">Исчерпаны попытки ({{ task.max_attempts }})</div>
+          {% endif %}
+
+          {# Мои посылки по этой задаче — компактная таблица под условием #}
+          {% if my_submissions %}
+            <h5 class="mt-5 mb-3">📤 Мои посылки по задаче</h5>
+            <div class="table-responsive">
+              <table class="table table-sm table-hover bg-white shadow-sm rounded">
+                <thead class="table-light">
+                  <tr>
+                    <th>#</th>
+                    <th>Ответ</th>
+                    <th>Результат</th>
+                    <th>Время</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for s in my_submissions %}
+                    <tr>
+                      <td>{{ s.attempt_number }}</td>
+                      <td class="font-monospace small">{{ s.answer|truncatechars:80 }}</td>
+                      <td>
+                        {% if s.is_correct %}
+                          <span class="badge bg-success-subtle text-success">✅ {{ s.points_earned }}</span>
+                        {% else %}
+                          <span class="badge bg-danger-subtle text-danger">❌ 0</span>
+                        {% endif %}
+                      </td>
+                      <td class="text-muted small">{{ s.created_at|date:"H:i:s" }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% endif %}
+        </div>
+
+        {% include "competitions/_tab_my.html" with submissions=my_submissions_all active_tab="tasks" %}
+{% include "competitions/_tab_standings.html" with standings_rows=standings_rows tasks=tasks competition=competition active_tab="tasks" %}
+
+      </div>
+    {% else %}
+      <div class="alert alert-warning d-flex align-items-center gap-3">
+        <i class="bi bi-hourglass-split fs-4"></i>
+        <div>
+          <strong>Соревнование ещё не началось.</strong>
+          Задачи откроются {{ competition.start_time|date:"d.m Y H:i" }}.
+        </div>
+      </div>
+    {% endif %}
+
+  {% endif %}
+</div>
+
+{# ---- прежний JS без изменений ---- #}
+<script>
+const TASK_TYPE = "{{ task.task_type }}";
+const TASK_ID = {{ task.id }};
+const COMP_ID = {{ competition.id }};
+const SUBMIT_URL = `/competitions/${COMP_ID}/submit/${TASK_ID}/`;
+
+/* BUILD */
+{% if task.task_type == 'build' %}
+(function initBuild() {
+  const word = "{{ task.build_word }}";
+  if (!word) return;
+  const shuffled = word.split('').sort(() => Math.random() - 0.5);
+  const target = document.getElementById('buildTarget');
+  const lettersArea = document.getElementById('buildLetters');
+  let current = '';
+  shuffled.forEach(letter => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'btn btn-outline-success';
+    btn.style.cssText = 'width:52px;height:52px;font-size:20px;font-weight:600;';
+    btn.textContent = letter;
+    btn.onclick = () => {
+      current += letter;
+      target.textContent = current;
+      btn.disabled = true;
+      btn.classList.add('opacity-25');
+    };
+    lettersArea.appendChild(btn);
+  });
+})();
+{% endif %}
+
+/* PAIRS */
+{% if task.task_type == 'pairs' %}
+(function initPairs() {
+  const pairs = {{ task.pairs|safe }};
+  if (!pairs.length) return;
+  const wrap = document.querySelector('.pairs-wrap');
+  const svg = document.querySelector('.pairs-svg');
+  const grid = document.querySelector('.pairs-grid');
+  const shuffle = arr => [...arr].sort(() => Math.random() - 0.5);
+  const leftItems = shuffle(pairs.map(p => ({ text: p[0], side: 'left' })));
+  const rightItems = shuffle(pairs.map(p => ({ text: p[1], side: 'right' })));
+  const leftCol = document.createElement('div');
+  leftCol.className = 'd-flex flex-column gap-3';
+  const rightCol = document.createElement('div');
+  rightCol.className = 'd-flex flex-column gap-3';
+  let selLeft = null, selRight = null;
+  const connections = [];
+  function makeCard(item) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'btn btn-outline-success py-3';
+    btn.textContent = item.text;
+    btn.dataset.side = item.side;
+    btn.style.cssText = 'position:relative;z-index:3;';
+    btn.onclick = () => onClick(btn, item);
+    return btn;
+  }
+  function drawLine(l, r) {
+    const wrapRect = wrap.getBoundingClientRect();
+    const lRect = l.getBoundingClientRect();
+    const rRect = r.getBoundingClientRect();
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', lRect.right - wrapRect.left);
+    line.setAttribute('y1', lRect.top + lRect.height / 2 - wrapRect.top);
+    line.setAttribute('x2', rRect.left - wrapRect.left);
+    line.setAttribute('y2', rRect.top + rRect.height / 2 - wrapRect.top);
+    line.setAttribute('stroke', '#0B6E4F');
+    line.setAttribute('stroke-width', '2');
+    line.setAttribute('marker-end', `url(#arrow-${TASK_ID})`);
+    svg.appendChild(line);
+    return line;
+  }
+  function save() {
+    const data = connections.map(c => [c.l.textContent.trim(), c.r.textContent.trim()]);
+    collectedAnswer = JSON.stringify(data);
+  }
+  function remove(card) {
+    for (let i = connections.length - 1; i >= 0; i--) {
+      const c = connections[i];
+      if (c.l === card || c.r === card) {
+        c.line.remove();
+        c.l.classList.remove('btn-success');
+        c.r.classList.remove('btn-success');
+        connections.splice(i, 1);
+      }
+    }
+    save();
+  }
+  function isConnected(card) {
+    return connections.some(c => c.l === card || c.r === card);
+  }
+  function onClick(btn, item) {
+    if (isConnected(btn)) { remove(btn); return; }
+    if (item.side === 'left') {
+      if (selLeft) selLeft.classList.remove('btn-success');
+      selLeft = btn;
+      btn.classList.add('btn-success');
+    } else {
+      if (selRight) selRight.classList.remove('btn-success');
+      selRight = btn;
+      btn.classList.add('btn-success');
+    }
+    if (selLeft && selRight) {
+      const line = drawLine(selLeft, selRight);
+      connections.push({ l: selLeft, r: selRight, line });
+      save();
+      selLeft = null; selRight = null;
+    }
+  }
+  leftItems.forEach(i => leftCol.appendChild(makeCard(i)));
+  rightItems.forEach(i => rightCol.appendChild(makeCard(i)));
+  grid.appendChild(leftCol);
+  grid.appendChild(rightCol);
+  window.addEventListener('resize', () => {
+    connections.forEach(c => {
+      const wrapRect = wrap.getBoundingClientRect();
+      const lRect = c.l.getBoundingClientRect();
+      const rRect = c.r.getBoundingClientRect();
+      c.line.setAttribute('x1', lRect.right - wrapRect.left);
+      c.line.setAttribute('y1', lRect.top + lRect.height / 2 - wrapRect.top);
+      c.line.setAttribute('x2', rRect.left - wrapRect.left);
+      c.line.setAttribute('y2', rRect.top + rRect.height / 2 - wrapRect.top);
+    });
+  });
+})();
+{% endif %}
+
+/* VOICE */
+function playVoice() {
+  const text = "{{ task.voice_text|default:task.correct_answer|escapejs }}";
+  new Audio('/competitions/api/synthesize/?text=' + encodeURIComponent(text)).play();
+}
+
+{% if task.task_type == 'voice' %}
+document.getElementById('voiceBtn')?.addEventListener('click', async () => {
+  const btn = document.getElementById('voiceBtn');
+  const result = document.getElementById('voiceResult');
+  btn.disabled = true;
+  result.innerHTML = '🎙️ Говорите...';
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const recorder = new MediaRecorder(stream);
+    const chunks = [];
+    recorder.ondataavailable = e => chunks.push(e.data);
+    recorder.onstop = async () => {
+      const blob = new Blob(chunks, { type: 'audio/webm' });
+      const form = new FormData();
+      form.append('audio', blob, 'voice.webm');
+      const res = await fetch('/competitions/api/recognize/', {
+        method: 'POST',
+        headers: { 'X-CSRFToken': getCookie('csrftoken') },
+        body: form,
+      });
+      const data = await res.json();
+      result.innerHTML = `Распознано: <strong>${data.text || '—'}</strong>`;
+      await sendAnswer(data.text || '');
+      btn.disabled = false;
+    };
+    recorder.start();
+    setTimeout(() => { recorder.stop(); stream.getTracks().forEach(t => t.stop()); }, 3000);
+  } catch (e) {
+    result.textContent = '❌ Нет доступа к микрофону';
+    btn.disabled = false;
+  }
+});
+{% endif %}
+
+/* ОТПРАВКА */
+let collectedAnswer = '';
+
+function getCookie(name) {
+  for (let c of document.cookie.split(';')) {
+    c = c.trim();
+    if (c.startsWith(name + '=')) return decodeURIComponent(c.slice(name.length + 1));
+  }
+  return '';
+}
+
+async function submitSolution() {
+  let answer;
+  if (TASK_TYPE === 'choice') {
+    const sel = document.querySelector('input[name="answer"]:checked');
+    if (!sel) return showToast('Выберите вариант', 'error');
+    answer = sel.value;
+  } else if (TASK_TYPE === 'multiple_choice') {
+    answer = Array.from(document.querySelectorAll('input[name="answer"]:checked')).map(i => i.value);
+    if (!answer.length) return showToast('Выберите хотя бы один вариант', 'error');
+  } else if (TASK_TYPE === 'build') {
+    answer = document.getElementById('buildTarget').textContent;
+    if (!answer) return showToast('Соберите слово из букв', 'error');
+  } else if (TASK_TYPE === 'pairs') {
+    answer = collectedAnswer;
+    if (!answer || answer === '[]') return showToast('Соедините все пары', 'error');
+  } else {
+    answer = document.getElementById('answerInput').value.trim();
+    if (!answer) return showToast('Введите ответ', 'error');
+  }
+  await sendAnswer(answer);
+}
+
+async function sendAnswer(answer) {
+  const btn = document.getElementById('submitBtn');
+  const result = document.getElementById('submitResult');
+  if (btn) { btn.disabled = true; btn.textContent = 'Отправка...'; }
+  try {
+    const res = await fetch(SUBMIT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+      body: JSON.stringify({ answer }),
+    });
+    const data = await res.json();
+    if (data.status === 'ok') {
+      if (data.is_correct) {
+        if (data.already_solved) {
+          showToast('Принято', 'info');
+        } else {
+          showToast(`Верно! ${data.points} баллов`, 'success');
+        }
+      } else {
+        showToast(`Неверно. Осталось попыток: ${data.attempts_left}`, 'error');
+      }
+      setTimeout(() => window.location.reload(), 1500);
+    } else {
+      showToast(data.error || 'Ошибка', 'error');
+      if (btn) { btn.disabled = false; btn.textContent = 'Отправить'; }
+    }
+  } catch (e) {
+    showToast('Ошибка сети', 'error');
+    if (btn) { btn.disabled = false; btn.textContent = 'Отправить'; }
+  }
+}
+</script>
+{% endblock %}

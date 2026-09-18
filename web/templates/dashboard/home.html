@@ -12,47 +12,6 @@
     <p>Сегодня отличный день, чтобы выучить новое татарское слово.</p>
   </div>
 
-  <!-- 🎲 Случайное слово -->
-  <div class="dashboard-section">
-    <div class="section-label">🎲 Случайное слово</div>
-    {% if random_word %}
-    <div class="daily-word-card" id="randomWordCard"
-         data-word="{{ random_word.tatar }}"
-         data-translation="{{ random_word.russian }}">
-      <div class="daily-word-main">
-        <div class="daily-word-tatar">{{ random_word.tatar }}</div>
-        <div class="daily-word-russian">{{ random_word.russian }}</div>
-        {% if random_word.transcription %}
-        <div class="daily-word-transcription">[{{ random_word.transcription }}]</div>
-        {% endif %}
-      </div>
-
-      <div class="daily-word-actions">
-        <button class="daily-btn" onclick="playWord('{{ random_word.tatar }}')">
-          <i class="bi bi-volume-up-fill"></i>
-        </button>
-        <button class="daily-btn" onclick="startRecording()">
-          <i class="bi bi-mic-fill"></i>
-        </button>
-      </div>
-
-      {% if random_word.example_tt %}
-      <div class="daily-word-example">
-        <p class="example-tt">{{ random_word.example_tt }}</p>
-        <p class="example-ru">{{ random_word.example_ru }}</p>
-      </div>
-      {% endif %}
-
-      <div id="recordResult" class="record-result"></div>
-    </div>
-    {% else %}
-    <div class="empty-block">
-      <i class="bi bi-book"></i>
-      <p>Слова пока не добавлены в базу</p>
-    </div>
-    {% endif %}
-  </div>
-
   <!-- Быстрые действия -->
   <div class="dashboard-section">
     <div class="section-label">Быстрые действия</div>
@@ -70,7 +29,7 @@
         </a>
       </div>
       <div class="col-md-4 col-sm-6">
-        <a href="{% url 'dashboard:competitions' %}" class="action-card">
+        <a href="{% url 'competitions:list' %}" class="action-card">
           <i class="bi bi-trophy"></i>
           <span>Соревнования</span>
         </a>
@@ -89,9 +48,9 @@
       </div>
       {% if user.is_staff %}
         <div class="col-md-4 col-sm-6">
-          <a href="/admin/" class="action-card">
-            <i class="bi bi-gear"></i>
-            <span>Админ-панель</span>
+          <a href="{% url 'competitions:admin_list' %}" class="action-card">
+            <i class="bi bi-trophy-fill"></i>
+            <span>Управление соревнованиями</span>
           </a>
         </div>
       {% endif %}
@@ -118,65 +77,6 @@
 
 {% block extra_js %}
 <script>
-const API_BASE = '/lessons/api';
-
-function playWord(text) {
-  const url = `${API_BASE}/synthesize/?text=${encodeURIComponent(text)}&speaker=alsu`;
-  const audio = new Audio(url);
-  audio.play().catch(err => {
-    console.error('Ошибка озвучки:', err);
-    showToast('Озвучка недоступна');
-  });
-}
-
-let mediaRecorder, audioChunks = [];
-
-async function startRecording() {
-  const result = document.getElementById('recordResult');
-  result.innerHTML = '<i class="bi bi-mic-fill text-danger"></i> Говорите...';
-
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorder = new MediaRecorder(stream);
-    audioChunks = [];
-
-    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-    mediaRecorder.onstop = async () => {
-      const blob = new Blob(audioChunks, { type: 'audio/webm' });
-      const form = new FormData();
-      form.append('audio', blob, 'voice.webm');
-
-      const res = await fetch(`${API_BASE}/recognize/`, {
-        method: 'POST',
-        headers: { 'X-CSRFToken': getCookie('csrftoken') },
-        body: form,
-      });
-      const data = await res.json();
-
-      if (data.text) {
-        result.innerHTML = `<i class="bi bi-check-circle-fill text-success"></i> Распознано: <strong>${data.text}</strong>`;
-      } else {
-        result.innerHTML = '<i class="bi bi-x-circle text-danger"></i> Не удалось распознать';
-      }
-    };
-
-    mediaRecorder.start();
-    setTimeout(() => mediaRecorder.stop(), 3000);
-  } catch (e) {
-    result.innerHTML = '<i class="bi bi-x-circle text-danger"></i> Нет доступа к микрофону';
-  }
-}
-
-function showToast(text) {
-  const div = document.createElement('div');
-  div.style.cssText = `position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-    background: #111; color: #fff; padding: 12px 22px; border-radius: 12px;
-    font-size: 14px; z-index: 9999; box-shadow: 0 8px 24px rgba(0,0,0,.2);`;
-  div.textContent = text;
-  document.body.appendChild(div);
-  setTimeout(() => div.remove(), 2500);
-}
-
 function getCookie(name) {
   for (let c of document.cookie.split(';')) {
     c = c.trim();
@@ -185,18 +85,55 @@ function getCookie(name) {
   return '';
 }
 
-function openJoinModal(e) { e.preventDefault(); document.getElementById('joinModal').style.display = 'flex'; }
-function closeJoinModal() { document.getElementById('joinModal').style.display = 'none'; }
+function openJoinModal(e) {
+  if (e) e.preventDefault();
+  document.getElementById('joinModal').style.display = 'flex';
+  setTimeout(() => document.getElementById('lessonCodeInput').focus(), 100);
+}
+
+function closeJoinModal() {
+  document.getElementById('joinModal').style.display = 'none';
+  document.getElementById('lessonCodeInput').value = '';
+  document.getElementById('joinError').textContent = '';
+}
+
 async function joinLesson() {
   const code = document.getElementById('lessonCodeInput').value.trim();
-  const res = await fetch('/lessons/join/', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': getCookie('csrftoken') },
-    body: 'code=' + encodeURIComponent(code),
-  });
-  const data = await res.json();
-  if (data.status === 'ok') window.location.href = data.url;
-  else document.getElementById('joinError').textContent = data.error || 'Ошибка';
+  const errorBox = document.getElementById('joinError');
+  errorBox.textContent = '';
+
+  if (!code) {
+    errorBox.textContent = 'Введите код урока';
+    return;
+  }
+
+  try {
+    const res = await fetch('/lessons/join/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-CSRFToken': getCookie('csrftoken'),
+      },
+      body: 'code=' + encodeURIComponent(code),
+    });
+    const data = await res.json();
+
+    if (data.status === 'ok') {
+      window.location.href = data.url;
+    } else {
+      errorBox.textContent = data.error || 'Урок не найден';
+    }
+  } catch (e) {
+    errorBox.textContent = 'Ошибка сети. Попробуйте позже.';
+  }
 }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeJoinModal();
+});
+
+document.getElementById('joinModal')?.addEventListener('click', function (e) {
+  if (e.target === this) closeJoinModal();
+});
 </script>
 {% endblock %}

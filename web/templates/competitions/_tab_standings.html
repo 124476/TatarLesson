@@ -1,0 +1,63 @@
+<div class="tab-pane fade {% if active_tab == 'standings' %}show active{% endif %}" id="tab-standings">
+  {% if standings_rows %}
+    <div class="table-responsive">
+      <table class="table table-hover align-middle bg-white shadow-sm rounded">
+        <thead class="table-light">
+          <tr>
+            <th style="width:60px;">#</th>
+            <th>Участник</th>
+            {% for task in tasks %}
+              <th class="text-center" style="min-width:80px;">
+                <a href="{% url 'competitions:task' competition.pk task.pk %}"
+                   class="text-decoration-none"
+                   title="{{ task.title }}">
+                  {{ forloop.counter }}
+                </a>
+              </th>
+            {% endfor %}
+            <th class="text-end" style="width:100px;">Итого</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in standings_rows %}
+            <tr {% if row.user == user %}class="table-success"{% endif %}>
+              <td class="fw-bold text-center">
+                {% if forloop.counter == 1 %}🥇
+                {% elif forloop.counter == 2 %}🥈
+                {% elif forloop.counter == 3 %}🥉
+                {% else %}{{ forloop.counter }}{% endif %}
+              </td>
+              <td class="fw-semibold">{{ row.user.username }}</td>
+              {% for cell in row.tasks %}
+                <td class="text-center">
+                  {% if cell.status == 'solved' %}
+                    <span class="badge bg-success-subtle text-success"
+                          title="Решено с {{ cell.points }} б.">
+                      {{ cell.points }}
+                    </span>
+                    {% if cell.wrong > 0 %}
+                      <div class="small text-muted" style="font-size:.75rem;">(-{{ cell.wrong }})</div>
+                    {% endif %}
+                  {% elif cell.status == 'attempted' %}
+                    <span class="text-danger fw-semibold">-{{ cell.wrong }}</span>
+                  {% else %}
+                    <span class="text-muted">—</span>
+                  {% endif %}
+                </td>
+              {% endfor %}
+              <td class="text-end fw-bold text-success">{{ row.score }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="small text-muted mt-2">
+      В ячейках: <span class="badge bg-success-subtle text-success">очки</span> — решено,
+      <span class="text-danger fw-semibold">-N</span> — N неверных попыток, без правильного ответа.
+      В скобках после очков — количество неверных попыток до правильного.
+    </div>
+  {% else %}
+    <div class="alert alert-secondary text-center">Пока никто не участвует</div>
+  {% endif %}
+</div>

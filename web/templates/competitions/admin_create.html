@@ -1,0 +1,767 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+{% block title %}{% if is_edit %}Редактирование{% else %}Создание{% endif %} соревнования{% endblock %}
+
+{% block dashboard_content %}
+<style>
+  /* ====== Word picker ====== */
+  .word-picker-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 420px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .word-picker-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #fff;
+    text-align: left;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+    width: 100%;
+    font: inherit;
+  }
+  .word-picker-row:hover {
+    background: #f0fdf4;
+    border-color: #86efac;
+  }
+  .word-picker-tt { font-weight: 600; color: #0f172a; }
+  .word-picker-ru { font-size: .875rem; color: #6b7280; }
+  .word-picker-meta { display: flex; gap: 6px; flex-shrink: 0; }
+</style>
+
+<div class="dashboard-home" id="compApp" data-comp-id="{{ competition.id|default:'' }}">
+
+  <div class="dashboard-header d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+    <div>
+      <h1>{% if is_edit %}Редактирование{% else %}Новое{% endif %} соревнование</h1>
+      <p>Настройте параметры и добавьте задачи</p>
+    </div>
+    <a href="{% url 'competitions:admin_list' %}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i> Назад
+    </a>
+  </div>
+
+  <!-- ==================== НАСТРОЙКИ ==================== -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+      <div class="row g-3">
+        <div class="col-12">
+          <label class="form-label fw-semibold">Название</label>
+          <input type="text" class="form-control" id="compTitle"
+                 value="{{ competition.title|default:'' }}"
+                 placeholder="Например: Осенний турнир">
+        </div>
+        <div class="col-12">
+          <label class="form-label fw-semibold">Описание</label>
+          <textarea class="form-control" id="compDescription" rows="3"
+                    placeholder="О чём соревнование...">{{ competition.description|default:'' }}</textarea>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Начало</label>
+          <input type="datetime-local" class="form-control" id="compStart"
+                 value="{% if competition %}{{ competition.start_time|date:'Y-m-d\TH:i' }}{% endif %}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Окончание</label>
+          <input type="datetime-local" class="form-control" id="compEnd"
+                 value="{% if competition %}{{ competition.end_time|date:'Y-m-d\TH:i' }}{% endif %}">
+        </div>
+        <div class="col-12">
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="compPublished"
+                   {% if competition.is_published %}checked{% endif %}>
+            <label class="form-check-label" for="compPublished">Опубликовать</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== ЗАДАЧИ ==================== -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="fw-bold mb-0">Задачи</h5>
+    <button type="button" class="btn btn-success" onclick="openTaskModal()">
+      <i class="bi bi-plus-lg"></i> Добавить задачу
+    </button>
+  </div>
+
+  <div id="tasksList" class="d-flex flex-column gap-3 mb-4"></div>
+
+  <div class="d-flex gap-2 flex-wrap align-items-center">
+    <button type="button" class="btn btn-success btn-lg" id="saveBtn" onclick="saveCompetition()">
+      <i class="bi bi-check-lg"></i> Сохранить
+    </button>
+    <span id="saveError" class="text-danger"></span>
+  </div>
+</div>
+
+<!-- ==================== МОДАЛКА ЗАДАЧИ ==================== -->
+<div class="app-modal-overlay" id="taskModal">
+  <div class="app-modal-box" style="max-width:960px;">
+    <div class="app-modal-header">
+      <h3 class="app-modal-title" id="taskModalTitle">Задача</h3>
+      <button type="button" class="app-modal-close" onclick="closeTaskModal()" aria-label="Закрыть">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="app-modal-body">
+      <div class="row g-3">
+
+        <!-- Ряд 1: тип + название -->
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Тип задачи</label>
+          <div class="d-flex gap-2">
+            <select class="form-select" id="taskType" onchange="onTypeChange()">
+              <option value="text">📝 Текстовый ответ</option>
+              <option value="choice">🔘 Один вариант</option>
+              <option value="multiple_choice">☑️ Несколько вариантов</option>
+              <option value="build">🧩 Собери слово</option>
+              <option value="pairs">🔗 Найди пару</option>
+              <option value="voice">🎙️ Голосовой перевод</option>
+            </select>
+            <button type="button" class="btn btn-outline-success flex-shrink-0"
+                    onclick="openWordPicker()" title="Заполнить из словаря">
+              <i class="bi bi-book"></i>
+            </button>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Название задачи</label>
+          <input type="text" class="form-control" id="taskTitle" placeholder="Переведи слово">
+        </div>
+
+        <!-- Ряд 2: условие + поля типа -->
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Условие</label>
+          <textarea class="form-control" id="taskStatement" rows="6"
+                    placeholder="Полный текст задания..."></textarea>
+        </div>
+
+        <div class="col-md-6">
+          <div class="task-fields d-none" id="fieldsText">
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Правильный ответ</label>
+              <input type="text" class="form-control" id="taskCorrect" placeholder="Книга">
+            </div>
+            <div class="mb-3 d-none" id="voiceTextField">
+              <label class="form-label fw-semibold">Что произнести (озвучка)</label>
+              <input type="text" class="form-control" id="taskVoiceText" placeholder="Китап">
+            </div>
+          </div>
+
+          <div class="task-fields d-none" id="fieldsBuild">
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Слово для сборки (татарский)</label>
+              <input type="text" class="form-control" id="taskBuildWord" placeholder="Китап">
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Подсказка (перевод)</label>
+              <input type="text" class="form-control" id="taskBuildHint" placeholder="Книга">
+            </div>
+          </div>
+        </div>
+
+        <!-- Ряд 3: варианты ответа -->
+        <div class="col-12 task-fields d-none" id="fieldsChoice">
+          <label class="form-label fw-semibold" id="choiceLabel">Варианты ответа</label>
+          <div id="optionsList" class="d-flex flex-column gap-2 mb-2"></div>
+          <button type="button" class="btn btn-sm btn-outline-success" onclick="addOption()">
+            <i class="bi bi-plus-lg"></i> Добавить вариант
+          </button>
+        </div>
+
+        <!-- Ряд 3: пары -->
+        <div class="col-12 task-fields d-none" id="fieldsPairs">
+          <label class="form-label fw-semibold">Пары (татарский → русский)</label>
+          <div id="pairsList" class="d-flex flex-column gap-2 mb-2"></div>
+          <button type="button" class="btn btn-sm btn-outline-success" onclick="addPair()">
+            <i class="bi bi-plus-lg"></i> Добавить пару
+          </button>
+        </div>
+
+        <!-- Ряд 4: баллы + попытки -->
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Баллы</label>
+          <input type="number" class="form-control" id="taskPoints" value="100" min="1">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Максимум попыток</label>
+          <input type="number" class="form-control" id="taskAttempts" value="5" min="1">
+        </div>
+
+        <div class="col-12">
+          <div id="taskError" class="text-danger small"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-modal-footer">
+      <button type="button" class="app-modal-btn app-modal-btn-secondary"
+              onclick="closeTaskModal()">Отмена</button>
+      <button type="button" class="app-modal-btn app-modal-btn-primary"
+              id="taskModalSubmitBtn" onclick="applyTask()">Добавить</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== МОДАЛКА СЛОВАРЯ ==================== -->
+<div class="app-modal-overlay" id="wordPickerModal" style="z-index:1090;">
+  <div class="app-modal-box" style="max-width:640px;">
+    <div class="app-modal-header">
+      <h3 class="app-modal-title">Из словаря</h3>
+      <button type="button" class="app-modal-close" onclick="closeWordPicker()" aria-label="Закрыть">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="app-modal-body">
+      <input type="text" class="form-control mb-3" id="wordSearch"
+             placeholder="Поиск по татарскому или русскому..." autocomplete="off">
+      <div id="wordPickerList" class="word-picker-list"></div>
+    </div>
+
+    <div class="app-modal-footer">
+      <button type="button" class="app-modal-btn app-modal-btn-secondary"
+              onclick="closeWordPicker()">Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<!-- Тост-контейнер -->
+<div id="toastContainer" class="toast-container"></div>
+
+{% endblock %}
+
+{% block extra_js %}
+{# json_script ДО инлайн-скрипта #}
+{{ tasks_json|json_script:"tasks-data" }}
+
+<script>
+// ==================== КОНСТАНТЫ ====================
+const WORDS_API_URL = "{% url 'competitions:api_words' %}";
+
+// ==================== УТИЛИТЫ ====================
+function showToast(message, type = 'info') {
+  let container = document.getElementById('toastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+  }
+  const toast = document.createElement('div');
+  toast.className = `app-toast app-toast-${type}`;
+  const icon = type === 'success' ? 'check-circle-fill'
+             : type === 'error' ? 'x-circle-fill'
+             : 'info-circle-fill';
+  toast.innerHTML = `<i class="bi bi-${icon}"></i><span>${message}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => toast.classList.add('show'), 10);
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+function getCookie(name) {
+  for (let c of document.cookie.split(';')) {
+    c = c.trim();
+    if (c.startsWith(name + '=')) return decodeURIComponent(c.slice(name.length + 1));
+  }
+  return '';
+}
+
+function escapeHtml(t) {
+  const d = document.createElement('div');
+  d.textContent = t ?? '';
+  return d.innerHTML;
+}
+
+function escapeAttr(t) {
+  return String(t ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+
+function debounce(fn, ms) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), ms);
+  };
+}
+
+// ==================== ДАННЫЕ ====================
+const TASK_TYPE_NAMES = {
+  text: '📝 Текстовый ответ',
+  choice: '🔘 Один вариант',
+  multiple_choice: '☑️ Несколько вариантов',
+  build: '🧩 Собери слово',
+  pairs: '🔗 Найди пару',
+  voice: '🎙️ Голосовой перевод',
+};
+
+let tasks = [];
+(function loadTasks() {
+  try {
+    const el = document.getElementById('tasks-data');
+    if (!el) return;
+    const raw = (el.textContent || '').trim();
+    if (!raw || raw === 'null') return;
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) tasks = parsed;
+  } catch (e) {
+    console.error('Ошибка парсинга tasks:', e);
+    tasks = [];
+  }
+})();
+
+let editingTaskIndex = null;
+
+// ==================== МОДАЛКА ЗАДАЧИ ====================
+function openTaskModal(index = null) {
+  editingTaskIndex = (typeof index === 'number') ? index : null;
+
+  // Сброс
+  document.getElementById('taskTitle').value = '';
+  document.getElementById('taskStatement').value = '';
+  document.getElementById('taskCorrect').value = '';
+  document.getElementById('taskVoiceText').value = '';
+  document.getElementById('taskBuildWord').value = '';
+  document.getElementById('taskBuildHint').value = '';
+  document.getElementById('taskPoints').value = 100;
+  document.getElementById('taskAttempts').value = 5;
+  document.getElementById('optionsList').innerHTML = '';
+  document.getElementById('pairsList').innerHTML = '';
+  document.getElementById('taskError').textContent = '';
+
+  if (editingTaskIndex !== null) {
+    const t = tasks[editingTaskIndex] || {};
+    document.getElementById('taskType').value = t.task_type || 'text';
+    document.getElementById('taskTitle').value = t.title || '';
+    document.getElementById('taskStatement').value = t.statement || '';
+    document.getElementById('taskPoints').value = t.points ?? 100;
+    document.getElementById('taskAttempts').value = t.max_attempts ?? 5;
+
+    onTypeChange();
+
+    const type = t.task_type;
+    if (type === 'text' || type === 'voice') {
+      document.getElementById('taskCorrect').value = t.correct_answer || '';
+      document.getElementById('taskVoiceText').value = t.voice_text || '';
+    } else if (type === 'choice' || type === 'multiple_choice') {
+      const opts = Array.isArray(t.options) ? t.options : [];
+      if (opts.length) opts.forEach(o => addOption(o.text || '', !!o.is_correct));
+      else { addOption(); addOption(); }
+    } else if (type === 'build') {
+      document.getElementById('taskBuildWord').value = t.build_word || '';
+      document.getElementById('taskBuildHint').value = t.build_hint || '';
+    } else if (type === 'pairs') {
+      const pairs = Array.isArray(t.pairs) ? t.pairs : [];
+      if (pairs.length) pairs.forEach(p => addPair(p[0] || '', p[1] || ''));
+      else { addPair(); addPair(); }
+    }
+
+    document.getElementById('taskModalTitle').textContent = 'Редактирование задачи';
+    document.getElementById('taskModalSubmitBtn').textContent = 'Сохранить';
+  } else {
+    document.getElementById('taskType').value = 'text';
+    onTypeChange();
+    addOption(); addOption();
+    addPair(); addPair();
+    document.getElementById('taskModalTitle').textContent = 'Задача';
+    document.getElementById('taskModalSubmitBtn').textContent = 'Добавить';
+  }
+
+  document.getElementById('taskModal').classList.add('open');
+}
+
+function closeTaskModal() {
+  document.getElementById('taskModal').classList.remove('open');
+  editingTaskIndex = null;
+}
+
+function onTypeChange() {
+  const type = document.getElementById('taskType').value;
+
+  document.querySelectorAll('.task-fields').forEach(el => el.classList.add('d-none'));
+
+  if (type === 'text') {
+    document.getElementById('fieldsText').classList.remove('d-none');
+    document.getElementById('voiceTextField').classList.add('d-none');
+  } else if (type === 'voice') {
+    document.getElementById('fieldsText').classList.remove('d-none');
+    document.getElementById('voiceTextField').classList.remove('d-none');
+  } else if (type === 'choice' || type === 'multiple_choice') {
+    document.getElementById('fieldsChoice').classList.remove('d-none');
+    document.getElementById('choiceLabel').textContent =
+      type === 'choice' ? 'Отметьте один правильный' : 'Отметьте все правильные';
+
+    const newType = type === 'choice' ? 'radio' : 'checkbox';
+    document.querySelectorAll('#optionsList input[type="radio"], #optionsList input[type="checkbox"]').forEach(inp => {
+      inp.type = newType;
+      if (newType === 'radio') {
+        inp.name = 'taskOptionCorrect';
+      } else {
+        inp.removeAttribute('name');
+      }
+    });
+
+    if (newType === 'radio') {
+      const checked = document.querySelectorAll('#optionsList .option-correct:checked');
+      checked.forEach((inp, idx) => { if (idx > 0) inp.checked = false; });
+    }
+  } else if (type === 'build') {
+    document.getElementById('fieldsBuild').classList.remove('d-none');
+  } else if (type === 'pairs') {
+    document.getElementById('fieldsPairs').classList.remove('d-none');
+  }
+}
+
+// ==================== ОПЦИИ / ПАРЫ ====================
+function addOption(text = '', isCorrect = false) {
+  const list = document.getElementById('optionsList');
+  const type = document.getElementById('taskType').value;
+  const inputType = type === 'choice' ? 'radio' : 'checkbox';
+  const nameAttr = inputType === 'radio' ? 'name="taskOptionCorrect"' : '';
+
+  const row = document.createElement('div');
+  row.className = 'd-flex gap-2 align-items-center option-row';
+  row.innerHTML = `
+    <input class="form-check-input mt-0 option-correct" type="${inputType}" ${nameAttr}
+           style="width:22px;height:22px;flex-shrink:0;">
+    <input type="text" class="form-control option-text" value="${escapeAttr(text)}"
+           placeholder="Вариант ответа">
+    <button type="button" class="btn btn-sm btn-outline-danger" onclick="this.parentElement.remove()">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  `;
+  if (isCorrect) row.querySelector('.option-correct').checked = true;
+  list.appendChild(row);
+}
+
+function addPair(tt = '', ru = '') {
+  const list = document.getElementById('pairsList');
+  const row = document.createElement('div');
+  row.className = 'd-flex gap-2 align-items-center pair-row';
+  row.innerHTML = `
+    <input type="text" class="form-control pair-tt" value="${escapeAttr(tt)}" placeholder="Татарский">
+    <i class="bi bi-arrow-right"></i>
+    <input type="text" class="form-control pair-ru" value="${escapeAttr(ru)}" placeholder="Русский">
+    <button type="button" class="btn btn-sm btn-outline-danger" onclick="this.parentElement.remove()">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  `;
+  list.appendChild(row);
+}
+
+// ==================== СОХРАНЕНИЕ ЗАДАЧИ ====================
+function applyTask() {
+  const type = document.getElementById('taskType').value;
+  const title = document.getElementById('taskTitle').value.trim();
+  const statement = document.getElementById('taskStatement').value.trim();
+  const points = parseInt(document.getElementById('taskPoints').value) || 100;
+  const attempts = parseInt(document.getElementById('taskAttempts').value) || 5;
+
+  if (!title) return showToast('Введите название задачи', 'error');
+  if (!statement) return showToast('Введите условие задачи', 'error');
+
+  const task = {
+    title, statement, task_type: type, points, max_attempts: attempts,
+    correct_answer: '', options: [], build_word: '', build_hint: '',
+    pairs: [], voice_text: '',
+  };
+
+  if (type === 'text' || type === 'voice') {
+    task.correct_answer = document.getElementById('taskCorrect').value.trim();
+    if (!task.correct_answer) return showToast('Введите правильный ответ', 'error');
+    if (type === 'voice') {
+      task.voice_text = document.getElementById('taskVoiceText').value.trim();
+    }
+  } else if (type === 'choice' || type === 'multiple_choice') {
+    const rows = document.querySelectorAll('#optionsList .option-row');
+    const options = [];
+    let hasCorrect = false;
+    rows.forEach(r => {
+      const text = r.querySelector('.option-text').value.trim();
+      const isCorrect = r.querySelector('.option-correct').checked;
+      if (text) {
+        options.push({ text, is_correct: isCorrect });
+        if (isCorrect) hasCorrect = true;
+      }
+    });
+    if (options.length < 2) return showToast('Нужно минимум 2 варианта', 'error');
+    if (!hasCorrect) return showToast('Отметьте правильный вариант', 'error');
+    task.options = options;
+    task.correct_answer = options.find(o => o.is_correct).text;
+  } else if (type === 'build') {
+    task.build_word = document.getElementById('taskBuildWord').value.trim();
+    task.build_hint = document.getElementById('taskBuildHint').value.trim();
+    if (!task.build_word) return showToast('Введите слово для сборки', 'error');
+  } else if (type === 'pairs') {
+    const rows = document.querySelectorAll('#pairsList .pair-row');
+    const pairs = [];
+    rows.forEach(r => {
+      const tt = r.querySelector('.pair-tt').value.trim();
+      const ru = r.querySelector('.pair-ru').value.trim();
+      if (tt && ru) pairs.push([tt, ru]);
+    });
+    if (pairs.length < 2) return showToast('Нужно минимум 2 пары', 'error');
+    task.pairs = pairs;
+  }
+
+  if (editingTaskIndex !== null) {
+    tasks[editingTaskIndex] = task;
+    showToast('Задача обновлена', 'success');
+  } else {
+    tasks.push(task);
+    showToast('Задача добавлена', 'success');
+  }
+
+  closeTaskModal();
+  renderTasks();
+}
+
+function renderTasks() {
+  const list = document.getElementById('tasksList');
+  if (!tasks.length) {
+    list.innerHTML = `<div class="alert alert-secondary text-center mb-0">
+      Задач пока нет. Нажмите «Добавить задачу».
+    </div>`;
+    return;
+  }
+
+  list.innerHTML = tasks.map((t, i) => `
+    <div class="card border-0 shadow-sm">
+      <div class="card-body d-flex align-items-center gap-3">
+        <span class="badge bg-success-subtle text-success rounded-circle"
+              style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:16px;">
+          ${i + 1}
+        </span>
+        <div class="flex-grow-1">
+          <div class="fw-semibold">${escapeHtml(t.title)}</div>
+          <div class="small text-muted">
+            ${TASK_TYPE_NAMES[t.task_type] || t.task_type} · ${t.points} б. · ${t.max_attempts} попыток
+          </div>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-secondary"
+                onclick="openTaskModal(${i})" title="Редактировать">
+          <i class="bi bi-pencil"></i>
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-danger"
+                onclick="removeTask(${i})" title="Удалить">
+          <i class="bi bi-trash"></i>
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function removeTask(i) {
+  tasks.splice(i, 1);
+  renderTasks();
+}
+
+// ==================== WORD PICKER ====================
+let wordPickerWords = [];
+
+function openWordPicker() {
+  const search = document.getElementById('wordSearch');
+  search.value = '';
+  loadWordPicker('');
+  document.getElementById('wordPickerModal').classList.add('open');
+  setTimeout(() => search.focus(), 120);
+}
+
+function closeWordPicker() {
+  document.getElementById('wordPickerModal').classList.remove('open');
+}
+
+async function loadWordPicker(q) {
+  const list = document.getElementById('wordPickerList');
+  list.innerHTML = '<div class="text-muted text-center py-3">Загрузка...</div>';
+  try {
+    const res = await fetch(WORDS_API_URL + '?q=' + encodeURIComponent(q || ''));
+    const data = await res.json();
+    wordPickerWords = data.words || [];
+    if (!wordPickerWords.length) {
+      list.innerHTML = '<div class="text-muted text-center py-3">Ничего не найдено</div>';
+      return;
+    }
+    list.innerHTML = wordPickerWords.map((w, i) => `
+      <button type="button" class="word-picker-row" data-idx="${i}">
+        <div class="word-picker-main">
+          <div class="word-picker-tt">${escapeHtml(w.tatar)}</div>
+          <div class="word-picker-ru">${escapeHtml(w.russian)}</div>
+        </div>
+        <div class="word-picker-meta">
+          ${w.transcription ? `<span class="badge bg-light text-dark">${escapeHtml(w.transcription)}</span>` : ''}
+          <span class="badge bg-success-subtle text-success">${escapeHtml(w.theme_display || '')}</span>
+        </div>
+      </button>
+    `).join('');
+    list.querySelectorAll('.word-picker-row').forEach(el => {
+      el.addEventListener('click', () => applyPickedWord(wordPickerWords[+el.dataset.idx]));
+    });
+  } catch (e) {
+    console.error(e);
+    list.innerHTML = '<div class="text-danger text-center py-3">Ошибка загрузки</div>';
+  }
+}
+
+function applyPickedWord(word) {
+  if (!word) return;
+  const type = document.getElementById('taskType').value;
+
+  if (type === 'text') {
+    document.getElementById('taskCorrect').value = word.tatar;
+    const st = document.getElementById('taskStatement');
+    if (!st.value.trim()) st.value = `Переведи на татарский: ${word.russian}`;
+    const ti = document.getElementById('taskTitle');
+    if (!ti.value.trim()) ti.value = `Перевод: ${word.russian}`;
+
+  } else if (type === 'voice') {
+    document.getElementById('taskCorrect').value = word.tatar;
+    document.getElementById('taskVoiceText').value = word.tatar;
+    const ti = document.getElementById('taskTitle');
+    if (!ti.value.trim()) ti.value = `Произнеси: ${word.tatar}`;
+
+  } else if (type === 'build') {
+    document.getElementById('taskBuildWord').value = word.tatar;
+    document.getElementById('taskBuildHint').value = word.russian;
+    const ti = document.getElementById('taskTitle');
+    if (!ti.value.trim()) ti.value = `Собери слово: ${word.russian}`;
+
+  } else if (type === 'choice' || type === 'multiple_choice') {
+    const list = document.getElementById('optionsList');
+    if (type === 'choice') {
+      list.querySelectorAll('.option-correct').forEach(cb => cb.checked = false);
+    }
+    if (!list.querySelector('.option-row')) {
+      addOption(); addOption();
+    }
+    let placed = false;
+    for (const r of list.querySelectorAll('.option-row')) {
+      const inp = r.querySelector('.option-text');
+      if (!inp.value.trim()) {
+        inp.value = word.tatar;
+        r.querySelector('.option-correct').checked = true;
+        placed = true;
+        break;
+      }
+    }
+    if (!placed) addOption(word.tatar, true);
+
+  } else if (type === 'pairs') {
+    const list = document.getElementById('pairsList');
+    if (!list.querySelector('.pair-row')) {
+      addPair(word.tatar, word.russian);
+    } else {
+      let placed = false;
+      for (const r of list.querySelectorAll('.pair-row')) {
+        const tt = r.querySelector('.pair-tt');
+        const ru = r.querySelector('.pair-ru');
+        if (!tt.value.trim() && !ru.value.trim()) {
+          tt.value = word.tatar;
+          ru.value = word.russian;
+          placed = true;
+          break;
+        }
+      }
+      if (!placed) addPair(word.tatar, word.russian);
+    }
+  }
+
+  showToast(`Добавлено: ${word.tatar} — ${word.russian}`, 'success');
+  closeWordPicker();
+}
+
+// ==================== СОХРАНЕНИЕ СОРЕВНОВАНИЯ ====================
+async function saveCompetition() {
+  const btn = document.getElementById('saveBtn');
+  const errorBox = document.getElementById('saveError');
+  errorBox.textContent = '';
+
+  const title = document.getElementById('compTitle').value.trim();
+  const description = document.getElementById('compDescription').value.trim();
+  const start = document.getElementById('compStart').value;
+  const end = document.getElementById('compEnd').value;
+  const is_published = document.getElementById('compPublished').checked;
+
+  if (!title) return showToast('Введите название', 'error');
+  if (!start) return showToast('Укажите время начала', 'error');
+  if (!end) return showToast('Укажите время окончания', 'error');
+  if (!tasks.length) return showToast('Добавьте хотя бы одну задачу', 'error');
+
+  const competition_id = document.getElementById('compApp').dataset.compId || null;
+
+  btn.disabled = true;
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Сохранение...';
+
+  try {
+    const res = await fetch('/competitions/manage/save/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken'),
+      },
+      body: JSON.stringify({
+        competition_id, title, description,
+        start_time: start, end_time: end, is_published, tasks,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (data.status === 'ok') {
+      showToast('Соревнование сохранено', 'success');
+      setTimeout(() => window.location.href = '/competitions/manage/', 800);
+    } else {
+      showToast(data.error || 'Ошибка сохранения', 'error');
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+    }
+  } catch (e) {
+    console.error('🔴 Ошибка:', e);
+    showToast('Ошибка сети: ' + e.message, 'error');
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+  }
+}
+
+// ==================== ИНИЦИАЛИЗАЦИЯ ====================
+document.addEventListener('DOMContentLoaded', () => {
+  renderTasks();
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      if (document.getElementById('wordPickerModal').classList.contains('open')) {
+        closeWordPicker();
+      } else {
+        closeTaskModal();
+      }
+    }
+  });
+
+  document.getElementById('taskModal')?.addEventListener('click', function (e) {
+    if (e.target === this) closeTaskModal();
+  });
+
+  document.getElementById('wordPickerModal')?.addEventListener('click', function (e) {
+    if (e.target === this) closeWordPicker();
+  });
+
+  const search = document.getElementById('wordSearch');
+  search?.addEventListener('input', debounce(e => loadWordPicker(e.target.value), 250));
+});
+</script>
+{% endblock %}

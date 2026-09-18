@@ -1,7 +1,6 @@
 __all__ = ()
 
 import random
-import json
 
 from apps.lessons.models import Answer, Lesson, LessonProgress
 from apps.words.models import Word
@@ -11,19 +10,13 @@ from django.contrib.auth.models import User
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, TemplateView
+from django.http import JsonResponse
+from django.views import View
 
 
 class DashboardHomeView(LoginRequiredMixin, TemplateView):
     template_name = "dashboard/home.html"
     login_url = "accounts:auth"
-
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        count = Word.objects.count()
-        ctx["random_word"] = (
-            Word.objects.all()[random.randint(0, count - 1)] if count else None
-        )
-        return ctx
 
 
 class LessonsListView(LoginRequiredMixin, ListView):
@@ -55,10 +48,10 @@ class LessonBuilderView(LoginRequiredMixin, TemplateView):
         ctx = super().get_context_data(**kwargs)
         lesson_id = self.kwargs.get("pk")
 
-        # Все слова из словаря — для выпадающего списка
         ctx["all_words"] = Word.objects.all().order_by("theme", "tatar")
 
         if lesson_id:
+            import json
             lesson = get_object_or_404(
                 Lesson, pk=lesson_id, author=self.request.user,
             )
@@ -101,7 +94,6 @@ class WordsView(LoginRequiredMixin, TemplateView):
 
         words = Word.objects.all()
         if search:
-            from django.db.models import Q
             words = words.filter(
                 Q(tatar__icontains=search) | Q(russian__icontains=search)
             )
@@ -114,25 +106,6 @@ class WordsView(LoginRequiredMixin, TemplateView):
         ctx["selected_theme"] = theme
         ctx["is_admin"] = self.request.user.is_staff
         return ctx
-
-
-class CompetitionsView(LoginRequiredMixin, TemplateView):
-    template_name = "dashboard/competitions.html"
-    login_url = "accounts:auth"
-
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        ctx["competitions"] = (
-            Lesson.objects
-            .filter(is_competition=True)
-            .filter(Q(is_public=True) | Q(author=self.request.user))
-            .order_by("-created_at")[:50]
-        )
-        ctx["is_admin"] = self.request.user.is_staff
-        return ctx
-
-from django.http import JsonResponse
-from django.views import View
 
 
 class AddWordView(LoginRequiredMixin, View):
@@ -156,7 +129,6 @@ class AddWordView(LoginRequiredMixin, View):
         if not tatar or not russian:
             return JsonResponse({"error": "Заполните слово и перевод"}, status=400)
 
-        # Проверка на дубликат
         if Word.objects.filter(tatar__iexact=tatar).exists():
             return JsonResponse({"error": "Такое слово уже есть"}, status=400)
 

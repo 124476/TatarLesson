@@ -419,3 +419,121 @@
   margin-top: 12px;
   min-height: 20px;
 }
+
+/* ================================================================
+   WORD OF DAY
+   ================================================================ */
+.word-of-day-section {
+  margin-bottom: 80px;
+}
+
+.word-of-day-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8faf9 100%);
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  padding: 36px 40px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 32px;
+  align-items: center;
+  box-shadow: 0 12px 32px -16px rgba(15, 23, 42, 0.12);
+  transition: transform .25s, box-shadow .25s;
+}
+
+.word-of-day-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 44px -18px rgba(15, 23, 42, 0.18);
+}
+
+.word-of-day-tatar {
+  font-size: 40px;
+  font-weight: 800;
+  color: #0B6E4F;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+
+.word-of-day-russian {
+  font-size: 20px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.word-of-day-transcription {
+  font-size: 14px;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+.word-of-day-example {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border-color);
+}
+
+.word-of-day-example .example-tt {
+  font-size: 15px;
+  color: var(--text-primary);
+  margin: 0 0 2px;
+}
+
+.word-of-day-example .example-ru {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.word-of-day-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 180px;
+}
+
+.wod-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all .15s;
+}
+
+.wod-btn:hover {
+  border-color: #0B6E4F;
+  color: #0B6E4F;
+  background: rgba(11, 110, 79, .04);
+}
+
+.record-result {
+  grid-column: 1 / -1;
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  min-height: 20px;
+}
+
+@media (max-width: 640px) {
+  .word-of-day-card {
+    grid-template-columns: 1fr;
+    padding: 24px;
+  }
+  .word-of-day-tatar {
+    font-size: 30px;
+  }
+  .word-of-day-actions {
+    flex-direction: row;
+    min-width: 0;
+  }
+  .wod-btn {
+    flex: 1;
+  }
+}

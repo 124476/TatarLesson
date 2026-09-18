@@ -1,0 +1,24 @@
+{% load static %}
+<ul class="nav nav-tabs mb-4" role="tablist">
+  <li class="nav-item">
+    <button class="nav-link {% if active_tab == 'tasks' %}active{% endif %}"
+            data-bs-toggle="tab" data-bs-target="#tab-tasks" type="button">
+      <i class="bi bi-list-task"></i> Задачи
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link {% if active_tab == 'my' %}active{% endif %}"
+            data-bs-toggle="tab" data-bs-target="#tab-my" type="button">
+      <i class="bi bi-send"></i> Мои посылки
+      {% if my_submissions_count %}
+        <span class="badge bg-secondary ms-1">{{ my_submissions_count }}</span>
+      {% endif %}
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link {% if active_tab == 'standings' %}active{% endif %}"
+            data-bs-toggle="tab" data-bs-target="#tab-standings" type="button">
+      <i class="bi bi-trophy"></i> Положение
+    </button>
+  </li>
+</ul>

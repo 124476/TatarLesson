@@ -45,6 +45,7 @@ urlpatterns = [
     path("dashboard/", include("apps.dashboard.urls")),
     path("lessons/", include("apps.lessons.urls")),
     path("gamification/", include("apps.gamification.urls")),
+    path("competitions/", include("apps.competitions.urls")),
     path(
         "oauth/complete/<str:backend>/",
         custom_complete,

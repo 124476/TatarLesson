@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Соревнования{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/competitions/list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width:1100px;">
+
+  <!-- ==================== ЗАГОЛОВОК ==================== -->
+  <div class="comp-hero mb-5">
+    <div class="comp-hero-content">
+      <span class="comp-hero-label">Турниры</span>
+      <h1 class="comp-hero-title">
+        Соревнования по <span>татарскому</span>
+      </h1>
+      <p class="comp-hero-subtitle">
+        Участвуй в турнирах, решай задачи и поднимайся в лидерборде.
+        Как на Codeforces, только про язык.
+      </p>
+    </div>
+    <div class="comp-hero-icon">
+      <i class="bi bi-trophy-fill"></i>
+    </div>
+  </div>
+
+  <!-- ==================== ИДУТ СЕЙЧАС ==================== -->
+  {% if running %}
+    <section class="comp-section mb-5">
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <span class="comp-pulse"></span>
+        <h2 class="comp-section-title mb-0">Идут сейчас</h2>
+        <span class="comp-section-count">{{ running|length }}</span>
+      </div>
+
+      <div class="row g-3">
+        {% for comp in running %}
+          <div class="col-md-6 col-lg-4">
+            <a href="{% url 'competitions:detail' comp.pk %}" class="comp-card comp-card-running">
+              <div class="comp-card-header">
+                <span class="comp-badge comp-badge-running">
+                  <span class="comp-pulse-sm"></span> Идёт
+                </span>
+                <i class="bi bi-arrow-up-right comp-card-arrow"></i>
+              </div>
+
+              <h3 class="comp-card-title">{{ comp.title }}</h3>
+
+              {% if comp.description %}
+                <p class="comp-card-desc">{{ comp.description|truncatechars:100 }}</p>
+              {% endif %}
+
+              <div class="comp-card-meta">
+                <span class="comp-meta-item">
+                  <i class="bi bi-clock"></i>
+                  до {{ comp.end_time|date:"d.m H:i" }}
+                </span>
+                <span class="comp-meta-item">
+                  <i class="bi bi-list-task"></i>
+                  {{ comp.tasks.count }} задач
+                </span>
+              </div>
+
+              <div class="comp-card-footer">
+                <div class="comp-progress-wrap">
+                  <div class="comp-progress-bar" style="width:100%;"></div>
+                </div>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  <!-- ==================== СКОРО ==================== -->
+  {% if upcoming %}
+    <section class="comp-section mb-5">
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <i class="bi bi-hourglass-split text-warning"></i>
+        <h2 class="comp-section-title mb-0">Скоро</h2>
+        <span class="comp-section-count">{{ upcoming|length }}</span>
+      </div>
+
+      <div class="row g-3">
+        {% for comp in upcoming %}
+          <div class="col-md-6 col-lg-4">
+            <a href="{% url 'competitions:detail' comp.pk %}" class="comp-card comp-card-upcoming">
+              <div class="comp-card-header">
+                <span class="comp-badge comp-badge-upcoming">⏳ Скоро</span>
+                <i class="bi bi-arrow-up-right comp-card-arrow"></i>
+              </div>
+
+              <h3 class="comp-card-title">{{ comp.title }}</h3>
+
+              {% if comp.description %}
+                <p class="comp-card-desc">{{ comp.description|truncatechars:100 }}</p>
+              {% endif %}
+
+              <div class="comp-card-meta">
+                <span class="comp-meta-item">
+                  <i class="bi bi-calendar-event"></i>
+                  старт {{ comp.start_time|date:"d.m H:i" }}
+                </span>
+                <span class="comp-meta-item">
+                  <i class="bi bi-list-task"></i>
+                  {{ comp.tasks.count }} задач
+                </span>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  <!-- ==================== ЗАВЕРШЁННЫЕ ==================== -->
+  {% if finished %}
+    <section class="comp-section mb-5">
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <i class="bi bi-check-circle text-muted"></i>
+        <h2 class="comp-section-title mb-0">Завершённые</h2>
+        <span class="comp-section-count">{{ finished|length }}</span>
+      </div>
+
+      <div class="row g-3">
+        {% for comp in finished %}
+          <div class="col-md-6 col-lg-4">
+            <a href="{% url 'competitions:detail' comp.pk %}" class="comp-card comp-card-finished">
+              <div class="comp-card-header">
+                <span class="comp-badge comp-badge-finished">✅ Завершено</span>
+                <i class="bi bi-arrow-up-right comp-card-arrow"></i>
+              </div>
+
+              <h3 class="comp-card-title">{{ comp.title }}</h3>
+
+              <div class="comp-card-meta">
+                <span class="comp-meta-item">
+                  <i class="bi bi-calendar-check"></i>
+                  {{ comp.end_time|date:"d.m.Y" }}
+                </span>
+                <span class="comp-meta-item">
+                  <i class="bi bi-people"></i>
+                  {{ comp.participants.count }} участников
+                </span>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  <!-- ==================== ПУСТО ==================== -->
+  {% if not running and not upcoming and not finished %}
+    <div class="comp-empty">
+      <div class="comp-empty-icon">
+        <i class="bi bi-trophy"></i>
+      </div>
+      <h2 class="comp-empty-title">Соревнований пока нет</h2>
+      <p class="comp-empty-text">
+        Загляните позже — скоро появятся новые турниры.
+      </p>
+      {% if user.is_staff %}
+        <a href="{% url 'competitions:admin_create' %}" class="btn btn-success">
+          <i class="bi bi-plus-lg"></i> Создать соревнование
+        </a>
+      {% endif %}
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

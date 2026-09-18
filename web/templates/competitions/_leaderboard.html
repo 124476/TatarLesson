@@ -1,0 +1,25 @@
+<div style="background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:16px;overflow:hidden;">
+  <div class="lb-row lb-header">
+    <span>#</span>
+    <span>Участник</span>
+    <span>Баллы</span>
+    <span>Время</span>
+  </div>
+  {% for p in leaderboard %}
+    <div class="lb-row {% if p.user == user %}lb-row-me{% endif %}">
+      <span class="lb-place">
+        {% if forloop.counter == 1 %}🥇
+        {% elif forloop.counter == 2 %}🥈
+        {% elif forloop.counter == 3 %}🥉
+        {% else %}{{ forloop.counter }}{% endif %}
+      </span>
+      <span class="lb-name">{{ p.user.username }}</span>
+      <span class="lb-score">{{ p.score }}</span>
+      <span class="lb-time">{{ p.created_at|date:"H:i" }}</span>
+    </div>
+  {% empty %}
+    <div style="padding:40px;text-align:center;color:var(--text-muted);">
+      Пока никто не участвует
+    </div>
+  {% endfor %}
+</div>

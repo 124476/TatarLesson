@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "apps.about.apps.AboutConfig",
     "apps.accounts.apps.AccountsConfig",
     "apps.homepage.apps.HomepageConfig",
+    "apps.competitions.apps.CompetitionsConfig",
     "apps.dashboard.apps.DashboardConfig",
     "apps.lessons.apps.LessonsConfig",
     "apps.words.apps.WordsConfig",

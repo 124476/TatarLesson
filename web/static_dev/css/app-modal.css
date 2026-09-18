@@ -1,0 +1,361 @@
+/* ================================================================
+   APP MODAL — универсальное модальное окно
+   с учётом header / footer страницы
+   ================================================================ */
+
+:root {
+  /* 👇 Высота вашего header и footer сайта + желаемый зазор.
+     Подставьте реальные значения (в px или rem). Если header sticky —
+     сюда идёт его высота; если он нефиксированный — 0. */
+  --app-header-offset: 76px;   /* высота header + 16px зазор */
+  --app-footer-offset: 60px;   /* высота footer + 16px зазор */
+  --app-modal-side-gap: 24px;  /* отступы слева/справа */
+
+  --modal-overlay-bg: rgba(15, 23, 42, 0.55);
+  --modal-bg: #ffffff;
+  --modal-border: #e5e7eb;
+  --modal-radius: 18px;
+  --modal-shadow: 0 24px 60px -12px rgba(15, 23, 42, 0.28),
+                  0 8px 20px -8px rgba(15, 23, 42, 0.15);
+  --modal-header-bg: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
+  --modal-footer-bg: #fafbfc;
+  --modal-title-color: #0f172a;
+  --modal-muted: #6b7280;
+  --modal-scroll-thumb: #cbd5e1;
+  --modal-scroll-thumb-hover: #94a3b8;
+}
+
+/* ---------- Overlay ---------- */
+.app-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--modal-overlay-bg);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* 👇 Резервируем место под header и footer */
+  padding-top: var(--app-header-offset);
+  padding-bottom: var(--app-footer-offset);
+  padding-left: var(--app-modal-side-gap);
+  padding-right: var(--app-modal-side-gap);
+
+  z-index: 1080;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.app-modal-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ---------- Box ---------- */
+.app-modal-box {
+  background: var(--modal-bg);
+  border: 1px solid var(--modal-border);
+  border-radius: var(--modal-radius);
+  box-shadow: var(--modal-shadow);
+  width: 100%;
+  max-width: 720px;
+
+  /* 👇 Никогда не выше доступной области между header и footer */
+  max-height: calc(
+    100vh
+    - var(--app-header-offset)
+    - var(--app-footer-offset)
+  );
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateY(12px) scale(0.98);
+  transition: transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+.app-modal-overlay.open .app-modal-box {
+  transform: translateY(0) scale(1);
+}
+
+.app-modal-box-sm {
+  max-width: 460px;
+}
+
+/* ---------- Header ---------- */
+.app-modal-header {
+  flex: 0 0 auto;
+  padding: 20px 24px 16px;
+  background: var(--modal-header-bg);
+  border-bottom: 1px solid var(--modal-border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.app-modal-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--modal-title-color);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.app-modal-subtitle {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  color: var(--modal-muted);
+}
+
+.app-modal-close {
+  margin-left: auto;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--modal-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.app-modal-close:hover {
+  background: #f1f5f9;
+  border-color: var(--modal-border);
+  color: #0f172a;
+}
+
+/* ---------- Body (скроллящаяся часть) ---------- */
+.app-modal-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 22px 24px;
+  min-height: 0; /* критично для flex-скролла */
+  scrollbar-width: thin;
+  scrollbar-color: var(--modal-scroll-thumb) transparent;
+}
+
+.app-modal-body::-webkit-scrollbar {
+  width: 10px;
+}
+.app-modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+.app-modal-body::-webkit-scrollbar-thumb {
+  background: var(--modal-scroll-thumb);
+  border-radius: 10px;
+  border: 2px solid var(--modal-bg);
+  background-clip: padding-box;
+}
+.app-modal-body::-webkit-scrollbar-thumb:hover {
+  background: var(--modal-scroll-thumb-hover);
+  background-clip: padding-box;
+}
+
+/* ---------- Footer ---------- */
+.app-modal-footer {
+  flex: 0 0 auto;
+  padding: 16px 24px;
+  background: var(--modal-footer-bg);
+  border-top: 1px solid var(--modal-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* ---------- Buttons ---------- */
+.app-modal-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  white-space: nowrap;
+}
+
+.app-modal-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.app-modal-btn-secondary {
+  background: #ffffff;
+  border-color: var(--modal-border);
+  color: #374151;
+}
+.app-modal-btn-secondary:hover:not(:disabled) {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.app-modal-btn-primary {
+  background: #0B6E4F;
+  border-color: #0B6E4F;
+  color: #ffffff;
+  box-shadow: 0 6px 14px -6px rgba(11, 110, 79, 0.55);
+}
+.app-modal-btn-primary:hover:not(:disabled) {
+  background: #095a40;
+  border-color: #095a40;
+}
+
+.app-modal-btn-danger {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: #ffffff;
+  box-shadow: 0 6px 14px -6px rgba(220, 38, 38, 0.5);
+}
+.app-modal-btn-danger:hover:not(:disabled) {
+  background: #b91c1c;
+  border-color: #b91c1c;
+}
+
+/* ---------- Icon (для модалки удаления) ---------- */
+.app-modal-icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+}
+
+.app-modal-icon-danger {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.app-modal-box-sm .app-modal-header {
+  flex-direction: column;
+  text-align: center;
+  padding-top: 28px;
+}
+.app-modal-box-sm .app-modal-title {
+  margin-top: 12px;
+}
+.app-modal-box-sm .app-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  margin-left: 0;
+}
+.app-modal-box-sm .app-modal-body {
+  text-align: center;
+}
+
+/* ================================================================
+   TOASTS
+   ================================================================ */
+.toast-container {
+  position: fixed;
+  top: calc(var(--app-header-offset) + 8px);
+  right: 20px;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.app-toast {
+  pointer-events: auto;
+  min-width: 260px;
+  max-width: 380px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid var(--modal-border);
+  box-shadow: 0 12px 30px -10px rgba(15, 23, 42, 0.25);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+  color: #0f172a;
+  opacity: 0;
+  transform: translateX(20px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.app-toast.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.app-toast i {
+  font-size: 1.15rem;
+}
+
+.app-toast-success { border-left: 4px solid #10b981; }
+.app-toast-success i { color: #10b981; }
+
+.app-toast-error { border-left: 4px solid #ef4444; }
+.app-toast-error i { color: #ef4444; }
+
+.app-toast-info { border-left: 4px solid #3b82f6; }
+.app-toast-info i { color: #3b82f6; }
+
+/* ================================================================
+   АДАПТИВ
+   ================================================================ */
+@media (max-width: 768px) {
+  :root {
+    /* На мобилке хедер/футер часто меньше — уменьшаем отступы */
+    --app-header-offset: 64px;
+    --app-footer-offset: 24px;
+    --app-modal-side-gap: 12px;
+  }
+
+  .app-modal-overlay {
+    align-items: flex-end;
+  }
+
+  .app-modal-box {
+    border-radius: 16px 16px 0 0;
+    transform: translateY(100%);
+    max-height: calc(
+      100vh
+      - var(--app-header-offset)
+      - var(--app-footer-offset)
+    );
+  }
+
+  .app-modal-overlay.open .app-modal-box {
+    transform: translateY(0);
+  }
+
+  .app-modal-header,
+  .app-modal-body,
+  .app-modal-footer {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .app-modal-footer {
+    flex-direction: column-reverse;
+  }
+
+  .app-modal-btn {
+    width: 100%;
+  }
+}
+
+/* Прокрутка body при открытой модалке (включайте, если не блокируете JS-ом) */
+body.app-modal-open {
+  overflow: hidden;
+}

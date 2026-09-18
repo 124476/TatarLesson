@@ -4,6 +4,7 @@
 {% block extra_css %}
 {{ block.super }}
 <link rel="stylesheet" href="{% static 'css/dashboard/dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'css/app-modal.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -44,14 +45,7 @@
            class="dashboard-nav-link {% if request.resolver_match.url_name == 'lesson_builder' %}active{% endif %}">
           <i class="bi bi-plus-square"></i>
           <span class="link-text">Создать урок</span>
-          <span class="tooltip">Создать урок</span>
-        </a>
-
-        <a href="{% url 'dashboard:competitions' %}"
-           class="dashboard-nav-link {% if request.resolver_match.url_name == 'competitions' %}active{% endif %}">
-          <i class="bi bi-trophy"></i>
-          <span class="link-text">Соревнования</span>
-          <span class="tooltip">Соревнования</span>
+          <span class="tooltip">Создать урок и прикрепить материал</span>
         </a>
 
         <a href="{% url 'dashboard:words' %}"
@@ -60,6 +54,15 @@
           <span class="link-text">Словарь</span>
           <span class="tooltip">Словарь</span>
         </a>
+
+        {% if user.is_staff %}
+          <a href="{% url 'competitions:admin_list' %}"
+             class="dashboard-nav-link {% if 'competitions' in request.resolver_match.namespace and request.resolver_match.url_name == 'admin_list' %}active{% endif %}">
+            <i class="bi bi-trophy"></i>
+            <span class="link-text">Соревнования</span>
+            <span class="tooltip">Управление соревнованиями</span>
+          </a>
+        {% endif %}
       </nav>
     </div>
   </aside>

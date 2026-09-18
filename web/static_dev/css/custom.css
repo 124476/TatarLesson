@@ -158,3 +158,250 @@ body.drawer-open {
 [data-theme="dark"] .avatar-placeholder {
   background: #333;
 }
+
+/* ==================== Универсальная модалка ==================== */
+.app-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.app-modal-overlay.open {
+  display: flex;
+  animation: appModalFadeIn 0.2s ease;
+}
+
+@keyframes appModalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.app-modal-box {
+  background: #ffffff;
+  color: #111111;
+  border-radius: 20px;
+  max-width: 480px;
+  width: 100%;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: appModalSlideIn 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@keyframes appModalSlideIn {
+  from { transform: translateY(20px) scale(0.98); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.app-modal-box-sm {
+  max-width: 420px;
+}
+
+[data-theme="dark"] .app-modal-box {
+  background: #24242a;
+  color: #e8e8e8;
+}
+
+/* ===== Заголовок ===== */
+.app-modal-header {
+  padding: 28px 24px 12px;
+  text-align: center;
+}
+
+.app-modal-icon {
+  width: 64px;
+  height: 64px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  font-size: 28px;
+  margin-bottom: 16px;
+}
+
+.app-modal-icon-danger {
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+}
+
+.app-modal-icon-warning {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.app-modal-icon-success {
+  background: rgba(22, 163, 74, 0.1);
+  color: #16a34a;
+}
+
+.app-modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+
+.app-modal-subtitle {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+[data-theme="dark"] .app-modal-subtitle {
+  color: #9ca3af;
+}
+
+/* ===== Тело ===== */
+.app-modal-body {
+  padding: 8px 24px 20px;
+}
+
+/* ===== Футер ===== */
+.app-modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+[data-theme="dark"] .app-modal-footer {
+  border-top-color: #2e2e34;
+}
+
+.app-modal-btn {
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+}
+
+.app-modal-btn-secondary {
+  background: transparent;
+  border: 1px solid #e9ecef;
+  color: #666;
+}
+
+.app-modal-btn-secondary:hover {
+  border-color: #0B6E4F;
+  color: #0B6E4F;
+}
+
+[data-theme="dark"] .app-modal-btn-secondary {
+  border-color: #2e2e34;
+  color: #aaa;
+}
+
+.app-modal-btn-danger {
+  background: #dc2626;
+  color: #fff;
+}
+
+.app-modal-btn-danger:hover {
+  background: #b91c1c;
+}
+
+.app-modal-btn-danger:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.app-modal-btn-primary {
+  background: #0B6E4F;
+  color: #fff;
+}
+
+.app-modal-btn-primary:hover {
+  background: #14A06E;
+}
+
+/* ==================== Тосты ==================== */
+.toast-container {
+  position: fixed;
+  top: 90px;
+  right: 24px;
+  z-index: 11000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.app-toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  transform: translateX(30px);
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: auto;
+  min-width: 240px;
+  max-width: 400px;
+}
+
+.app-toast.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.app-toast i {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.app-toast-success {
+  background: #ecfdf5;
+  color: #065f46;
+  border-left: 4px solid #16a34a;
+}
+.app-toast-success i { color: #16a34a; }
+
+.app-toast-error {
+  background: #fef2f2;
+  color: #991b1b;
+  border-left: 4px solid #dc2626;
+}
+.app-toast-error i { color: #dc2626; }
+
+.app-toast-info {
+  background: #eff6ff;
+  color: #1e40af;
+  border-left: 4px solid #3b82f6;
+}
+.app-toast-info i { color: #3b82f6; }
+
+[data-theme="dark"] .app-toast-success {
+  background: #064e3b;
+  color: #d1fae5;
+}
+[data-theme="dark"] .app-toast-error {
+  background: #7f1d1d;
+  color: #fee2e2;
+}
+[data-theme="dark"] .app-toast-info {
+  background: #1e3a8a;
+  color: #dbeafe;
+}
+
+@media (max-width: 520px) {
+  .toast-container {
+    top: auto;
+    bottom: 20px;
+    left: 16px;
+    right: 16px;
+  }
+  .app-toast { max-width: none; width: 100%; }
+}

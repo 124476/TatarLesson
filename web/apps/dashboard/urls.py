@@ -14,5 +14,4 @@ urlpatterns = [
     path("words/add/", views.AddWordView.as_view(), name="word_add"),
     path("words/<int:pk>/update/", views.UpdateWordView.as_view(), name="word_update"),
     path("words/<int:pk>/delete/", views.DeleteWordView.as_view(), name="word_delete"),
-    path("competitions/", views.CompetitionsView.as_view(), name="competitions"),
 ]

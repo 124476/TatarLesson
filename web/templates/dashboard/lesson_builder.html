@@ -15,29 +15,16 @@
 
   <!-- ==================== НАСТРОЙКИ УРОКА ==================== -->
   <div style="background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:16px;padding:24px;margin-bottom:24px;">
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;">
-      <div>
-        <label style="display:block;font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">Название урока</label>
-        <input type="text" id="lessonTitle" value="{{ lesson.title|default:'' }}" placeholder="Например: Семья"
-               style="width:100%;padding:11px 14px;border:1px solid var(--border-color);border-radius:10px;background:var(--bg-page);color:var(--text-primary);outline:none;">
-      </div>
-
-      <div>
-        <label style="display:block;font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">Лимит времени (мин)</label>
-        <input type="number" id="lessonTime" value="{{ lesson.time_limit|default:15 }}" min="1" max="120"
-               style="width:100%;padding:11px 14px;border:1px solid var(--border-color);border-radius:10px;background:var(--bg-page);color:var(--text-primary);outline:none;">
-      </div>
+    <div>
+      <label style="display:block;font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">Название урока</label>
+      <input type="text" id="lessonTitle" value="{{ lesson.title|default:'' }}" placeholder="Например: Семья"
+             style="width:100%;padding:11px 14px;border:1px solid var(--border-color);border-radius:10px;background:var(--bg-page);color:var(--text-primary);outline:none;">
     </div>
 
     <div style="display:flex;gap:24px;flex-wrap:wrap;margin-top:20px;padding-top:20px;border-top:1px solid var(--border-color);">
       <label style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text-secondary);cursor:pointer;">
         <input type="checkbox" id="lessonPublic" {% if lesson.is_public %}checked{% endif %} style="width:18px;height:18px;accent-color:#0B6E4F;">
         Публичный (доступен всем)
-      </label>
-
-      <label style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text-secondary);cursor:pointer;">
-        <input type="checkbox" id="lessonCompetition" {% if lesson.is_competition %}checked{% endif %} style="width:18px;height:18px;accent-color:#0B6E4F;">
-        Отметить как соревнование
       </label>
 
       <label style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text-secondary);cursor:pointer;">
@@ -132,12 +119,11 @@
 
     <div class="modal-body">
 
-      <!-- ====== ДЛЯ ОБЫЧНЫХ БЛОКОВ (2 КОЛОНКИ) ====== -->
+      <!-- ====== ДЛЯ ОБЫЧНЫХ БЛОКОВ ====== -->
       <div id="normalFields">
 
         <div class="block-form-grid">
 
-          <!-- Колонка 1 -->
           <div class="block-form-col">
             <div class="block-form-hint">
               <label><i class="bi bi-book"></i> Выбрать слово из словаря</label>
@@ -171,7 +157,6 @@
             </div>
           </div>
 
-          <!-- Колонка 2 -->
           <div class="block-form-col">
             <div class="block-form-field">
               <label>Правильный ответ *</label>
@@ -242,12 +227,12 @@
 {% block extra_js %}
 <script>
 const BLOCK_TYPES = {
-  audio:     { name: '🎧 Аудирование',  icon: 'headphones',       hasPairs: false },
-  translate: { name: '📖 Перевод',      icon: 'translate',        hasPairs: false },
-  build:     { name: '🧩 Собери слово', icon: 'puzzle',           hasPairs: false },
-  pairs:     { name: '🔗 Найди пару',   icon: 'link-45deg',       hasPairs: true },
-  quick:     { name: '⏱️ Быстрый раунд',icon: 'stopwatch',        hasPairs: false },
-  gap:       { name: '📝 Вставь пропуск',icon: 'input-cursor-text',hasPairs: false },
+  audio:     { name: '🎧 Аудирование',   icon: 'headphones',         hasPairs: false },
+  translate: { name: '📖 Перевод',       icon: 'translate',          hasPairs: false },
+  build:     { name: '🧩 Собери слово',  icon: 'puzzle',             hasPairs: false },
+  pairs:     { name: '🔗 Найди пару',    icon: 'link-45deg',         hasPairs: true },
+  quick:     { name: '⏱️ Быстрый раунд', icon: 'stopwatch',          hasPairs: false },
+  gap:       { name: '📝 Вставь пропуск', icon: 'input-cursor-text', hasPairs: false },
 };
 
 let currentBlockType = null;
@@ -257,7 +242,6 @@ document.querySelectorAll('.block-chip').forEach(chip => {
   chip.addEventListener('click', () => openBlockModal(chip.dataset.type));
 });
 
-// =================== ОТКРЫТИЕ МОДАЛКИ ===================
 function openBlockModal(type) {
   currentBlockType = type;
   const info = BLOCK_TYPES[type];
@@ -268,13 +252,11 @@ function openBlockModal(type) {
   document.getElementById('modalPoints').value = 10;
   document.getElementById('pairsList').innerHTML = '';
 
-  // Сброс выпадающих списков
   const dictSelect = document.getElementById('dictionarySelect');
   if (dictSelect) dictSelect.value = '';
   const dictPairsSelect = document.getElementById('dictionaryPairsSelect');
   if (dictPairsSelect) dictPairsSelect.value = '';
 
-  // Показать/скрыть нужные поля
   document.getElementById('normalFields').style.display = info.hasPairs ? 'none' : 'block';
   document.getElementById('pairsField').style.display = info.hasPairs ? 'block' : 'none';
 
@@ -291,7 +273,6 @@ function closeBlockModal() {
   currentBlockType = null;
 }
 
-// =================== АВТОЗАПОЛНЕНИЕ ИЗ СЛОВАРЯ ===================
 document.getElementById('dictionarySelect')?.addEventListener('change', function () {
   if (!this.value) return;
 
@@ -301,11 +282,9 @@ document.getElementById('dictionarySelect')?.addEventListener('change', function
   const type = currentBlockType;
 
   if (type === 'build') {
-    // Показать перевод, собрать татарское
     document.getElementById('modalWord').value = russian;
     document.getElementById('modalCorrect').value = tatar;
   } else {
-    // audio, translate, quick, gap — показать татарское, ответ русский
     document.getElementById('modalWord').value = tatar;
     document.getElementById('modalCorrect').value = russian;
   }
@@ -313,7 +292,6 @@ document.getElementById('dictionarySelect')?.addEventListener('change', function
   this.value = '';
 });
 
-// =================== ПАРЫ ===================
 function addPairRow(tt = '', ru = '') {
   const list = document.getElementById('pairsList');
   const row = document.createElement('div');
@@ -343,7 +321,6 @@ function addPairFromDictionary() {
   const tatar = opt.dataset.tatar || '';
   const russian = opt.dataset.russian || '';
 
-  // Если в списке только пустые строки — очищаем и добавляем
   const existing = document.querySelectorAll('#pairsList > div');
   if (existing.length && [...existing].every(r =>
     !r.querySelector('.pair-tt').value && !r.querySelector('.pair-ru').value
@@ -355,7 +332,6 @@ function addPairFromDictionary() {
   select.value = '';
 }
 
-// =================== ПРИМЕНЕНИЕ КОНФИГА БЛОКА ===================
 function applyBlockConfig() {
   if (!currentBlockType) return;
   const info = BLOCK_TYPES[currentBlockType];
@@ -442,7 +418,6 @@ function applyBlockConfig() {
   closeBlockModal();
 }
 
-// =================== УДАЛЕНИЕ БЛОКА ===================
 document.addEventListener('click', e => {
   if (e.target.closest('.btn-remove')) {
     e.target.closest('.block-item').remove();
@@ -455,7 +430,6 @@ document.addEventListener('click', e => {
   }
 });
 
-// =================== СОХРАНЕНИЕ УРОКА ===================
 function saveLesson() {
   const app = document.getElementById('builderApp');
   const lessonId = app.dataset.lessonId || null;
@@ -525,9 +499,7 @@ function saveLesson() {
     body: JSON.stringify({
       lesson_id: lessonId,
       title: title,
-      time_limit: parseInt(document.getElementById('lessonTime').value) || 15,
       is_public: document.getElementById('lessonPublic').checked,
-      is_competition: document.getElementById('lessonCompetition').checked,
       allow_retry: document.getElementById('lessonRetry').checked,
       show_answers_after: document.getElementById('lessonShowAnswers').checked,
       blocks: blocks,
@@ -550,7 +522,6 @@ function saveLesson() {
   });
 }
 
-// =================== УТИЛИТЫ ===================
 function escapeAttr(text) {
   return String(text ?? '')
     .replace(/&/g, '&amp;')

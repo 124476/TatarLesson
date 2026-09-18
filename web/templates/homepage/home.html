@@ -55,6 +55,43 @@
     </div>
   </section>
 
+  <!-- ==================== СЛУЧАЙНОЕ СЛОВО ==================== -->
+  {% if random_word %}
+  <section class="word-of-day-section">
+    <div class="section-label">🎲 Попробуй себя</div>
+
+    <div class="word-of-day-card" id="randomWordCard"
+         data-word="{{ random_word.tatar }}"
+         data-translation="{{ random_word.russian }}">
+      <div class="word-of-day-main">
+        <div class="word-of-day-tatar">{{ random_word.tatar }}</div>
+        <div class="word-of-day-russian">{{ random_word.russian }}</div>
+        {% if random_word.transcription %}
+          <div class="word-of-day-transcription">[{{ random_word.transcription }}]</div>
+        {% endif %}
+        {% if random_word.example_tt %}
+          <div class="word-of-day-example">
+            <p class="example-tt">{{ random_word.example_tt }}</p>
+            <p class="example-ru">{{ random_word.example_ru }}</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="word-of-day-actions">
+        <button type="button" class="wod-btn"
+                onclick="playWord('{{ random_word.tatar|escapejs }}')">
+          <i class="bi bi-volume-up-fill"></i> Послушать
+        </button>
+        <button type="button" class="wod-btn" onclick="startRecording()">
+          <i class="bi bi-mic-fill"></i> Повторить
+        </button>
+      </div>
+
+      <div id="recordResult" class="record-result"></div>
+    </div>
+  </section>
+  {% endif %}
+
   <!-- ==================== ВОЗМОЖНОСТИ ==================== -->
   <section class="features-section">
     <div class="section-label">Возможности</div>
@@ -75,7 +112,7 @@
       <div class="feature-card">
         <div class="feature-icon">🏆</div>
         <h3>Соревнования</h3>
-        <p>Создавай публичные уроки-турниры — ученики соревнуются и получают баллы.</p>
+        <p>Публичные турниры по задачам — соревнуйся с другими и получай баллы.</p>
       </div>
 
       <div class="feature-card">
@@ -108,10 +145,10 @@
       </div>
 
       <div class="col-md-4">
-        <a href="{% url 'dashboard:competitions' %}" class="quick-card">
+        <a href="{% url 'competitions:list' %}" class="quick-card">
           <div class="quick-icon"><i class="bi bi-trophy"></i></div>
           <h3>Соревнования</h3>
-          <p>Публичные уроки и турниры</p>
+          <p>Публичные турниры по задачам</p>
         </a>
       </div>
     </div>
@@ -153,16 +190,15 @@ function getCookie(name) {
   return '';
 }
 
-function openJoinModal(e) {
+// =================== ВХОД ПО КОДУ ===================
+function openJoinModal(e, prefilledCode = '') {
   if (e) e.preventDefault();
 
-  {% if user.is_authenticated %}
-    const modal = document.getElementById('joinModal');
-    modal.classList.add('open');
-    setTimeout(() => document.getElementById('lessonCodeInput').focus(), 100);
-  {% else %}
-    window.location.href = '{% url "accounts:auth" %}';
-  {% endif %}
+  const modal = document.getElementById('joinModal');
+  modal.classList.add('open');
+  const input = document.getElementById('lessonCodeInput');
+  if (prefilledCode) input.value = prefilledCode;
+  setTimeout(() => input.focus(), 100);
 }
 
 function closeJoinModal() {
@@ -184,6 +220,7 @@ async function joinLesson() {
   }
 
   try {
+    // Всегда спрашиваем сервер: публичный урок пустит и анонима
     const res = await fetch('/lessons/join/', {
       method: 'POST',
       headers: {
@@ -196,16 +233,32 @@ async function joinLesson() {
     const data = await res.json();
 
     if (data.status === 'ok') {
+      // Публичный урок или свой — сразу идём играть
       window.location.href = data.url;
-    } else {
-      errorBox.textContent = data.error || 'Урок не найден';
+      return;
     }
+
+    if (res.status === 403) {
+      // Закрытый урок — просим войти
+      {% if not user.is_authenticated %}
+        sessionStorage.setItem('pendingJoinCode', code);
+        window.location.href = '{% url "accounts:auth" %}?next=' + encodeURIComponent(
+          window.location.pathname + '?join=' + code
+        );
+        return;
+      {% else %}
+        errorBox.textContent = data.error || 'Доступ запрещён';
+        return;
+      {% endif %}
+    }
+
+    errorBox.textContent = data.error || 'Урок не найден';
+
   } catch (e) {
     errorBox.textContent = 'Ошибка сети. Попробуйте позже.';
   }
 }
 
-// Закрытие по Escape и клику по фону
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeJoinModal();
 });
@@ -213,5 +266,85 @@ document.addEventListener('keydown', e => {
 document.getElementById('joinModal')?.addEventListener('click', function (e) {
   if (e.target === this) closeJoinModal();
 });
+
+// 👇 Если вернулись после логина с ?join=CODE — открываем модалку сразу
+document.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const joinCode = urlParams.get('join');
+
+  {% if user.is_authenticated %}
+    if (joinCode) {
+      openJoinModal(null, joinCode);
+      // Убираем ?join из адресной строки
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  {% else %}
+    const stored = sessionStorage.getItem('pendingJoinCode');
+    if (stored && !joinCode) {
+      openJoinModal(null, stored);
+    }
+  {% endif %}
+});
+
+// Очищаем pendingJoinCode после успешного входа
+{% if user.is_authenticated %}
+if (sessionStorage.getItem('pendingJoinCode')) {
+  sessionStorage.removeItem('pendingJoinCode');
+}
+{% endif %}
+
+// =================== СЛУЧАЙНОЕ СЛОВО ===================
+function playWord(text) {
+  const url = '/lessons/api/synthesize/?text=' + encodeURIComponent(text) + '&speaker=alsu';
+  new Audio(url).play().catch(() => {
+    console.warn('Аудио недоступно');
+  });
+}
+
+let mediaRecorder, audioChunks = [];
+
+async function startRecording() {
+  const result = document.getElementById('recordResult');
+  if (!result) return;
+  result.innerHTML = '<i class="bi bi-mic-fill" style="color:#dc2626;"></i> Говорите...';
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
+
+    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+    mediaRecorder.onstop = async () => {
+      const blob = new Blob(audioChunks, { type: 'audio/webm' });
+      const form = new FormData();
+      form.append('audio', blob, 'voice.webm');
+
+      try {
+        const res = await fetch('/lessons/api/recognize/', {
+          method: 'POST',
+          headers: { 'X-CSRFToken': getCookie('csrftoken') },
+          body: form,
+        });
+        const data = await res.json();
+
+        if (data.text) {
+          result.innerHTML = `<i class="bi bi-check-circle-fill" style="color:#16a34a;"></i> Распознано: <strong>${data.text}</strong>`;
+        } else {
+          result.innerHTML = '<i class="bi bi-x-circle" style="color:#dc2626;"></i> Не удалось распознать';
+        }
+      } catch (e) {
+        result.innerHTML = '<i class="bi bi-x-circle" style="color:#dc2626;"></i> Ошибка распознавания';
+      }
+    };
+
+    mediaRecorder.start();
+    setTimeout(() => {
+      mediaRecorder.stop();
+      stream.getTracks().forEach(t => t.stop());
+    }, 3000);
+  } catch (e) {
+    result.innerHTML = '<i class="bi bi-x-circle" style="color:#dc2626;"></i> Нет доступа к микрофону';
+  }
+}
 </script>
 {% endblock %}
