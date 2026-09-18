@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "apps.lessons.apps.LessonsConfig",
     "apps.words.apps.WordsConfig",
     "apps.gamification.apps.GamificationConfig",
+    "apps.generation.apps.GenerationConfig",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -302,3 +303,8 @@ DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@resend.dev")
 
 TATSOFT_BASE_URL = os.getenv("TATSOFT_BASE_URL", "")
 TATSOFT_TOKEN = os.getenv("TATSOFT_TOKEN", "")
+
+GIGACHAT_AUTH_KEY = os.getenv("GIGACHAT_AUTH_KEY", "")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+OPENROUTER_API_KEY =os.getenv("OPENROUTER_API_KEY", "")

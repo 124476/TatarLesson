@@ -87,11 +87,16 @@
   </div>
 
   <!-- ==================== ЗАДАЧИ ==================== -->
-  <div class="d-flex justify-content-between align-items-center mb-3">
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
     <h5 class="fw-bold mb-0">Задачи</h5>
-    <button type="button" class="btn btn-success" onclick="openTaskModal()">
-      <i class="bi bi-plus-lg"></i> Добавить задачу
-    </button>
+    <div class="d-flex gap-2">
+      <button type="button" class="btn btn-outline-success" onclick="openAIGenModal()">
+        <i class="bi bi-magic"></i> Сгенерировать с ИИ
+      </button>
+      <button type="button" class="btn btn-success" onclick="openTaskModal()">
+        <i class="bi bi-plus-lg"></i> Добавить задачу
+      </button>
+    </div>
   </div>
 
   <div id="tasksList" class="d-flex flex-column gap-3 mb-4"></div>
@@ -233,6 +238,113 @@
     <div class="app-modal-footer">
       <button type="button" class="app-modal-btn app-modal-btn-secondary"
               onclick="closeWordPicker()">Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== МОДАЛКА AI-ГЕНЕРАЦИИ ==================== -->
+<div class="app-modal-overlay" id="aiGenModal" style="z-index:1085;">
+  <div class="app-modal-box" style="max-width:720px;">
+    <div class="app-modal-header">
+      <h3 class="app-modal-title">✨ Генерация задач с помощью ИИ</h3>
+      <button type="button" class="app-modal-close" onclick="closeAIGenModal()" aria-label="Закрыть">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="app-modal-body">
+
+      <!-- ФОРМА -->
+      <div id="aiGenForm">
+        <div class="row g-3">
+          <div class="col-md-8">
+            <label class="form-label fw-semibold">Тема соревнования</label>
+            <input type="text" class="form-control" id="aiTheme"
+                   placeholder="Например: Семья, Еда, Животные, Природа">
+            <div class="form-text">
+              ИИ сгенерирует слова по этой теме и составит из них задачи
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Сколько задач</label>
+            <input type="number" class="form-control" id="aiCount" value="5" min="3" max="15">
+          </div>
+
+          <div class="col-12">
+            <label class="form-label fw-semibold">Типы задач</label>
+            <div class="d-flex flex-wrap gap-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="text" id="typeText" checked>
+                <label class="form-check-label" for="typeText">📝 Текстовый ответ</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="choice" id="typeChoice" checked>
+                <label class="form-check-label" for="typeChoice">🔘 Один вариант</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="build" id="typeBuild" checked>
+                <label class="form-check-label" for="typeBuild">🧩 Собери слово</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="pairs" id="typePairs">
+                <label class="form-check-label" for="typePairs">🔗 Найди пару</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="voice" id="typeVoice">
+                <label class="form-check-label" for="typeVoice">🎙️ Голосовой</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="aiUseDict" checked>
+              <label class="form-check-label" for="aiUseDict">
+                Использовать слова из моего словаря (если есть по теме)
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="alert alert-info mt-3 mb-0 small">
+          <i class="bi bi-info-circle"></i>
+          ИИ возьмёт реальные татарские слова и составит из них задачи.
+          Это займёт 10–30 секунд.
+        </div>
+      </div>
+
+      <!-- ЛОАДЕР -->
+      <div id="aiGenLoader" style="display:none;text-align:center;padding:40px 20px;">
+        <div class="spinner-border text-success" style="width:3rem;height:3rem;"></div>
+        <p class="mt-3 mb-0 text-muted">Генерируем задачи… Это может занять до 30 секунд</p>
+      </div>
+
+      <!-- РЕЗУЛЬТАТ -->
+      <div id="aiGenResult" style="display:none;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="mb-0">Сгенерировано задач: <span id="aiGenCount" class="text-success"></span></h6>
+          <button type="button" class="btn btn-sm btn-outline-secondary" onclick="backToAIGenForm()">
+            <i class="bi bi-arrow-left"></i> Изменить параметры
+          </button>
+        </div>
+        <div id="aiGenPreview" class="d-flex flex-column gap-2"></div>
+      </div>
+
+      <div id="aiGenError" class="text-danger mt-3" style="min-height:20px;"></div>
+    </div>
+
+    <div class="app-modal-footer">
+      <button type="button" class="app-modal-btn app-modal-btn-secondary"
+              onclick="closeAIGenModal()">Отмена</button>
+      <button type="button" class="app-modal-btn app-modal-btn-primary"
+              id="aiGenBtn" onclick="generateWithAI()">
+        <i class="bi bi-magic"></i> Сгенерировать
+      </button>
+      <button type="button" class="app-modal-btn app-modal-btn-primary"
+              id="aiGenAddBtn" onclick="addGeneratedTasks()" style="display:none;">
+        <i class="bi bi-check-lg"></i> Добавить все
+      </button>
     </div>
   </div>
 </div>
@@ -683,6 +795,147 @@ function applyPickedWord(word) {
   showToast(`Добавлено: ${word.tatar} — ${word.russian}`, 'success');
   closeWordPicker();
 }
+
+// ==================== AI-ГЕНЕРАЦИЯ ЗАДАЧ ====================
+let aiGeneratedTasks = [];
+
+function openAIGenModal() {
+  document.getElementById('aiTheme').value = '';
+  document.getElementById('aiCount').value = 5;
+  document.getElementById('typeText').checked = true;
+  document.getElementById('typeChoice').checked = true;
+  document.getElementById('typeBuild').checked = true;
+  document.getElementById('typePairs').checked = false;
+  document.getElementById('typeVoice').checked = false;
+  document.getElementById('aiUseDict').checked = true;
+  document.getElementById('aiGenError').textContent = '';
+  document.getElementById('aiGenForm').style.display = 'block';
+  document.getElementById('aiGenLoader').style.display = 'none';
+  document.getElementById('aiGenResult').style.display = 'none';
+  document.getElementById('aiGenBtn').style.display = 'inline-flex';
+  document.getElementById('aiGenAddBtn').style.display = 'none';
+  aiGeneratedTasks = [];
+  document.getElementById('aiGenModal').classList.add('open');
+}
+
+function closeAIGenModal() {
+  document.getElementById('aiGenModal').classList.remove('open');
+}
+
+function backToAIGenForm() {
+  document.getElementById('aiGenForm').style.display = 'block';
+  document.getElementById('aiGenResult').style.display = 'none';
+  document.getElementById('aiGenBtn').style.display = 'inline-flex';
+  document.getElementById('aiGenAddBtn').style.display = 'none';
+}
+
+async function generateWithAI() {
+  const theme = document.getElementById('aiTheme').value.trim();
+  if (!theme) {
+    showToast('Введите тему', 'error');
+    return;
+  }
+
+  const taskTypes = [];
+  document.querySelectorAll('#aiGenModal input[type="checkbox"][id^="type"]').forEach(cb => {
+    if (cb.checked) taskTypes.push(cb.value);
+  });
+  if (!taskTypes.length) {
+    showToast('Выберите хотя бы один тип задачи', 'error');
+    return;
+  }
+
+  const payload = {
+    theme: theme,
+    n_tasks: parseInt(document.getElementById('aiCount').value) || 5,
+    task_types: taskTypes,
+    use_dictionary: document.getElementById('aiUseDict').checked,
+  };
+
+  document.getElementById('aiGenForm').style.display = 'none';
+  document.getElementById('aiGenLoader').style.display = 'block';
+  document.getElementById('aiGenError').textContent = '';
+
+  try {
+    const res = await fetch('/generation/competition-tasks/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken'),
+      },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+
+    document.getElementById('aiGenLoader').style.display = 'none';
+
+    if (data.status !== 'ok') {
+      document.getElementById('aiGenError').textContent = data.error || 'Ошибка генерации';
+      document.getElementById('aiGenForm').style.display = 'block';
+      return;
+    }
+
+    aiGeneratedTasks = data.tasks || [];
+    renderAIGenPreview();
+  } catch (e) {
+    document.getElementById('aiGenLoader').style.display = 'none';
+    document.getElementById('aiGenForm').style.display = 'block';
+    document.getElementById('aiGenError').textContent = 'Ошибка сети: ' + e.message;
+  }
+}
+
+function renderAIGenPreview() {
+  document.getElementById('aiGenResult').style.display = 'block';
+  document.getElementById('aiGenBtn').style.display = 'none';
+  document.getElementById('aiGenAddBtn').style.display = 'inline-flex';
+  document.getElementById('aiGenCount').textContent = aiGeneratedTasks.length;
+
+  const preview = document.getElementById('aiGenPreview');
+  preview.innerHTML = aiGeneratedTasks.map((t, i) => {
+    const typeName = TASK_TYPE_NAMES[t.task_type] || t.task_type;
+    let extra = '';
+    if (t.task_type === 'pairs' && t.pairs.length) {
+      extra = t.pairs.slice(0, 3).map(p => `${p[0]} → ${p[1]}`).join(', ');
+    } else if ((t.task_type === 'choice' || t.task_type === 'multiple_choice') && t.options.length) {
+      extra = t.options.map(o => o.text + (o.is_correct ? ' ✓' : '')).join(', ');
+    } else if (t.task_type === 'build') {
+      extra = `Слово: ${t.build_word}, подсказка: ${t.build_hint}`;
+    } else if (t.task_type === 'voice') {
+      extra = `Произнести: ${t.voice_text || t.correct_answer}`;
+    } else {
+      extra = `Ответ: ${t.correct_answer}`;
+    }
+    return `
+      <div class="border rounded p-3 bg-light">
+        <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+          <div class="fw-semibold">${i + 1}. ${escapeHtml(t.title)}</div>
+          <span class="badge bg-success-subtle text-success small">${typeName}</span>
+        </div>
+        <div class="small text-muted mb-1">${escapeHtml(t.statement)}</div>
+        <div class="small font-monospace text-secondary">${escapeHtml(extra)}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function addGeneratedTasks() {
+  if (!aiGeneratedTasks.length) return;
+  tasks.push(...aiGeneratedTasks);
+  renderTasks();
+  closeAIGenModal();
+  showToast(`Добавлено задач: ${aiGeneratedTasks.length}`, 'success');
+}
+
+// Escape закрытие
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('aiGenModal').classList.contains('open')) {
+    closeAIGenModal();
+  }
+});
+
+document.getElementById('aiGenModal')?.addEventListener('click', function (e) {
+  if (e.target === this) closeAIGenModal();
+});
 
 // ==================== СОХРАНЕНИЕ СОРЕВНОВАНИЯ ====================
 async function saveCompetition() {

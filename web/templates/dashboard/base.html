@@ -63,6 +63,13 @@
             <span class="tooltip">Управление соревнованиями</span>
           </a>
         {% endif %}
+
+        <a href="{% url 'generation:chat' %}"
+           class="dashboard-nav-link {% if request.resolver_match.namespace == 'generation' and request.resolver_match.url_name == 'chat' %}active{% endif %}">
+          <i class="bi bi-robot"></i>
+          <span class="link-text">AI-помощник</span>
+          <span class="tooltip">AI-помощник по татарскому</span>
+        </a>
       </nav>
     </div>
   </aside>

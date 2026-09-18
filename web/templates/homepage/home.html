@@ -1,180 +1,241 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}TatarLesson — Изучай татарский играя{% endblock %}
+{% block title %}TatarLesson — Учи татарский играя{% endblock %}
 
 {% block extra_css %}
-{{ block.super }}
-<link rel="stylesheet" href="{% static 'css/homepage/home.css' %}">
+  {{ block.super }}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="{% static 'css/homepage/home.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="container home-page">
 
-  <!-- ==================== HERO ==================== -->
-  <section class="hero-section">
-    <div class="hero-content">
-      <div class="section-label">Изучай татарский играя</div>
+<div class="tl-root">
+  <div class="tl-container">
 
-      <h1 class="hero-title">
-        Tatar<span>Lesson</span>
+    <!-- ═══════════════ HERO ═══════════════ -->
+    <section class="tl-hero">
+      <span class="tl-watermark" aria-hidden="true">Ә</span>
+
+      <div class="tl-kicker">
+        <span class="tl-mono">TatarLesson</span>
+        <span class="tl-kicker-sep">/</span>
+        <span class="tl-kicker-dot"></span>
+        <span>Платформа для живого татарского языка</span>
+      </div>
+
+      <h1 class="tl-title">
+        Играй.<br>
+        Учись.<br>
+        Говори <em>по-татарски</em>.
       </h1>
 
-      <p class="hero-subtitle">
-        Интерактивные уроки из блоков, живая озвучка слов
-        и соревнования. Учись сам или веди класс —
-        всё в одном месте.
-      </p>
+      <div class="tl-hero-grid">
+        <p class="tl-lead">
+          Интерактивные уроки из блоков, живая озвучка TatSoft,
+          соревнования и AI-помощник — всё для тех, кто учит
+          и кто учит учить.
+        </p>
 
-      <div class="hero-buttons">
+        <div class="tl-hero-actions">
+          {% if user.is_authenticated %}
+            <a href="{% url 'dashboard:home' %}" class="tl-btn tl-btn-primary">
+              Открыть панель
+              <span class="tl-btn-arrow">→</span>
+            </a>
+            <a href="#" onclick="openJoinModal(event); return false;" class="tl-btn">
+              Войти по коду
+            </a>
+          {% else %}
+            <a href="{% url 'accounts:auth' %}" class="tl-btn tl-btn-primary">
+              Начать учиться
+              <span class="tl-btn-arrow">→</span>
+            </a>
+            <a href="{% url 'competitions:list' %}" class="tl-btn">
+              Соревнования
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════ СЛОВО ДНЯ ═══════════════ -->
+    {% if random_word %}
+    <section class="tl-word-section tl-reveal">
+      <div class="tl-word-card" id="randomWordCard">
+        <div class="tl-word-tag">
+          <span class="tl-mono">СЛОВО ДНЯ</span>
+        </div>
+
+        <div class="tl-word-body">
+          <div class="tl-word-tt">{{ random_word.tatar }}</div>
+          <div class="tl-word-ru">{{ random_word.russian }}</div>
+          {% if random_word.transcription %}
+            <div class="tl-word-tr">[{{ random_word.transcription }}]</div>
+          {% endif %}
+          {% if random_word.example_tt %}
+            <div class="tl-word-example">
+              <p class="tl-ex-tt">{{ random_word.example_tt }}</p>
+              <p class="tl-ex-ru">{{ random_word.example_ru }}</p>
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="tl-word-actions">
+          <button type="button" class="tl-word-btn"
+                  onclick="playWord('{{ random_word.tatar|escapejs }}')">
+            <i class="bi bi-volume-up-fill"></i>
+            Послушать
+          </button>
+          <button type="button" class="tl-word-btn tl-word-btn-record"
+                  onclick="startRecording()">
+            <i class="bi bi-mic-fill"></i>
+            Повторить
+          </button>
+        </div>
+
+        <div id="recordResult" class="tl-record-result"></div>
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- ═══════════════ 01 / ЧТО ВНУТРИ ═══════════════ -->
+    <section class="tl-section tl-reveal">
+      <div class="tl-section-head">
+        <span class="tl-section-num tl-mono">/ 01</span>
+        <h2>Что умеет TatarLesson</h2>
+      </div>
+
+      <div class="tl-features">
+        <div class="tl-feature">
+          <div class="tl-feature-icon">🔊</div>
+          <h3>Озвучка TatSoft</h3>
+          <p>Каждое татарское слово произносится живым голосом — слушай и повторяй.</p>
+        </div>
+        <div class="tl-feature">
+          <div class="tl-feature-icon">🧩</div>
+          <h3>6 типов заданий</h3>
+          <p>Аудирование, перевод, сборка слова, пары, быстрый раунд, вставь пропуск.</p>
+        </div>
+        <div class="tl-feature">
+          <div class="tl-feature-icon">🏆</div>
+          <h3>Соревнования</h3>
+          <p>Турниры с задачами, штрафом за попытки и лидербордом в реальном времени.</p>
+        </div>
+        <div class="tl-feature">
+          <div class="tl-feature-icon">✨</div>
+          <h3>AI-помощник</h3>
+          <p>Генерация слов и задач по теме. Чат, который знает только татарский.</p>
+        </div>
+        <div class="tl-feature">
+          <div class="tl-feature-icon">📖</div>
+          <h3>Общий словарь</h3>
+          <p>Единая база слов с переводом, транскрипцией и примерами использования.</p>
+        </div>
+        <div class="tl-feature">
+          <div class="tl-feature-icon">🎯</div>
+          <h3>Геймификация</h3>
+          <p>Баллы, стрики, достижения и таблица лидеров — учиться становится азартно.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════ 02 / КАК РАБОТАЕТ ═══════════════ -->
+    <section class="tl-section tl-reveal">
+      <div class="tl-section-head">
+        <span class="tl-section-num tl-mono">/ 02</span>
+        <h2>Как это работает</h2>
+      </div>
+
+      <div class="tl-steps">
+        <div class="tl-step">
+          <span class="tl-step-num tl-mono">01</span>
+          <h3>Учитель собирает урок</h3>
+          <p>Из блоков-заданий: аудирование, перевод, пары и другие. Пять минут — урок готов.</p>
+        </div>
+        <div class="tl-step">
+          <span class="tl-step-num tl-mono">02</span>
+          <h3>Ученик вводит код</h3>
+          <p>Шестизначный код — и урок открывается без регистрации. В классе или дома.</p>
+        </div>
+        <div class="tl-step">
+          <span class="tl-step-num tl-mono">03</span>
+          <h3>Результаты сразу</h3>
+          <p>Баллы начисляются автоматически, прогресс виден в лидерборде и статистике.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════ 03 / ТИПЫ ЗАДАНИЙ ═══════════════ -->
+    <section class="tl-section tl-reveal">
+      <div class="tl-section-head">
+        <span class="tl-section-num tl-mono">/ 03</span>
+        <h2>Типы заданий</h2>
+      </div>
+
+      <div class="tl-types">
+        <span class="tl-type">🎧 Аудирование</span>
+        <span class="tl-type">📖 Перевод</span>
+        <span class="tl-type">🧩 Собери слово</span>
+        <span class="tl-type">🔗 Найди пару</span>
+        <span class="tl-type">⏱️ Быстрый раунд</span>
+        <span class="tl-type">📝 Вставь пропуск</span>
+        <span class="tl-type">🎙️ Голосовой ответ</span>
+        <span class="tl-type">☑️ Выбор варианта</span>
+      </div>
+
+      <div class="tl-cta">
+        <p class="tl-cta-text">
+          Готовы попробовать? <em>Откройте панель</em> и создайте первый урок.
+        </p>
         {% if user.is_authenticated %}
-          <a href="{% url 'dashboard:home' %}" class="btn-primary">
-            <i class="bi bi-play-fill"></i> Открыть панель
-          </a>
-          <a href="#" onclick="openJoinModal(event); return false;" class="btn-ghost">
-            <i class="bi bi-box-arrow-in-right"></i> Войти по коду
+          <a href="{% url 'dashboard:lesson_builder' %}" class="tl-btn tl-btn-primary tl-btn-lg">
+            Создать урок
+            <span class="tl-btn-arrow">→</span>
           </a>
         {% else %}
-          <a href="{% url 'accounts:auth' %}" class="btn-primary">
-            <i class="bi bi-box-arrow-in-right"></i> Войти
-          </a>
-          <a href="{% url 'accounts:auth' %}" class="btn-ghost">
-            <i class="bi bi-person-plus"></i> Регистрация
+          <a href="{% url 'accounts:auth' %}" class="tl-btn tl-btn-primary tl-btn-lg">
+            Начать бесплатно
+            <span class="tl-btn-arrow">→</span>
           </a>
         {% endif %}
       </div>
-    </div>
+    </section>
 
-    <div class="hero-visual">
-      <div class="hero-card">
-        <div class="hero-card-line">📚 Уроки из блоков</div>
-        <div class="hero-card-line">🔊 Озвучка слов</div>
-        <div class="hero-card-line">🏆 Соревнования</div>
-        <div class="hero-card-line">📖 Общий словарь</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ==================== СЛУЧАЙНОЕ СЛОВО ==================== -->
-  {% if random_word %}
-  <section class="word-of-day-section">
-    <div class="section-label">🎲 Попробуй себя</div>
-
-    <div class="word-of-day-card" id="randomWordCard"
-         data-word="{{ random_word.tatar }}"
-         data-translation="{{ random_word.russian }}">
-      <div class="word-of-day-main">
-        <div class="word-of-day-tatar">{{ random_word.tatar }}</div>
-        <div class="word-of-day-russian">{{ random_word.russian }}</div>
-        {% if random_word.transcription %}
-          <div class="word-of-day-transcription">[{{ random_word.transcription }}]</div>
-        {% endif %}
-        {% if random_word.example_tt %}
-          <div class="word-of-day-example">
-            <p class="example-tt">{{ random_word.example_tt }}</p>
-            <p class="example-ru">{{ random_word.example_ru }}</p>
-          </div>
-        {% endif %}
-      </div>
-
-      <div class="word-of-day-actions">
-        <button type="button" class="wod-btn"
-                onclick="playWord('{{ random_word.tatar|escapejs }}')">
-          <i class="bi bi-volume-up-fill"></i> Послушать
-        </button>
-        <button type="button" class="wod-btn" onclick="startRecording()">
-          <i class="bi bi-mic-fill"></i> Повторить
-        </button>
-      </div>
-
-      <div id="recordResult" class="record-result"></div>
-    </div>
-  </section>
-  {% endif %}
-
-  <!-- ==================== ВОЗМОЖНОСТИ ==================== -->
-  <section class="features-section">
-    <div class="section-label">Возможности</div>
-
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon">📚</div>
-        <h3>Уроки из блоков</h3>
-        <p>Учитель собирает урок за минуту: аудирование, перевод, сборка слов, пары и викторина.</p>
-      </div>
-
-      <div class="feature-card">
-        <div class="feature-icon">🔊</div>
-        <h3>Озвучка слов</h3>
-        <p>Слушай татарские слова голосом — приложение произносит их правильно.</p>
-      </div>
-
-      <div class="feature-card">
-        <div class="feature-icon">🏆</div>
-        <h3>Соревнования</h3>
-        <p>Публичные турниры по задачам — соревнуйся с другими и получай баллы.</p>
-      </div>
-
-      <div class="feature-card">
-        <div class="feature-icon">📖</div>
-        <h3>Общий словарь</h3>
-        <p>Единая база татарских слов с переводом и примерами. Доступна всем ученикам.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ==================== БЫСТРЫЙ СТАРТ ==================== -->
-  <section class="quick-section">
-    <div class="section-label">Быстрый старт</div>
-
-    <div class="row g-3">
-      <div class="col-md-4">
-        <a href="{% url 'dashboard:lesson_builder' %}" class="quick-card">
-          <div class="quick-icon"><i class="bi bi-plus-circle"></i></div>
-          <h3>Создать урок</h3>
-          <p>Собери урок из блоков за минуту</p>
-        </a>
-      </div>
-
-      <div class="col-md-4">
-        <a href="#" onclick="openJoinModal(event); return false;" class="quick-card">
-          <div class="quick-icon"><i class="bi bi-mortarboard"></i></div>
-          <h3>Войти по коду</h3>
-          <p>Открой урок по коду учителя</p>
-        </a>
-      </div>
-
-      <div class="col-md-4">
-        <a href="{% url 'competitions:list' %}" class="quick-card">
-          <div class="quick-icon"><i class="bi bi-trophy"></i></div>
-          <h3>Соревнования</h3>
-          <p>Публичные турниры по задачам</p>
-        </a>
-      </div>
-    </div>
-  </section>
-
+  </div>
 </div>
 
-<!-- ==================== МОДАЛКА: ВВОД КОДА ==================== -->
-<div class="modal-overlay" id="joinModal">
-  <div class="modal-box">
-    <h3>Введите код урока</h3>
+<!-- ═══════════════ МОДАЛКА: ВВОД КОДА ═══════════════ -->
+<div class="tl-modal-overlay" id="joinModal">
+  <div class="tl-modal-box">
+    <button type="button" class="tl-modal-close" onclick="closeJoinModal()" aria-label="Закрыть">
+      <i class="bi bi-x-lg"></i>
+    </button>
+
+    <div class="tl-modal-tag tl-mono">6-значный код</div>
+    <h3 class="tl-modal-title">Введите код урока</h3>
+    <p class="tl-modal-sub">Код можно получить у учителя</p>
 
     <input type="text"
            id="lessonCodeInput"
            maxlength="6"
            placeholder="000000"
-           class="code-input"
+           class="tl-code-input tl-mono"
            inputmode="numeric"
            autocomplete="off">
 
-    <div class="modal-actions">
-      <button type="button" onclick="closeJoinModal()" class="btn-ghost">Отмена</button>
-      <button type="button" onclick="joinLesson()" class="btn-primary">Войти</button>
+    <div class="tl-modal-actions">
+      <button type="button" onclick="closeJoinModal()" class="tl-btn tl-btn-ghost">Отмена</button>
+      <button type="button" onclick="joinLesson()" class="tl-btn tl-btn-primary">
+        Войти
+        <span class="tl-btn-arrow">→</span>
+      </button>
     </div>
 
-    <p id="joinError" class="error-text"></p>
+    <p id="joinError" class="tl-error-text"></p>
   </div>
 </div>
 
@@ -182,6 +243,24 @@
 
 {% block extra_js %}
 <script>
+// ════════════ FADE-IN ПРИ СКРОЛЛЕ ════════════
+(function () {
+  const items = document.querySelectorAll('.tl-reveal');
+  if (!items.length || !('IntersectionObserver' in window)) return;
+
+  const io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('tl-reveal--visible');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+  items.forEach(function (el) { io.observe(el); });
+})();
+
+// ════════════ COOKIE ════════════
 function getCookie(name) {
   for (let c of document.cookie.split(';')) {
     c = c.trim();
@@ -190,10 +269,9 @@ function getCookie(name) {
   return '';
 }
 
-// =================== ВХОД ПО КОДУ ===================
+// ════════════ ВХОД ПО КОДУ ════════════
 function openJoinModal(e, prefilledCode = '') {
   if (e) e.preventDefault();
-
   const modal = document.getElementById('joinModal');
   modal.classList.add('open');
   const input = document.getElementById('lessonCodeInput');
@@ -220,7 +298,6 @@ async function joinLesson() {
   }
 
   try {
-    // Всегда спрашиваем сервер: публичный урок пустит и анонима
     const res = await fetch('/lessons/join/', {
       method: 'POST',
       headers: {
@@ -233,13 +310,11 @@ async function joinLesson() {
     const data = await res.json();
 
     if (data.status === 'ok') {
-      // Публичный урок или свой — сразу идём играть
       window.location.href = data.url;
       return;
     }
 
     if (res.status === 403) {
-      // Закрытый урок — просим войти
       {% if not user.is_authenticated %}
         sessionStorage.setItem('pendingJoinCode', code);
         window.location.href = '{% url "accounts:auth" %}?next=' + encodeURIComponent(
@@ -267,7 +342,7 @@ document.getElementById('joinModal')?.addEventListener('click', function (e) {
   if (e.target === this) closeJoinModal();
 });
 
-// 👇 Если вернулись после логина с ?join=CODE — открываем модалку сразу
+// Восстановление после логина
 document.addEventListener('DOMContentLoaded', () => {
   const urlParams = new URLSearchParams(window.location.search);
   const joinCode = urlParams.get('join');
@@ -275,7 +350,6 @@ document.addEventListener('DOMContentLoaded', () => {
   {% if user.is_authenticated %}
     if (joinCode) {
       openJoinModal(null, joinCode);
-      // Убираем ?join из адресной строки
       window.history.replaceState({}, '', window.location.pathname);
     }
   {% else %}
@@ -286,14 +360,13 @@ document.addEventListener('DOMContentLoaded', () => {
   {% endif %}
 });
 
-// Очищаем pendingJoinCode после успешного входа
 {% if user.is_authenticated %}
 if (sessionStorage.getItem('pendingJoinCode')) {
   sessionStorage.removeItem('pendingJoinCode');
 }
 {% endif %}
 
-// =================== СЛУЧАЙНОЕ СЛОВО ===================
+// ════════════ ОЗВУЧКА СЛОВА ════════════
 function playWord(text) {
   const url = '/lessons/api/synthesize/?text=' + encodeURIComponent(text) + '&speaker=alsu';
   new Audio(url).play().catch(() => {
@@ -301,12 +374,13 @@ function playWord(text) {
   });
 }
 
+// ════════════ ЗАПИСЬ ГОЛОСА ════════════
 let mediaRecorder, audioChunks = [];
 
 async function startRecording() {
   const result = document.getElementById('recordResult');
   if (!result) return;
-  result.innerHTML = '<i class="bi bi-mic-fill" style="color:#dc2626;"></i> Говорите...';
+  result.innerHTML = '<span class="tl-rec-live"></span> Говорите…';
 
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -328,12 +402,15 @@ async function startRecording() {
         const data = await res.json();
 
         if (data.text) {
-          result.innerHTML = `<i class="bi bi-check-circle-fill" style="color:#16a34a;"></i> Распознано: <strong>${data.text}</strong>`;
+          result.innerHTML = `<i class="bi bi-check-circle-fill"></i> Распознано: <strong>${data.text}</strong>`;
+          result.classList.add('tl-rec-ok');
         } else {
-          result.innerHTML = '<i class="bi bi-x-circle" style="color:#dc2626;"></i> Не удалось распознать';
+          result.innerHTML = '<i class="bi bi-x-circle"></i> Не удалось распознать';
+          result.classList.add('tl-rec-fail');
         }
       } catch (e) {
-        result.innerHTML = '<i class="bi bi-x-circle" style="color:#dc2626;"></i> Ошибка распознавания';
+        result.innerHTML = '<i class="bi bi-x-circle"></i> Ошибка распознавания';
+        result.classList.add('tl-rec-fail');
       }
     };
 
@@ -343,7 +420,8 @@ async function startRecording() {
       stream.getTracks().forEach(t => t.stop());
     }, 3000);
   } catch (e) {
-    result.innerHTML = '<i class="bi bi-x-circle" style="color:#dc2626;"></i> Нет доступа к микрофону';
+    result.innerHTML = '<i class="bi bi-x-circle"></i> Нет доступа к микрофону';
+    result.classList.add('tl-rec-fail');
   }
 }
 </script>
