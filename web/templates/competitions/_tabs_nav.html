@@ -1,18 +1,63 @@
 {% load static %}
-<nav class="cmpd-tabs">
-  <button class="cmpd-tab {% if active_tab == 'tasks' %}active{% endif %}"
-          data-bs-toggle="tab" data-bs-target="#tab-tasks" type="button">
+
+<nav class="cmpd-tabs" id="cmpdTabs">
+  <button type="button"
+          class="cmpd-tab {% if active_tab == 'tasks' %}active{% endif %}"
+          data-tab="tab-tasks">
     Задачи
   </button>
-  <button class="cmpd-tab {% if active_tab == 'my' %}active{% endif %}"
-          data-bs-toggle="tab" data-bs-target="#tab-my" type="button">
+  <button type="button"
+          class="cmpd-tab {% if active_tab == 'my' %}active{% endif %}"
+          data-tab="tab-my">
     Мои посылки
     {% if my_submissions_count %}
       <span class="cmpd-tab-badge">{{ my_submissions_count }}</span>
     {% endif %}
   </button>
-  <button class="cmpd-tab {% if active_tab == 'standings' %}active{% endif %}"
-          data-bs-toggle="tab" data-bs-target="#tab-standings" type="button">
+  <button type="button"
+          class="cmpd-tab {% if active_tab == 'standings' %}active{% endif %}"
+          data-tab="tab-standings">
     Положение
   </button>
 </nav>
+
+<script>
+(function () {
+  function init() {
+    var nav = document.getElementById('cmpdTabs');
+    if (!nav) return;
+
+    var buttons = nav.querySelectorAll('.cmpd-tab');
+    var panes   = document.querySelectorAll('.tab-content > .tab-pane');
+
+    function activate(id) {
+      buttons.forEach(function (b) {
+        b.classList.toggle('active', b.dataset.tab === id);
+      });
+      panes.forEach(function (p) {
+        var on = p.id === id;
+        p.classList.toggle('active', on);
+        p.classList.toggle('show', on);
+      });
+    }
+
+    buttons.forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        activate(btn.dataset.tab);
+      });
+    });
+
+    // Первая активная — либо та, что пришла из шаблона, либо первая по списку
+    var current = nav.querySelector('.cmpd-tab.active') || buttons[0];
+    if (current) activate(current.dataset.tab);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>

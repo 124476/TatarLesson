@@ -530,20 +530,45 @@ async function submitLesson() {
       headers: {
         'Content-Type': 'application/json',
         'X-CSRFToken': getCookie('csrftoken'),
+        'X-Requested-With': 'XMLHttpRequest',
       },
       body: JSON.stringify({ lesson_id: LESSON_ID, answers: collectedAnswers }),
     });
+
+    const ct = res.headers.get('content-type') || '';
+
+    // ── Не JSON (403 CSRF / 500 / redirect на login) ──
+    if (!ct.includes('application/json')) {
+      // fetch автоматически следует за редиректами — ловим уход на страницу входа
+      if (res.redirected && /\/(auth|login|accounts)/.test(res.url)) {
+        err.textContent = 'Требуется вход. Перенаправляем…';
+        setTimeout(() => { window.location.href = res.url; }, 700);
+        return;
+      }
+      if (res.status === 403) {
+        err.textContent = 'Сессия устарела. Обновите страницу и попробуйте ещё раз.';
+      } else {
+        err.textContent = `Ошибка сервера (${res.status}). Попробуйте позже.`;
+      }
+      btn.disabled = false;
+      btn.innerHTML = orig;
+      return;
+    }
+
     const data = await res.json();
 
     if (data.status !== 'ok') {
       err.textContent = data.error || 'Ошибка проверки';
-      btn.disabled = false; btn.innerHTML = orig;
+      btn.disabled = false;
+      btn.innerHTML = orig;
       return;
     }
+
     showResult(data);
   } catch (e) {
     err.textContent = 'Ошибка сети: ' + e.message;
-    btn.disabled = false; btn.innerHTML = orig;
+    btn.disabled = false;
+    btn.innerHTML = orig;
   }
 }
 

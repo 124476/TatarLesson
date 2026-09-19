@@ -16,7 +16,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.generic import ListView, TemplateView
 
 
@@ -94,6 +96,7 @@ from django.http import Http404
 from django.urls import reverse
 
 
+@method_decorator(ensure_csrf_cookie, name="dispatch")
 class LessonPlayView(TemplateView):
     """Прохождение урока. Публичные уроки — всем, закрытые — автору/стаффу."""
     template_name = "lessons/lesson_play.html"

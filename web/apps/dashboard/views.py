@@ -165,7 +165,7 @@ class AddWordView(LoginRequiredMixin, View):
                 "russian": word.russian,
                 "transcription": word.transcription,
                 "theme": word.theme,
-                "theme_display": word.get_theme_display(),
+                "theme_display": word.theme_display,
             },
         })
 

@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load competitions_extras %}
 
 {% block title %}{{ task.title }}{% endblock %}
 
@@ -154,7 +155,7 @@
                   {% for s in my_submissions %}
                     <tr>
                       <td class="cmpd-mono">{{ s.attempt_number }}</td>
-                      <td class="cmpd-mono cmpd-truncate">{{ s.answer|truncatechars:80 }}</td>
+                      <td class="cmpd-mono cmpd-truncate">{{ s|format_answer:80 }}</td>
                       <td>
                         {% if s.is_correct %}
                           <span class="cmpd-tag cmpd-tag-success">{{ s.points_earned }}</span>

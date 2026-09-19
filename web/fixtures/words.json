@@ -8801,22 +8801,6 @@
   },
   {
     "model": "words.word",
-    "pk": 551,
-    "fields": {
-      "tatar": "Су",
-      "russian": "Вода",
-      "transcription": "су",
-      "example_tt": "Су эчәм",
-      "example_ru": "Пью воду",
-      "theme": "nature",
-      "level": "beginner",
-      "audio_url": "",
-      "created_at": "2026-01-01T00:00:00Z",
-      "updated_at": "2026-01-01T00:00:00Z"
-    }
-  },
-  {
-    "model": "words.word",
     "pk": 552,
     "fields": {
       "tatar": "Һава",
@@ -8856,22 +8840,6 @@
       "transcription": "джир",
       "example_tt": "Җир яшел",
       "example_ru": "Земля зелёная",
-      "theme": "nature",
-      "level": "beginner",
-      "audio_url": "",
-      "created_at": "2026-01-01T00:00:00Z",
-      "updated_at": "2026-01-01T00:00:00Z"
-    }
-  },
-  {
-    "model": "words.word",
-    "pk": 555,
-    "fields": {
-      "tatar": "Ут",
-      "russian": "Огонь",
-      "transcription": "ут",
-      "example_tt": "Ут яна",
-      "example_ru": "Огонь горит",
       "theme": "nature",
       "level": "beginner",
       "audio_url": "",
@@ -9185,38 +9153,6 @@
   },
   {
     "model": "words.word",
-    "pk": 575,
-    "fields": {
-      "tatar": "Агач",
-      "russian": "Дерево",
-      "transcription": "агач",
-      "example_tt": "Агач биек",
-      "example_ru": "Дерево высокое",
-      "theme": "nature",
-      "level": "beginner",
-      "audio_url": "",
-      "created_at": "2026-01-01T00:00:00Z",
-      "updated_at": "2026-01-01T00:00:00Z"
-    }
-  },
-  {
-    "model": "words.word",
-    "pk": 576,
-    "fields": {
-      "tatar": "Яфрак",
-      "russian": "Лист",
-      "transcription": "яфрак",
-      "example_tt": "Яфрак яшел",
-      "example_ru": "Лист зелёный",
-      "theme": "nature",
-      "level": "beginner",
-      "audio_url": "",
-      "created_at": "2026-01-01T00:00:00Z",
-      "updated_at": "2026-01-01T00:00:00Z"
-    }
-  },
-  {
-    "model": "words.word",
     "pk": 577,
     "fields": {
       "tatar": "Тамыр",
@@ -9281,102 +9217,6 @@
   },
   {
     "model": "words.word",
-    "pk": 581,
-    "fields": {
-      "tatar": "Урман",
-      "russian": "Лес",
-      "transcription": "урман",
-      "example_tt": "Урман зур",
-      "example_ru": "Лес большой",
-      "theme": "nature",
-      "level": "beginner",
-      "audio_url": "",
-      "created_at": "2026-01-01T00:00:00Z",
-      "updated_at": "2026-01-01T00:00:00Z"
-    }
-  },
-  {
-    "model": "words.word",
-    "pk": 582,
-    "fields": {
-      "tatar": "Кыр",
-      "russian": "Поле",
-      "transcription": "кыр",
-      "example_tt": "Кыр киң",
-      "example_ru": "Поле широкое",
-      "theme": "nature",
-      "level": "beginner",
-      "audio_url": "",
-      "created_at": "2026-01-01T00:00:00Z",
-      "updated_at": "2026-01-01T00:00:00Z"
-    }
-  },
-  {
-    "model": "words.word",
-    "pk": 583,
-    "fields": {
-      "tatar": "Тау",
-      "russian": "Гора",
-      "transcription": "тау",
-      "example_tt": "Тау биек",
-      "example_ru": "Гора высокая",
-      "theme": "nature",
-      "level": "beginner",
-      "audio_url": "",
-      "created_at": "2026-01-01T00:00:00Z",
-      "updated_at": "2026-01-01T00:00:00Z"
-    }
-  },
-  {
-    "model": "words.word",
-    "pk": 584,
-    "fields": {
-      "tatar": "Елга",
-      "russian": "Река",
-      "transcription": "элга",
-      "example_tt": "Елга тирән",
-      "example_ru": "Река глубокая",
-      "theme": "nature",
-      "level": "beginner",
-      "audio_url": "",
-      "created_at": "2026-01-01T00:00:00Z",
-      "updated_at": "2026-01-01T00:00:00Z"
-    }
-  },
-  {
-    "model": "words.word",
-    "pk": 585,
-    "fields": {
-      "tatar": "Күл",
-      "russian": "Озеро",
-      "transcription": "кул",
-      "example_tt": "Күл зур",
-      "example_ru": "Озеро большое",
-      "theme": "nature",
-      "level": "beginner",
-      "audio_url": "",
-      "created_at": "2026-01-01T00:00:00Z",
-      "updated_at": "2026-01-01T00:00:00Z"
-    }
-  },
-  {
-    "model": "words.word",
-    "pk": 586,
-    "fields": {
-      "tatar": "Диңгез",
-      "russian": "Море",
-      "transcription": "динггез",
-      "example_tt": "Диңгез тирән",
-      "example_ru": "Море глубокое",
-      "theme": "nature",
-      "level": "beginner",
-      "audio_url": "",
-      "created_at": "2026-01-01T00:00:00Z",
-      "updated_at": "2026-01-01T00:00:00Z"
-    }
-  },
-  {
-    "model": "words.word",
     "pk": 587,
     "fields": {
       "tatar": "Кояш",
@@ -9393,22 +9233,6 @@
   },
   {
     "model": "words.word",
-    "pk": 588,
-    "fields": {
-      "tatar": "Ай",
-      "russian": "Луна",
-      "transcription": "ай",
-      "example_tt": "Ай якты",
-      "example_ru": "Луна светит",
-      "theme": "nature",
-      "level": "beginner",
-      "audio_url": "",
-      "created_at": "2026-01-01T00:00:00Z",
-      "updated_at": "2026-01-01T00:00:00Z"
-    }
-  },
-  {
-    "model": "words.word",
     "pk": 589,
     "fields": {
       "tatar": "Йолдыз",
@@ -9416,22 +9240,6 @@
       "transcription": "йолдыз",
       "example_tt": "Йолдыз күренә",
       "example_ru": "Звезда видна",
-      "theme": "nature",
-      "level": "beginner",
-      "audio_url": "",
-      "created_at": "2026-01-01T00:00:00Z",
-      "updated_at": "2026-01-01T00:00:00Z"
-    }
-  },
-  {
-    "model": "words.word",
-    "pk": 590,
-    "fields": {
-      "tatar": "Күк",
-      "russian": "Небо",
-      "transcription": "кук",
-      "example_tt": "Күк зәңгәр",
-      "example_ru": "Небо синее",
       "theme": "nature",
       "level": "beginner",
       "audio_url": "",
@@ -9489,22 +9297,6 @@
   },
   {
     "model": "words.word",
-    "pk": 594,
-    "fields": {
-      "tatar": "Болыт",
-      "russian": "Облако",
-      "transcription": "болыт",
-      "example_tt": "Болыт күктә",
-      "example_ru": "Облако в небе",
-      "theme": "nature",
-      "level": "beginner",
-      "audio_url": "",
-      "created_at": "2026-01-01T00:00:00Z",
-      "updated_at": "2026-01-01T00:00:00Z"
-    }
-  },
-  {
-    "model": "words.word",
     "pk": 595,
     "fields": {
       "tatar": "Томан",
@@ -9544,38 +9336,6 @@
       "transcription": "кук кукрэу",
       "example_tt": "Күк күкри",
       "example_ru": "Гром гремит",
-      "theme": "nature",
-      "level": "beginner",
-      "audio_url": "",
-      "created_at": "2026-01-01T00:00:00Z",
-      "updated_at": "2026-01-01T00:00:00Z"
-    }
-  },
-  {
-    "model": "words.word",
-    "pk": 598,
-    "fields": {
-      "tatar": "Салават күпере",
-      "russian": "Радуга",
-      "transcription": "салават купере",
-      "example_tt": "Салават күпере чыкты",
-      "example_ru": "Радуга появилась",
-      "theme": "nature",
-      "level": "beginner",
-      "audio_url": "",
-      "created_at": "2026-01-01T00:00:00Z",
-      "updated_at": "2026-01-01T00:00:00Z"
-    }
-  },
-  {
-    "model": "words.word",
-    "pk": 599,
-    "fields": {
-      "tatar": "Чык",
-      "russian": "Роса",
-      "transcription": "чык",
-      "example_tt": "Чык төшкән",
-      "example_ru": "Роса выпала",
       "theme": "nature",
       "level": "beginner",
       "audio_url": "",

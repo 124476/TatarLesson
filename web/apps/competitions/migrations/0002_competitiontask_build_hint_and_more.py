@@ -71,12 +71,12 @@ class Migration(migrations.Migration):
             name="task_type",
             field=models.CharField(
                 choices=[
-                    ("text", "📝 Текстовый ответ"),
-                    ("choice", "🔘 Один вариант"),
-                    ("multiple_choice", "☑️ Несколько вариантов"),
-                    ("build", "🧩 Собери слово"),
-                    ("pairs", "🔗 Найди пару"),
-                    ("voice", "🎙️ Голосовой перевод"),
+                    ("text", "Текстовый ответ"),
+                    ("choice", "Один вариант"),
+                    ("multiple_choice", "Несколько вариантов"),
+                    ("build", "Собери слово"),
+                    ("pairs", "Найди пару"),
+                    ("voice", "Голосовой перевод"),
                 ],
                 default="text",
                 max_length=32,

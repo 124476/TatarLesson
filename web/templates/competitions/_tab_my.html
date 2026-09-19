@@ -1,3 +1,5 @@
+{% load competitions_extras %}
+
 <div class="tab-pane fade {% if active_tab == 'my' %}show active{% endif %}" id="tab-my">
   {% if not user.is_authenticated %}
     <div class="cmpd-empty">Войдите, чтобы увидеть свои посылки</div>
@@ -21,7 +23,7 @@
                 {{ s.task.title }}
               </a>
             </td>
-            <td class="cmpd-mono cmpd-truncate">{{ s.answer|truncatechars:60 }}</td>
+            <td class="cmpd-mono cmpd-truncate">{{ s|format_answer:60 }}</td>
             <td>
               {% if s.is_correct %}
                 {% if s.points_earned > 0 %}

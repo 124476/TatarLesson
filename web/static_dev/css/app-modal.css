@@ -63,11 +63,7 @@
   max-width: 720px;
 
   /* 👇 Никогда не выше доступной области между header и footer */
-  max-height: calc(
-    100vh
-    - var(--app-header-offset)
-    - var(--app-footer-offset)
-  );
+  max-height: calc(100vh - 180px);
 
   display: flex;
   flex-direction: column;
@@ -328,11 +324,7 @@
   .app-modal-box {
     border-radius: 16px 16px 0 0;
     transform: translateY(100%);
-    max-height: calc(
-      100vh
-      - var(--app-header-offset)
-      - var(--app-footer-offset)
-    );
+    max-height: calc(100vh - 180px);
   }
 
   .app-modal-overlay.open .app-modal-box {

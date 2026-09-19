@@ -591,7 +591,7 @@ class CompetitionWordsAPIView(AdminRequiredMixin, View):
                     "russian": w.russian,
                     "transcription": w.transcription,
                     "theme": w.theme,
-                    "theme_display": w.get_theme_display(),
+                    "theme_display": w.theme_display,
                 }
                 for w in qs
             ]
