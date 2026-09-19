@@ -50,7 +50,6 @@ class AIChatSendView(LoginRequiredMixin, View):
         if len(message) > 500:
             return JsonResponse({"error": "Слишком длинное (макс. 500)"}, status=400)
 
-        # История
         history_qs = AIChatMessage.objects.filter(
             user=request.user,
         ).order_by("-created_at")[:10]
@@ -59,12 +58,10 @@ class AIChatSendView(LoginRequiredMixin, View):
             for m in reversed(list(history_qs))
         ]
 
-        # Сохраняем сообщение пользователя
         user_msg = AIChatMessage.objects.create(
             user=request.user, role="user", content=message,
         )
 
-        # Спрашиваем LLM
         answer = chat_with_tatar_ai(history, message)
         if not answer:
             return JsonResponse(
@@ -72,7 +69,6 @@ class AIChatSendView(LoginRequiredMixin, View):
                 status=502,
             )
 
-        # Сохраняем ответ
         assistant_msg = AIChatMessage.objects.create(
             user=request.user, role="assistant", content=answer,
         )
@@ -94,19 +90,23 @@ class AIChatClearView(LoginRequiredMixin, View):
 
 
 # ══════════════════════════════════════════════════════════════════
-# ГЕНЕРАЦИЯ СЛОВ
+# ГЕНЕРАЦИЯ СЛОВ — доступно всем авторизованным
 # ══════════════════════════════════════════════════════════════════
 
 class GenerateWordsView(LoginRequiredMixin, View):
     login_url = "accounts:auth"
 
     def post(self, request):
-        if not request.user.is_staff:
-            return JsonResponse({"error": "Forbidden"}, status=403)
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Неверный формат"}, status=400)
 
-        data = json.loads(request.body)
         theme = data.get("theme", "family")
-        n = min(int(data.get("n", 5)), 20)
+        try:
+            n = min(int(data.get("n", 5)), 20)
+        except (TypeError, ValueError):
+            n = 5
 
         words = generate_words(theme=theme, n=n)
         if not words:
@@ -122,11 +122,12 @@ class GenerateDistractorsView(LoginRequiredMixin, View):
     login_url = "accounts:auth"
 
     def post(self, request):
-        if not request.user.is_staff:
-            return JsonResponse({"error": "Forbidden"}, status=403)
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Неверный формат"}, status=400)
 
-        data = json.loads(request.body)
-        correct = data.get("correct", "").strip()
+        correct = (data.get("correct") or "").strip()
         theme = data.get("theme", "общее")
 
         if not correct:
@@ -143,9 +144,12 @@ class ExplainView(LoginRequiredMixin, View):
     login_url = "accounts:auth"
 
     def post(self, request):
-        data = json.loads(request.body)
-        question = data.get("question", "").strip()
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Неверный формат"}, status=400)
 
+        question = (data.get("question") or "").strip()
         if not question:
             return JsonResponse({"error": "Пустой вопрос"}, status=400)
 
@@ -157,16 +161,13 @@ class ExplainView(LoginRequiredMixin, View):
 
 
 # ══════════════════════════════════════════════════════════════════
-# ГЕНЕРАЦИЯ ЗАДАЧ СОРЕВНОВАНИЯ
+# ГЕНЕРАЦИЯ БЛОКОВ УРОКА — доступно всем авторизованным
 # ══════════════════════════════════════════════════════════════════
 
 class GenerateLessonBlocksView(LoginRequiredMixin, View):
     login_url = "accounts:auth"
 
     def post(self, request):
-        if not request.user.is_staff:
-            return JsonResponse({"error": "Forbidden"}, status=403)
-
         try:
             data = json.loads(request.body)
         except json.JSONDecodeError:
@@ -177,7 +178,10 @@ class GenerateLessonBlocksView(LoginRequiredMixin, View):
             return JsonResponse({"error": "Укажите тему"}, status=400)
 
         types = data.get("types") or ["translate", "build"]
-        count = int(data.get("count", 8))
+        try:
+            count = int(data.get("count", 8))
+        except (TypeError, ValueError):
+            count = 8
         use_dictionary = bool(data.get("use_dictionary", True))
 
         blocks = generate_lesson_blocks(
