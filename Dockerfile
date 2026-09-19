@@ -12,7 +12,6 @@ ENV PYTHONPATH=/usr/src/app/web
 CMD ["sh", "-c", "\
   python web/manage.py collectstatic --noinput && \
   python web/manage.py migrate --noinput && \
-  python web/manage.py loaddata fixtures/words.json && \
   (ls web/fixtures/*.json >/dev/null 2>&1 && python web/manage.py loaddata web/fixtures/*.json || echo \"No fixtures found, skipping...\") && \
   echo \"import os; from django.contrib.auth import get_user_model; \
   U = get_user_model(); \

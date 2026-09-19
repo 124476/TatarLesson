@@ -27,7 +27,6 @@ ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", default="*").split(",")
 
 INSTALLED_APPS = [
     "daphne",
-    "apps.news.apps.NewsConfig",
     "apps.core.apps.CoreConfig",
     "apps.about.apps.AboutConfig",
     "apps.accounts.apps.AccountsConfig",
