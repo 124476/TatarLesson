@@ -34,16 +34,10 @@
             Открыть панель
             <span class="hp-btn-arrow">→</span>
           </a>
-          <a href="#" onclick="openJoinModal(event); return false;" class="hp-btn">
-            Войти по коду
-          </a>
         {% else %}
           <a href="{% url 'accounts:auth' %}" class="hp-btn hp-btn-primary">
             Начать учиться
             <span class="hp-btn-arrow">→</span>
-          </a>
-          <a href="#" onclick="openJoinModal(event); return false;" class="hp-btn">
-            Войти по коду
           </a>
           <a href="{% url 'competitions:list' %}" class="hp-btn">
             Соревнования
@@ -189,36 +183,6 @@
 
 </div>
 
-<!-- ═══════════════ МОДАЛКА КОДА ═══════════════ -->
-<div class="hp-modal-overlay" id="joinModal">
-  <div class="hp-modal-box">
-    <button type="button" class="hp-modal-close" onclick="closeJoinModal()" aria-label="Закрыть">
-      <i class="bi bi-x-lg"></i>
-    </button>
-
-    <h3 class="hp-modal-title">Введите код урока</h3>
-    <p class="hp-modal-sub">Код можно получить у учителя</p>
-
-    <input type="text"
-           id="lessonCodeInput"
-           maxlength="6"
-           placeholder="000000"
-           class="hp-code"
-           inputmode="numeric"
-           autocomplete="off">
-
-    <div class="hp-modal-actions">
-      <button type="button" onclick="closeJoinModal()" class="hp-btn">Отмена</button>
-      <button type="button" onclick="joinLesson()" class="hp-btn hp-btn-primary">
-        Войти
-        <span class="hp-btn-arrow">→</span>
-      </button>
-    </div>
-
-    <p id="joinError" class="hp-error"></p>
-  </div>
-</div>
-
 {% endblock %}
 
 {% block extra_js %}
@@ -231,73 +195,6 @@ function getCookie(name) {
   }
   return '';
 }
-
-// ═══════════════ ВХОД ПО КОДУ ═══════════════
-function openJoinModal(e, prefilledCode = '') {
-  if (e) e.preventDefault();
-  document.getElementById('joinModal').classList.add('open');
-  const input = document.getElementById('lessonCodeInput');
-  if (prefilledCode) input.value = prefilledCode;
-  setTimeout(() => input.focus(), 100);
-}
-
-function closeJoinModal() {
-  document.getElementById('joinModal').classList.remove('open');
-  document.getElementById('lessonCodeInput').value = '';
-  document.getElementById('joinError').textContent = '';
-}
-
-async function joinLesson() {
-  const errorBox = document.getElementById('joinError');
-  const code = document.getElementById('lessonCodeInput').value.trim();
-
-  errorBox.textContent = '';
-  if (!code) {
-    errorBox.textContent = 'Введите код урока';
-    return;
-  }
-
-  try {
-    const res = await fetch('/lessons/join/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'X-CSRFToken': getCookie('csrftoken'),
-      },
-      body: 'code=' + encodeURIComponent(code),
-    });
-    const data = await res.json();
-
-    if (data.status === 'ok') {
-      window.location.href = data.url;
-      return;
-    }
-
-    if (res.status === 403) {
-      {% if not user.is_authenticated %}
-        sessionStorage.setItem('pendingJoinCode', code);
-        window.location.href = '{% url "accounts:auth" %}?next=' + encodeURIComponent(
-          window.location.pathname + '?join=' + code
-        );
-        return;
-      {% else %}
-        errorBox.textContent = data.error || 'Доступ запрещён';
-        return;
-      {% endif %}
-    }
-
-    errorBox.textContent = data.error || 'Урок не найден';
-  } catch (e) {
-    errorBox.textContent = 'Ошибка сети. Попробуйте позже.';
-  }
-}
-
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeJoinModal();
-});
-document.getElementById('joinModal')?.addEventListener('click', function (e) {
-  if (e.target === this) closeJoinModal();
-});
 
 document.addEventListener('DOMContentLoaded', () => {
   const urlParams = new URLSearchParams(window.location.search);
