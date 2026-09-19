@@ -38,9 +38,11 @@
     border-radius: 50%;
     background: linear-gradient(135deg, #0B6E4F, #14A06E);
     display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
+    font-size: 16px;
+    font-weight: 700;
     color: #fff;
     flex-shrink: 0;
+    letter-spacing: -0.02em;
   }
   .ai-chat-who { flex: 1; min-width: 0; }
   .ai-chat-name {
@@ -114,19 +116,23 @@
     border-radius: 50%;
     flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
-    font-size: 14px; color: #fff;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.02em;
     background: linear-gradient(135deg, #0B6E4F, #14A06E);
   }
   .ai-msg-user .ai-msg-avatar {
     background: linear-gradient(135deg, #3b82f6, #6366f1);
+    font-size: 14px;
   }
+  .ai-msg-user .ai-msg-avatar i { font-size: 14px; }
 
   .ai-msg-bubble {
     padding: 11px 15px;
     border-radius: 14px;
     font-size: 15px;
     line-height: 1.55;
-    white-space: pre-wrap;
     word-wrap: break-word;
     overflow-wrap: anywhere;
   }
@@ -140,7 +146,77 @@
     background: #0B6E4F;
     color: #fff;
     border-bottom-right-radius: 4px;
+    white-space: pre-wrap;
   }
+
+  /* ═══ MARKDOWN внутри бабла ═══ */
+  .ai-msg-bubble > *:first-child { margin-top: 0; }
+  .ai-msg-bubble > *:last-child  { margin-bottom: 0; }
+
+  .ai-msg-bubble p {
+    margin: 0 0 8px;
+  }
+  .ai-msg-bubble p:last-child { margin-bottom: 0; }
+
+  .ai-msg-bubble strong { font-weight: 700; }
+  .ai-msg-bubble em { font-style: italic; }
+  .ai-msg-bubble del { opacity: .65; text-decoration: line-through; }
+
+  .ai-msg-bubble code {
+    padding: 1px 6px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: .9em;
+    background: rgba(0, 0, 0, .06);
+    border-radius: 5px;
+  }
+  [data-theme="dark"] .ai-msg-bubble code {
+    background: rgba(255, 255, 255, .08);
+  }
+
+  .ai-msg-bubble pre {
+    margin: 8px 0;
+    padding: 12px 14px;
+    background: rgba(0, 0, 0, .06);
+    border-radius: 10px;
+    overflow-x: auto;
+    font-size: .88em;
+    line-height: 1.5;
+  }
+  [data-theme="dark"] .ai-msg-bubble pre {
+    background: rgba(255, 255, 255, .06);
+  }
+  .ai-msg-bubble pre code {
+    padding: 0;
+    background: transparent;
+    font-size: 1em;
+  }
+
+  .ai-msg-bubble ul,
+  .ai-msg-bubble ol {
+    margin: 6px 0;
+    padding-left: 22px;
+  }
+  .ai-msg-bubble li { margin-bottom: 4px; }
+  .ai-msg-bubble li:last-child { margin-bottom: 0; }
+
+  .ai-msg-bubble h1,
+  .ai-msg-bubble h2,
+  .ai-msg-bubble h3,
+  .ai-msg-bubble h4 {
+    margin: 12px 0 6px;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+  .ai-msg-bubble h1, .ai-msg-bubble h2 { font-size: 1.06em; }
+  .ai-msg-bubble h3, .ai-msg-bubble h4 { font-size: 1em; }
+
+  .ai-msg-bubble a {
+    color: #0B6E4F;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  [data-theme="dark"] .ai-msg-bubble a { color: #4ade80; }
 
   /* ═══ TYPING ═══ */
   .ai-typing {
@@ -160,7 +236,7 @@
     30%           { transform: translateY(-4px); opacity: 1; }
   }
 
-  /* ═══ EMPTY / SUGGESTIONS ═══ */
+  /* ═══ EMPTY ═══ */
   .ai-empty {
     margin: auto;
     text-align: center;
@@ -168,12 +244,12 @@
     max-width: 520px;
   }
   .ai-empty-icon {
-    width: 60px; height: 60px;
+    width: 56px; height: 56px;
     margin: 0 auto 16px;
     border-radius: 50%;
     background: linear-gradient(135deg, #0B6E4F, #14A06E);
     display: flex; align-items: center; justify-content: center;
-    font-size: 28px; color: #fff;
+    font-size: 22px; color: #fff;
   }
   .ai-empty h3 {
     font-size: 18px;
@@ -268,11 +344,11 @@
   /* ═══ RESPONSIVE ═══ */
   @media (max-width: 768px) {
     .ai-fill { margin: -16px; }
-    .ai-chat { height: calc(100% + 31px) !important; }
     .ai-chat-header { padding: 12px 16px; }
-    .ai-chat-avatar { width: 36px; height: 36px; font-size: 16px; }
+    .ai-chat-avatar { width: 36px; height: 36px; font-size: 14px; }
     .ai-chat-body   { padding: 18px 14px; gap: 14px; }
     .ai-msg { max-width: 92%; }
+    .ai-chat { height: calc(100% + 31px) !important; }
     .ai-msg-bubble { font-size: 14.5px; padding: 10px 13px; }
     .ai-chat-input-wrap { padding: 10px 12px; }
     .ai-suggestion { font-size: 12.5px; padding: 8px 13px; }
@@ -291,7 +367,7 @@
 
     <!-- HEADER -->
     <div class="ai-chat-header">
-      <div class="ai-chat-avatar">🌱</div>
+      <div class="ai-chat-avatar">Э</div>
       <div class="ai-chat-who">
         <p class="ai-chat-name">Эльмира</p>
         <p class="ai-chat-status">
@@ -306,18 +382,9 @@
 
     <!-- MESSAGES -->
     <div class="ai-chat-body" id="chatMessages">
-      {% if chat_messages %}
-        {% for m in chat_messages %}
-          <div class="ai-msg ai-msg-{% if m.role == 'user' %}user{% else %}bot{% endif %}">
-            <div class="ai-msg-avatar">
-              {% if m.role == 'user' %}<i class="bi bi-person-fill"></i>{% else %}🌱{% endif %}
-            </div>
-            <div class="ai-msg-bubble">{{ m.content }}</div>
-          </div>
-        {% endfor %}
-      {% else %}
+      {% if not chat_messages %}
         <div class="ai-empty" id="chatEmpty">
-          <div class="ai-empty-icon">🌱</div>
+          <div class="ai-empty-icon"><i class="bi bi-stars"></i></div>
           <h3>Сәлам! Я Эльмира</h3>
           <p>Помогу с переводом, грамматикой и культурой татарского. Спросите что-нибудь!</p>
           <div class="ai-suggestions">
@@ -344,12 +411,145 @@
     </div>
   </div>
 </div>
+
+{# ═══ Начальные сообщения — безопасно как JSON ═══ #}
+<script id="initialChatData" type="application/json">[
+{% for m in chat_messages %}{"role": "{{ m.role|escapejs }}", "content": "{{ m.content|escapejs }}"}{% if not forloop.last %},{% endif %}{% endfor %}
+]</script>
 {% endblock %}
 
 {% block extra_js %}
 <script>
 const SEND_URL  = "{% url 'generation:chat_send' %}";
 const CLEAR_URL = "{% url 'generation:chat_clear' %}";
+
+/* ═══════════════════════════════════════════════════════════════
+   MARKDOWN RENDERER
+   Безопасный: сначала HTML-escape, потом разметка.
+   Поддержка: **bold**, *italic*, _italic_, `code`, ```code```,
+             ~~strike~~, [link](url), # headings, - / 1. lists.
+   ═══════════════════════════════════════════════════════════════ */
+
+function escapeHtml(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function applyInline(s) {
+  // Inline code → прячем, чтобы внутри не сработала другая разметка
+  s = s.replace(/`([^`\n]+)`/g, '\x00I$1\x00');
+
+  // Bold
+  s = s.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+  s = s.replace(/__([^_\n]+)__/g, '<strong>$1</strong>');
+
+  // Italic (не путать со **bold**)
+  s = s.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1<em>$2</em>');
+  s = s.replace(/(^|[^_\w])_([^_\n]+)_(?!_)/g, '$1<em>$2</em>');
+
+  // Strikethrough
+  s = s.replace(/~~([^~\n]+)~~/g, '<del>$1</del>');
+
+  // Links
+  s = s.replace(
+    /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
+    '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
+  );
+
+  // Возвращаем inline code
+  s = s.replace(/\x00I([^\x00]*)\x00/g, '<code>$1</code>');
+
+  return s;
+}
+
+function renderMarkdown(src) {
+  if (!src) return '';
+  const escaped = escapeHtml(src);
+  const lines = escaped.split('\n');
+  const out = [];
+  let inUl = false, inOl = false;
+  let para = [];
+  let inCode = false;
+  let codeBuf = [];
+
+  const flushPara = () => {
+    if (para.length) {
+      out.push('<p>' + para.map(applyInline).join('<br>') + '</p>');
+      para = [];
+    }
+  };
+  const closeLists = () => {
+    if (inUl) { out.push('</ul>'); inUl = false; }
+    if (inOl) { out.push('</ol>'); inOl = false; }
+  };
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    // Code fence
+    if (/^```/.test(line.trim())) {
+      if (inCode) {
+        out.push('<pre><code>' + codeBuf.join('\n') + '</code></pre>');
+        codeBuf = []; inCode = false;
+      } else {
+        flushPara(); closeLists(); inCode = true;
+      }
+      continue;
+    }
+    if (inCode) { codeBuf.push(line); continue; }
+
+    // Headers
+    const h = line.match(/^(#{1,6})\s+(.+)$/);
+    if (h) {
+      flushPara(); closeLists();
+      const level = Math.min(h[1].length + 2, 6);
+      out.push('<h' + level + '>' + applyInline(h[2]) + '</h' + level + '>');
+      continue;
+    }
+
+    // Unordered list
+    const ul = line.match(/^\s*[-*+]\s+(.+)$/);
+    if (ul) {
+      flushPara();
+      if (inOl) { out.push('</ol>'); inOl = false; }
+      if (!inUl) { out.push('<ul>'); inUl = true; }
+      out.push('<li>' + applyInline(ul[1]) + '</li>');
+      continue;
+    }
+
+    // Ordered list
+    const ol = line.match(/^\s*\d+\.\s+(.+)$/);
+    if (ol) {
+      flushPara();
+      if (inUl) { out.push('</ul>'); inUl = false; }
+      if (!inOl) { out.push('<ol>'); inOl = true; }
+      out.push('<li>' + applyInline(ol[1]) + '</li>');
+      continue;
+    }
+
+    // Blank line — разделитель абзацев
+    if (!line.trim()) {
+      flushPara(); closeLists();
+      continue;
+    }
+
+    // Обычный текст — копим в абзац
+    closeLists();
+    para.push(line);
+  }
+
+  if (inCode) out.push('<pre><code>' + codeBuf.join('\n') + '</code></pre>');
+  flushPara();
+  closeLists();
+
+  return out.join('');
+}
+
+/* ═══════════════ ЧАТ ═══════════════ */
 
 function autoGrow(el) {
   el.style.height = 'auto';
@@ -376,31 +576,39 @@ function scrollDown() {
   const wrap = document.getElementById('chatMessages');
   wrap.scrollTop = wrap.scrollHeight;
 }
+
 function appendMessage(role, text) {
   const wrap  = document.getElementById('chatMessages');
   const empty = document.getElementById('chatEmpty');
   if (empty) empty.remove();
 
+  const isUser = role === 'user';
   const msg = document.createElement('div');
-  msg.className = 'ai-msg ai-msg-' + (role === 'user' ? 'user' : 'bot');
+  msg.className = 'ai-msg ai-msg-' + (isUser ? 'user' : 'bot');
   msg.innerHTML = `
-    <div class="ai-msg-avatar">
-      ${role === 'user' ? '<i class="bi bi-person-fill"></i>' : '🌱'}
-    </div>
+    <div class="ai-msg-avatar">${isUser ? '<i class="bi bi-person-fill"></i>' : 'Э'}</div>
     <div class="ai-msg-bubble"></div>
   `;
-  msg.querySelector('.ai-msg-bubble').textContent = text;
+
+  const bubble = msg.querySelector('.ai-msg-bubble');
+  if (isUser) {
+    bubble.textContent = text;                       // юзер — плоский текст
+  } else {
+    bubble.innerHTML = renderMarkdown(text);         // бот — markdown
+  }
+
   wrap.appendChild(msg);
   scrollDown();
   return msg;
 }
+
 function showTyping() {
   const wrap = document.getElementById('chatMessages');
   const div = document.createElement('div');
   div.className = 'ai-msg ai-msg-bot';
   div.id = 'typingIndicator';
   div.innerHTML = `
-    <div class="ai-msg-avatar">🌱</div>
+    <div class="ai-msg-avatar">Э</div>
     <div class="ai-msg-bubble"><span class="ai-typing"><i></i><i></i><i></i></span></div>
   `;
   wrap.appendChild(div);
@@ -438,11 +646,11 @@ async function sendMessage() {
     if (data.status === 'ok') {
       appendMessage('assistant', data.answer);
     } else {
-      appendMessage('assistant', '⚠️ ' + (data.error || 'Ошибка'));
+      appendMessage('assistant', 'Ошибка: ' + (data.error || 'неизвестная'));
     }
   } catch (e) {
     hideTyping();
-    appendMessage('assistant', '⚠️ Ошибка сети: ' + e.message);
+    appendMessage('assistant', 'Ошибка сети: ' + e.message);
   } finally {
     btn.disabled = false;
     input.focus();
@@ -462,6 +670,16 @@ async function clearChat() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', scrollDown);
+/* ═══ Рендер начальных сообщений ═══ */
+document.addEventListener('DOMContentLoaded', () => {
+  const el = document.getElementById('initialChatData');
+  let initial = [];
+  if (el) {
+    try { initial = JSON.parse(el.textContent.trim()) || []; }
+    catch (e) { initial = []; }
+  }
+  initial.forEach(m => appendMessage(m.role, m.content));
+  scrollDown();
+});
 </script>
 {% endblock %}
