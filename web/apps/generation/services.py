@@ -92,7 +92,7 @@ class BaseProvider:
 class GigaChatProvider(BaseProvider):
     """GigaChat (Сбер). Знает татарский. Медленный, но точный."""
     name = "GigaChat"
-    model = "GigaChat"
+    model = "GigaChat-Pro"
 
     _token = None
     _expires_at = 0
@@ -249,7 +249,7 @@ class LLMClient:
 
     # Профили: для разных задач — разный порядок провайдеров
     PROFILES = {
-        "tatar": [GigaChatProvider, GeminiProvider, GroqProvider],
+        "tatar": [GeminiProvider, GigaChatProvider, GroqProvider],
         "json": [GeminiProvider, GigaChatProvider, GroqProvider],
         "fast": [GroqProvider, GeminiProvider, GigaChatProvider],
     }
@@ -383,83 +383,130 @@ def explain_tatar(question: str) -> str | None:
     return client.generate_text(prompt, max_tokens=400)
 
 # ══════════════════════════════════════════════════════════════════
-# ЧАТ С AI ПО ТАТАРСКОМУ
+# СПРАВОЧНИК ПО ТАТАРСКОМУ (в контекст для LLM)
 # ══════════════════════════════════════════════════════════════════
 
-CHAT_SYSTEM_PROMPT_TEMPLATE = """Ты — дружелюбный ассистент по татарскому языку и культуре в приложении TatarLesson.
+TATAR_REFERENCE = """СПРАВОЧНИК ТАТАРСКОГО ЯЗЫКА (используй только это!)
 
-ТВОЯ ЗАДАЧА:
-- Помогать с переводом (русский ↔ татарский)
-- Объяснять грамматику татарского языка (падежи, аффиксы, времена)
-- Рассказывать о татарской культуре, традициях, праздниках
-- Помогать учить слова, транскрипцию и произношение
+СПЕЦИФИЧЕСКИЕ БУКВЫ: ә ө ү җ ң һ
+(это НЕ турецкий и НЕ башкирский — не путай!)
 
-КРИТИЧЕСКИ ВАЖНО ПРО ТАТАРСКИЙ ЯЗЫК:
-- Татарский — это НЕ турецкий и НЕ башкирский. Не путай!
-- Татарский алфавит: ә ө ү җ ң һ (это специфические буквы)
-- Используй ТОЛЬКО те татарские слова, в которых уверен на 100%
-- НЕ выдумывай слова и фразы. Если не знаешь — скажи "Точный перевод не уверен, проверьте в словаре"
-- Если фраза звучит странно (как в турецком) — НЕ используй её
-- НЕ придумывай идиомы и устойчивые выражения
+ЛИЧНЫЕ МЕСТОИМЕНИЯ:
+мин — я, син — ты, ул — он/она, без — мы, сез — вы, алар — они
 
-ПРОВЕРЕННЫЕ СЛОВА ИЗ НАШЕГО СЛОВАРЯ (используй в первую очередь):
-{words_context}
+ПАДЕЖИ (килешләр):
+- Именительный:      китап        — книга
+- Притяжательный:    китапның     — книги
+- Дательный:         китапка      — книге
+- Винительный:       китапны      — книгу
+- Исходный:          китаптан     — из книги
+- Местный:           китапта      — в книге
 
-ПРАВИЛЬНЫЕ ПРИМЕРЫ (запомни их):
-- Приветствие: "Сәлам!" или "Исәнмесез!" (официальное)
-- Спасибо: "Рәхмәт!"
-- Как дела: "Хәлләр ничек?" 
-- Меня зовут...: "Минем исемем..."
-- Я не понимаю: "Мин аңламыйм"
-- Книга: "китап", дом: "өй", вода: "су", мама: "әни", папа: "әти"
+СПРЯЖЕНИЕ ГЛАГОЛА «укырга» (читать), настоящее время:
+мин укыйм — я читаю
+син укыйсың — ты читаешь
+ул укый — он читает
+без укыйбыз — мы читаем
+сез укыйсыз — вы читаете
+алар укыйлар — они читают
 
-НЕПРАВИЛЬНЫЕ ПРИМЕРЫ (НЕ используй!):
-- "Язмышлы инек" — так не говорят
-- "Сәгатьләрең кайда?" — не говорят
-- "Нәрсә кызыксынды?" — грамматически неверно
-- Любые турецкие слова (merhaba, teşekkür, nasılsın и т.д.)
+ПРИТЯЖАТЕЛЬНЫЕ АФФИКСЫ (минем китабым — моя книга):
+минем китабым, синең китабың, аның китабы,
+безнең китабыбыз, сезнең китабыгыз, аларның китабы
 
-ЖЁСТКИЕ ОГРАНИЧЕНИЯ ПО ТЕМЕ:
-- Отвечай ТОЛЬКО на вопросы про татарский язык и культуру
-- На любые другие темы (рецепты, программирование, политика) отвечай ровно:
-  "Я помогаю только с татарским языком. Спросите что-нибудь о нём 🌱"
+ПРОВЕРЕННЫЕ ФРАЗЫ:
+Сәлам! — Привет!
+Исәнмесез! — Здравствуйте!
+Хәерле иртә! — Доброе утро!
+Рәхмәт! — Спасибо!
+Зинһар — Пожалуйста
+Хәлләр ничек? — Как дела?
+Яхшы — Хорошо
+Минем исемем ... — Меня зовут ...
+Мин аңламыйм — Я не понимаю
+Кабатлагыз әле — Повторите пожалуйста
+Әйе — Да
+Юк — Нет
+Сау бул! — До свидания!
+Сау булыгыз! — До свидания (вежл.)
 
-ФОРМАТ ОТВЕТА:
-- Отвечай на русском
-- Кратко: 2-4 предложения (не больше!)
-- Пример на татарском — с переводом на русский
-- НЕ пиши длинные списки слов или фраз
-- Будь дружелюбным, но не навязчивым
+ЧИСЛА: бер, ике, өч, дүрт, биш, алты, җиде, сигез, тугыз, ун
+
+ПРОВЕРЕННЫЕ СЛОВА:
+китап — книга, өй — дом, су — вода, әни — мама, әти — папа,
+бала — ребёнок, мәктәп — школа, укучы — ученик, укытучы — учитель,
+дус — друг, ипи — хлеб, чәй — чай, сөт — молоко, мәче — кошка,
+эт — собака, кош — птица, агач — дерево, чәчәк — цветок,
+көн — день, төн — ночь, иртә — утро, кич — вечер, ел — год, ай — месяц
+
+ЗАПРЕЩЕНО (никогда не используй!):
+- турецкие слова: merhaba, teşekkür, nasılsın, evet, hayır
+- выдуманные слова и идиомы
+- фразы «Язмышлы инек», «Сәгатьләрең кайда?»
 """
 
 
-def _get_words_context(limit: int = 40) -> str:
-    """Загружает слова из БД для контекста."""
+CHAT_SYSTEM_PROMPT_TEMPLATE = """Ты — Эльмира, тёплый и дружелюбный преподаватель татарского языка в приложении Әйдә укырга!.
+
+⚠️ ГЛАВНЫЕ ПРАВИЛА (никогда не нарушай):
+1. Татарский — это НЕ турецкий и НЕ башкирский.
+2. НИКОГДА не выдумывай татарские слова и выражения. Если не уверен на 100% — напиши:
+   «Точный перевод не уверен, проверьте в словаре».
+3. Используй только проверенные слова и фразы из справочника ниже.
+4. Если пользователь просит перевести что-то спорное — дай 1-2 безопасных варианта и оговорку.
+
+{reference}
+
+СЛОВА ИЗ НАШЕГО СЛОВАРЯ (приоритетный источник!):
+{words_context}
+
+═══════ КАК ОТВЕЧАТЬ ═══════
+- Язык ответа: русский (если не просят иначе).
+- Кратко и по делу: 2–4 предложения. Без «стен текста».
+- Татарские примеры — ВСЕГДА с переводом в скобках или на новой строке.
+- Не пиши длинные списки слов — пользователь может спросить ещё.
+- Обращайся тепло, по-дружески, изредка уместные эмодзи (🌱 ✨ 📚).
+- Пиши живые примеры, а не сухие правила.
+
+═══════ ГРАНИЦЫ ТЕМЫ ═══════
+Помогаем только с татарским языком и культурой (лексика, грамматика, произношение,
+традиции, праздники, пословицы).
+На любые другие темы (рецепты, код, политика, математика и т.п.) отвечай РОВНО:
+«Я помогаю только с татарским языком. Спросите что-нибудь о нём 🌱»
+
+═══════ ПРИМЕР ХОРОШЕГО ОТВЕТА ═══════
+Вопрос: Как сказать «спасибо» по-татарски?
+Ответ: «Спасибо» по-татарски — «Рәхмәт!» [рәхмәт]. Это универсальное слово,
+подходит в любой ситуации. Можно усилить: «Зур рәхмәт!» — «Большое спасибо!» ✨
+"""
+
+
+def _get_words_context(limit: int = 60) -> str:
+    """Слова из БД для контекста — приоритетный источник для LLM."""
     try:
         from apps.words.models import Word
-        words = Word.objects.all()[:limit]
+        words = Word.objects.all().order_by("theme", "tatar")[:limit]
         if not words:
             return "(словарь пока пуст)"
-        return "\n".join(
-            f"- {w.tatar} — {w.russian}" + (f" [{w.transcription}]" if w.transcription else "")
-            for w in words
-        )
+        lines = []
+        for w in words:
+            extra = f" [{w.transcription}]" if w.transcription else ""
+            lines.append(f"- {w.tatar} — {w.russian}{extra}")
+        return "\n".join(lines)
     except Exception:
         return "(словарь недоступен)"
 
 
+CHAT_HISTORY_LIMIT = 10
+
+
 def _build_chat_messages(history, user_message):
-    """Собирает messages для LLM."""
-    from apps.words.models import Word
-
-    # Берём слова из БД (до 40)
-    words = Word.objects.all()[:40]
-    words_context = "\n".join(
-        f"- {w.tatar} — {w.russian}" + (f" [{w.transcription}]" if w.transcription else "")
-        for w in words
-    ) or "(словарь пока пуст)"
-
-    system_prompt = CHAT_SYSTEM_PROMPT_TEMPLATE.format(words_context=words_context)
+    """Собирает messages для LLM с полным справочником и словарём."""
+    words_context = _get_words_context(60)
+    system_prompt = CHAT_SYSTEM_PROMPT_TEMPLATE.format(
+        reference=TATAR_REFERENCE,
+        words_context=words_context,
+    )
 
     messages = [{"role": "system", "content": system_prompt}]
     for msg in history[-CHAT_HISTORY_LIMIT:]:
@@ -471,47 +518,34 @@ def _build_chat_messages(history, user_message):
     return messages
 
 
-CHAT_HISTORY_LIMIT = 10  # последних сообщений в контекст
-
-
 def chat_with_tatar_ai(history: list[dict], user_message: str) -> str | None:
-    """
-    Отправляет сообщение в LLM с историей.
-    history: [{"role": "user"|"assistant", "content": "..."}]
-    Возвращает текст ответа или None.
-    """
+    """Чат с AI по татарскому. Для Gemini system склеивается в единый prompt."""
     messages = _build_chat_messages(history, user_message)
 
     client = LLMClient(profile="tatar")
 
     def attempt(provider):
-        # Провайдеры по-разному принимают messages.
-        # У GigaChat/Groq — массив messages, у Gemini — склеиваем.
         if provider.name == "Gemini":
-            # Склеиваем всё в один prompt
             parts = []
             for m in messages:
                 prefix = {
                     "system": "ИНСТРУКЦИЯ",
                     "user": "Пользователь",
-                    "assistant": "Ассистент",
+                    "assistant": "Эльмира",
                 }.get(m["role"], m["role"])
                 parts.append(f"{prefix}:\n{m['content']}")
-            parts.append("Ассистент:")
+            parts.append("Эльмира:")
             prompt = "\n\n".join(parts)
-            return provider.call(prompt, max_tokens=600, json_mode=False)
+            return provider.call(prompt, max_tokens=700, json_mode=False)
 
-        # GigaChat и Groq принимают messages напрямую
-        return _call_with_messages(provider, messages, max_tokens=600)
+        return _call_with_messages(provider, messages, max_tokens=700)
 
     return client._try_all(attempt)
 
 
-def _call_with_messages(provider, messages, max_tokens=600):
+def _call_with_messages(provider, messages, max_tokens=700):
     """Универсальный вызов для OpenAI-совместимых (Groq) и GigaChat."""
     import requests
-    import uuid as _uuid
-    import time as _time
 
     if provider.name == "GigaChat":
         token = provider._get_token()
@@ -525,7 +559,7 @@ def _call_with_messages(provider, messages, max_tokens=600):
             json={
                 "model": provider.model,
                 "messages": messages,
-                "temperature": 0.5,
+                "temperature": 0.35,
                 "max_tokens": max_tokens,
             },
             verify=False,
@@ -545,7 +579,7 @@ def _call_with_messages(provider, messages, max_tokens=600):
             json={
                 "model": provider.model,
                 "messages": messages,
-                "temperature": 0.5,
+                "temperature": 0.35,
                 "max_tokens": max_tokens,
                 "reasoning_effort": "low",
             },
@@ -560,108 +594,157 @@ def _call_with_messages(provider, messages, max_tokens=600):
 
 
 # ══════════════════════════════════════════════════════════════════
-# ГЕНЕРАЦИЯ ЗАДАЧ ДЛЯ СОРЕВНОВАНИЙ
+# ГЕНЕРАЦИЯ БЛОКОВ УРОКА
 # ══════════════════════════════════════════════════════════════════
 
-COMPETITION_TASKS_PROMPT = """Ты — методист, создающий задания для соревнований по татарскому языку.
+def _fetch_lesson_words(theme: str, count: int, use_dictionary: bool) -> list[dict]:
+    """Слова для урока: сначала из БД, потом добираем через LLM."""
+    from apps.words.models import Word
+    from django.db.models import Q
 
-Создай {n} задач на тему "{theme}".
-Используй ТОЛЬКО эти слова (татарский — русский):
-{words_block}
+    words: list[dict] = []
+    seen: set[str] = set()
 
-Допустимые типы задач: {types}
-Распредели задачи равномерно по этим типам.
-
-Верни СТРОГО JSON-массив задач без markdown. Используй ТОЛЬКО прямые двойные кавычки ASCII (").
-Формат задачи зависит от типа:
-
-Тип "text" (текстовый ответ):
-{{"task_type":"text","title":"Переведи слово","statement":"Переведи на татарский: дом","correct_answer":"өй","points":100,"max_attempts":5,"options":[],"build_word":"","build_hint":"","pairs":[],"voice_text":""}}
-
-Тип "choice" (один вариант из 4):
-{{"task_type":"choice","title":"Выбери перевод","statement":"Как переводится 'дом'?","correct_answer":"өй","options":[{{"text":"өй","is_correct":true}},{{"text":"су","is_correct":false}},{{"text":"урман","is_correct":false}},{{"text":"яңгыр","is_correct":false}}],"points":100,"max_attempts":5,"build_word":"","build_hint":"","pairs":[],"voice_text":""}}
-ВАЖНО: правильный вариант — ровно один, всего 4 варианта. Дистракторы — реальные татарские слова с других тем.
-
-Тип "build" (собери слово):
-{{"task_type":"build","title":"Собери слово","statement":"Собери татарское слово, означающее 'дом'","build_word":"өй","build_hint":"дом","correct_answer":"","options":[],"pairs":[],"voice_text":"","points":100,"max_attempts":5}}
-
-Тип "pairs" (найди пару — минимум 3 пары):
-{{"task_type":"pairs","title":"Найди пары","statement":"Соедини татарские слова с русскими переводами","pairs":[["өй","дом"],["су","вода"],["урман","лес"]],"correct_answer":"","options":[],"build_word":"","build_hint":"","voice_text":"","points":100,"max_attempts":3}}
-
-Тип "voice" (голосовой ответ):
-{{"task_type":"voice","title":"Произнеси слово","statement":"Произнеси слово вслух: өй","voice_text":"өй","correct_answer":"өй","options":[],"build_word":"","build_hint":"","pairs":[],"points":100,"max_attempts":5}}
-
-Требования:
-- points: 100 для обычных, 150 для pairs, 80 для build
-- max_attempts: 5 (3 для pairs)
-- statement, title — на русском
-- Татарские слова — только из предоставленного списка
-- Отвечай ТОЛЬКО JSON-массивом, без пояснений и markdown
-"""
-
-
-def generate_competition_tasks(
-    theme: str,
-    n_tasks: int = 5,
-    task_types: list[str] | None = None,
-    words: list[dict] | None = None,
-) -> list[dict] | None:
-    """
-    Генерирует задачи для соревнования.
-    words — список {tatar, russian}. Если не передан — генерируется через generate_words.
-    """
-    if not task_types:
-        task_types = ["text", "choice", "build"]
-
-    # Слова
-    if not words:
-        words = generate_words(theme=theme, n=15) or []
-    if len(words) < 5:
-        return None
-
-    # Собираем блок слов
-    words_block = "\n".join(
-        f"- {w['tatar']} — {w['russian']}" for w in words
-    )
-    types_str = ", ".join(task_types)
-
-    prompt = COMPETITION_TASKS_PROMPT.format(
-        n=n_tasks,
-        theme=theme,
-        words_block=words_block,
-        types=types_str,
-    )
-
-    client = LLMClient(profile="json")
-    result = client.generate_json(prompt, max_tokens=4000)
-
-    if not isinstance(result, list):
-        return None
-
-    # Валидация
-    valid_types = {"text", "choice", "multiple_choice", "build", "pairs", "voice"}
-    cleaned = []
-    for t in result:
-        if not isinstance(t, dict):
-            continue
-        ttype = t.get("task_type")
-        if ttype not in valid_types:
-            continue
-        if not t.get("title") or not t.get("statement"):
-            continue
-
-        cleaned.append({
-            "title": str(t.get("title", "")).strip()[:255],
-            "statement": str(t.get("statement", "")).strip(),
-            "task_type": ttype,
-            "correct_answer": str(t.get("correct_answer", "")).strip(),
-            "options": t.get("options", []) if isinstance(t.get("options"), list) else [],
-            "build_word": str(t.get("build_word", "")).strip(),
-            "build_hint": str(t.get("build_hint", "")).strip(),
-            "pairs": t.get("pairs", []) if isinstance(t.get("pairs"), list) else [],
-            "voice_text": str(t.get("voice_text", "")).strip(),
-            "points": int(t.get("points", 100)),
-            "max_attempts": int(t.get("max_attempts", 5)),
+    def _push(tatar: str, russian: str, ex_tt: str = "", ex_ru: str = ""):
+        key = (tatar or "").strip().lower()
+        if not key or key in seen:
+            return
+        seen.add(key)
+        words.append({
+            "tatar": tatar.strip(),
+            "russian": russian.strip(),
+            "example_tt": (ex_tt or "").strip(),
+            "example_ru": (ex_ru or "").strip(),
         })
 
-    return cleaned or None
+    if use_dictionary:
+        db_qs = (
+            Word.objects
+            .filter(Q(theme=theme) | Q(russian__icontains=theme))
+            .values("tatar", "russian", "example_tt", "example_ru")[:count]
+        )
+        for w in db_qs:
+            _push(w["tatar"], w["russian"], w["example_tt"], w["example_ru"])
+
+    if len(words) < count:
+        need = count - len(words)
+        generated = generate_words(theme=theme, n=need) or []
+        for g in generated:
+            _push(
+                g.get("tatar", ""),
+                g.get("russian", ""),
+                g.get("example_tt", ""),
+                g.get("example_ru", ""),
+            )
+
+    return words
+
+
+BLOCK_POINTS = {
+    "audio": 10,
+    "translate": 10,
+    "build": 15,
+    "quick": 10,
+    "gap": 10,
+    "pairs": 20,
+}
+
+def _make_gap_sentence(w: dict) -> str:
+    """Строит предложение с пропуском ___ из example_tt."""
+    ex = (w.get("example_tt") or "").strip()
+    tatar = (w.get("tatar") or "").strip()
+
+    if ex and tatar:
+        if tatar in ex:
+            return ex.replace(tatar, "___", 1)
+        idx = ex.lower().find(tatar.lower())
+        if idx >= 0:
+            return ex[:idx] + "___" + ex[idx + len(tatar):]
+        return f"___ {ex}"
+    if ex:
+        return ex
+    return "___"
+
+
+def generate_lesson_blocks(
+    theme: str,
+    types: list[str] | None = None,
+    count: int = 8,
+    use_dictionary: bool = True,
+) -> list[dict] | None:
+    """
+    Собирает блоки для урока по теме.
+    Возвращает список {type, points, config} — как в lesson_builder.
+    """
+    valid = {"audio", "translate", "build", "quick", "gap", "pairs"}
+    if not types:
+        types = ["translate", "build"]
+    types = [t for t in types if t in valid]
+    if not types:
+        types = ["translate"]
+
+    count = max(3, min(int(count), 20))
+
+    # Один слот забирает pairs, если он в выбранных типах
+    use_pairs = "pairs" in types
+    non_pairs = [t for t in types if t != "pairs"]
+
+    # Слов нужно примерно столько же, сколько блоков + запас на pairs
+    words_needed = count + (4 if use_pairs else 0)
+    words = _fetch_lesson_words(theme, words_needed, use_dictionary)
+
+    min_words = max(3, count) if not use_pairs else 4
+    if len(words) < min_words:
+        return None
+
+    blocks: list[dict] = []
+
+    # Сначала обычные блоки (round-robin по выбранным типам)
+    n_regular = count - (1 if use_pairs else 0)
+    if n_regular < 1:
+        n_regular = 1
+
+    regular_types = non_pairs or ["translate"]
+    for i in range(n_regular):
+        if i >= len(words):
+            break
+        w = words[i]
+        t = regular_types[i % len(regular_types)]
+
+        if t == "build":
+            config = {
+                "word": w["tatar"],  # правильный ответ (собирается)
+                "correct": w["russian"],  # подсказка
+            }
+        elif t == "gap":
+            config = {
+                "sentence": _make_gap_sentence(w),  # "Мин ___ укыйм."
+                "correct": w["tatar"],  # ответ
+                "hint": w["russian"],  # перевод предложения
+                "word": w["tatar"],  # legacy
+            }
+        else:
+            config = {
+                "word": w["tatar"],
+                "correct": w["russian"],
+            }
+
+        blocks.append({
+            "type": t,
+            "points": BLOCK_POINTS.get(t, 10),
+            "config": config,
+        })
+
+    # Пары — один блок с 4–5 словами
+    if use_pairs:
+        pair_words = words[:5]
+        if len(pair_words) >= 3:
+            blocks.append({
+                "type": "pairs",
+                "points": BLOCK_POINTS["pairs"],
+                "config": {
+                    "pairs": [[w["tatar"], w["russian"]] for w in pair_words],
+                },
+            })
+
+    return blocks or None

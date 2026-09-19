@@ -21,7 +21,7 @@
     "fields": {
       "tatar": "Әни",
       "russian": "Мама",
-      "transcription": "әни",
+      "transcription": "эни",
       "example_tt": "Әни өйдә",
       "example_ru": "Мама дома",
       "theme": "family",
@@ -37,7 +37,7 @@
     "fields": {
       "tatar": "Әти",
       "russian": "Папа",
-      "transcription": "әти",
+      "transcription": "эти",
       "example_tt": "Әти эштә",
       "example_ru": "Папа на работе",
       "theme": "family",
@@ -85,7 +85,7 @@
     "fields": {
       "tatar": "Чәй",
       "russian": "Чай",
-      "transcription": "чәй",
+      "transcription": "чэй",
       "example_tt": "Чәй эчәм",
       "example_ru": "Пью чай",
       "theme": "food",
@@ -117,7 +117,7 @@
     "fields": {
       "tatar": "Сөт",
       "russian": "Молоко",
-      "transcription": "сөт",
+      "transcription": "сот",
       "example_tt": "Сөт эчәм",
       "example_ru": "Пью молоко",
       "theme": "food",
@@ -149,7 +149,7 @@
     "fields": {
       "tatar": "Мәктәп",
       "russian": "Школа",
-      "transcription": "мәктәп",
+      "transcription": "мэктэп",
       "example_tt": "Мин мәктәпкә барам",
       "example_ru": "Я иду в школу",
       "theme": "school",
@@ -197,7 +197,7 @@
     "fields": {
       "tatar": "Өстәл",
       "russian": "Стол",
-      "transcription": "өстәл",
+      "transcription": "остэл",
       "example_tt": "Өстәлдә китап",
       "example_ru": "На столе книга",
       "theme": "home",
@@ -245,7 +245,7 @@
     "fields": {
       "tatar": "Тәрәзә",
       "russian": "Окно",
-      "transcription": "тәрәзә",
+      "transcription": "тэрэзэ",
       "example_tt": "Тәрәзәдән карыйм",
       "example_ru": "Смотрю из окна",
       "theme": "home",
@@ -277,7 +277,7 @@
     "fields": {
       "tatar": "Мәче",
       "russian": "Кошка",
-      "transcription": "мәче",
+      "transcription": "мэче",
       "example_tt": "Мәче йоклый",
       "example_ru": "Кошка спит",
       "theme": "animals",
@@ -309,7 +309,7 @@
     "fields": {
       "tatar": "Сыер",
       "russian": "Корова",
-      "transcription": "сыйыр",
+      "transcription": "сыер",
       "example_tt": "Сыер утла",
       "example_ru": "Корова пасётся",
       "theme": "animals",
@@ -357,7 +357,7 @@
     "fields": {
       "tatar": "Җир",
       "russian": "Земля",
-      "transcription": "җир",
+      "transcription": "джир",
       "example_tt": "Җир матур",
       "example_ru": "Земля красивая",
       "theme": "nature",
@@ -421,7 +421,7 @@
     "fields": {
       "tatar": "Көн",
       "russian": "День",
-      "transcription": "көн",
+      "transcription": "кон",
       "example_tt": "Көн аяз",
       "example_ru": "День ясный",
       "theme": "time",
@@ -437,7 +437,7 @@
     "fields": {
       "tatar": "Төн",
       "russian": "Ночь",
-      "transcription": "төн",
+      "transcription": "тон",
       "example_tt": "Төн караңгы",
       "example_ru": "Ночь тёмная",
       "theme": "time",
@@ -453,7 +453,7 @@
     "fields": {
       "tatar": "Иртә",
       "russian": "Утро",
-      "transcription": "иртә",
+      "transcription": "иртэ",
       "example_tt": "Иртә таң",
       "example_ru": "Раннее утро",
       "theme": "time",
@@ -501,7 +501,7 @@
     "fields": {
       "tatar": "Бүлмә",
       "russian": "Комната",
-      "transcription": "бүлмә",
+      "transcription": "булмэ",
       "example_tt": "Бүлмә чиста",
       "example_ru": "Комната чистая",
       "theme": "home",
@@ -549,7 +549,7 @@
     "fields": {
       "tatar": "Идән",
       "russian": "Пол",
-      "transcription": "идән",
+      "transcription": "идэн",
       "example_tt": "Идән юылды",
       "example_ru": "Пол вымыт",
       "theme": "home",
@@ -565,7 +565,7 @@
     "fields": {
       "tatar": "Түшәм",
       "russian": "Потолок",
-      "transcription": "түшәм",
+      "transcription": "тушэм",
       "example_tt": "Түшәм биек",
       "example_ru": "Потолок высокий",
       "theme": "home",
@@ -597,7 +597,7 @@
     "fields": {
       "tatar": "Түбә",
       "russian": "Крыша",
-      "transcription": "түбә",
+      "transcription": "тубэ",
       "example_tt": "Түбә яшел",
       "example_ru": "Крыша зелёная",
       "theme": "home",
@@ -661,7 +661,7 @@
     "fields": {
       "tatar": "Келәм",
       "russian": "Ковёр",
-      "transcription": "келәм",
+      "transcription": "келэм",
       "example_tt": "Келәм матур",
       "example_ru": "Ковёр красивый",
       "theme": "home",
@@ -677,7 +677,7 @@
     "fields": {
       "tatar": "Пәрдә",
       "russian": "Занавеска",
-      "transcription": "пәрдә",
+      "transcription": "пэрдэ",
       "example_tt": "Пәрдә ачык",
       "example_ru": "Занавеска открыта",
       "theme": "home",
@@ -709,7 +709,7 @@
     "fields": {
       "tatar": "Мендәр",
       "russian": "Подушка",
-      "transcription": "мендәр",
+      "transcription": "мендэр",
       "example_tt": "Мендәр йомшак",
       "example_ru": "Подушка мягкая",
       "theme": "home",
@@ -773,7 +773,7 @@
     "fields": {
       "tatar": "Киштә",
       "russian": "Полка",
-      "transcription": "киштә",
+      "transcription": "киштэ",
       "example_tt": "Китап киштәсе",
       "example_ru": "Книжная полка",
       "theme": "home",
@@ -837,7 +837,7 @@
     "fields": {
       "tatar": "Күз",
       "russian": "Глаз",
-      "transcription": "күз",
+      "transcription": "куз",
       "example_tt": "Күзләрем зәңгәр",
       "example_ru": "Мои глаза голубые",
       "theme": "body",
@@ -965,7 +965,7 @@
     "fields": {
       "tatar": "Йөрәк",
       "russian": "Сердце",
-      "transcription": "йөрәк",
+      "transcription": "йорэк",
       "example_tt": "Йөрәк тибә",
       "example_ru": "Сердце бьётся",
       "theme": "body",
@@ -997,7 +997,7 @@
     "fields": {
       "tatar": "Үпкә",
       "russian": "Лёгкие",
-      "transcription": "үпкә",
+      "transcription": "упкэ",
       "example_tt": "Үпкәләрем сау",
       "example_ru": "Мои лёгкие здоровы",
       "theme": "body",
@@ -1029,7 +1029,7 @@
     "fields": {
       "tatar": "Күлмәк",
       "russian": "Платье, рубашка",
-      "transcription": "күлмәк",
+      "transcription": "кулмэк",
       "example_tt": "Күлмәк кидем",
       "example_ru": "Надела платье",
       "theme": "clothing",
@@ -1061,7 +1061,7 @@
     "fields": {
       "tatar": "Итәк",
       "russian": "Юбка",
-      "transcription": "итәк",
+      "transcription": "итэк",
       "example_tt": "Итәк озын",
       "example_ru": "Юбка длинная",
       "theme": "clothing",
@@ -1093,7 +1093,7 @@
     "fields": {
       "tatar": "Пәлтә",
       "russian": "Пальто",
-      "transcription": "пәлтә",
+      "transcription": "пэлтэ",
       "example_tt": "Пәлтә кидем",
       "example_ru": "Надел пальто",
       "theme": "clothing",
@@ -1109,7 +1109,7 @@
     "fields": {
       "tatar": "Бүрек",
       "russian": "Меховая шапка",
-      "transcription": "бүрек",
+      "transcription": "бурек",
       "example_tt": "Бүрек кидем",
       "example_ru": "Надел шапку",
       "theme": "clothing",
@@ -1157,7 +1157,7 @@
     "fields": {
       "tatar": "Бияләй",
       "russian": "Варежки",
-      "transcription": "бияләй",
+      "transcription": "биялэй",
       "example_tt": "Бияләй кидем",
       "example_ru": "Надел варежки",
       "theme": "clothing",
@@ -1205,7 +1205,7 @@
     "fields": {
       "tatar": "Түбәтәй",
       "russian": "Тюбетейка",
-      "transcription": "түбәтәй",
+      "transcription": "тубэтэй",
       "example_tt": "Түбәтәй кидем",
       "example_ru": "Надел тюбетейку",
       "theme": "clothing",
@@ -1365,7 +1365,7 @@
     "fields": {
       "tatar": "Зәңгәр",
       "russian": "Синий",
-      "transcription": "зәңгәр",
+      "transcription": "зэнггэр",
       "example_tt": "Зәңгәр күк",
       "example_ru": "Синее небо",
       "theme": "colors",
@@ -1381,7 +1381,7 @@
     "fields": {
       "tatar": "Күк",
       "russian": "Голубой",
-      "transcription": "күк",
+      "transcription": "кук",
       "example_tt": "Күк чәчәк",
       "example_ru": "Голубой цветок",
       "theme": "colors",
@@ -1413,7 +1413,7 @@
     "fields": {
       "tatar": "Көрән",
       "russian": "Коричневый",
-      "transcription": "көрән",
+      "transcription": "корэн",
       "example_tt": "Көрән аю",
       "example_ru": "Бурый медведь",
       "theme": "colors",
@@ -1429,7 +1429,7 @@
     "fields": {
       "tatar": "Шәмәхә",
       "russian": "Фиолетовый",
-      "transcription": "шәмәхә",
+      "transcription": "шэмэхэ",
       "example_tt": "Шәмәхә чәчәк",
       "example_ru": "Фиолетовый цветок",
       "theme": "colors",
@@ -1477,7 +1477,7 @@
     "fields": {
       "tatar": "Өч",
       "russian": "Три",
-      "transcription": "өч",
+      "transcription": "оч",
       "example_tt": "Өч мәче",
       "example_ru": "Три кошки",
       "theme": "numbers",
@@ -1493,7 +1493,7 @@
     "fields": {
       "tatar": "Дүрт",
       "russian": "Четыре",
-      "transcription": "дүрт",
+      "transcription": "дурт",
       "example_tt": "Дүрт эт",
       "example_ru": "Четыре собаки",
       "theme": "numbers",
@@ -1541,7 +1541,7 @@
     "fields": {
       "tatar": "Җиде",
       "russian": "Семь",
-      "transcription": "җиде",
+      "transcription": "джиде",
       "example_tt": "Җиде йолдыз",
       "example_ru": "Семь звёзд",
       "theme": "numbers",
@@ -1621,7 +1621,7 @@
     "fields": {
       "tatar": "Дияргә",
       "russian": "Сказать",
-      "transcription": "дияргә",
+      "transcription": "дияргэ",
       "example_tt": "Ул миңа диде",
       "example_ru": "Он сказал мне",
       "theme": "verbs",
@@ -1653,7 +1653,7 @@
     "fields": {
       "tatar": "Итәргә",
       "russian": "Делать",
-      "transcription": "итәргә",
+      "transcription": "итэргэ",
       "example_tt": "Эш итәм",
       "example_ru": "Делаю работу",
       "theme": "verbs",
@@ -1669,7 +1669,7 @@
     "fields": {
       "tatar": "Эшләргә",
       "russian": "Работать",
-      "transcription": "эшләргә",
+      "transcription": "эшлэргэ",
       "example_tt": "Мин эшлим",
       "example_ru": "Я работаю",
       "theme": "verbs",
@@ -1685,7 +1685,7 @@
     "fields": {
       "tatar": "Бирергә",
       "russian": "Давать",
-      "transcription": "бирергә",
+      "transcription": "бирергэ",
       "example_tt": "Миңа бир",
       "example_ru": "Дай мне",
       "theme": "verbs",
@@ -1701,7 +1701,7 @@
     "fields": {
       "tatar": "Килергә",
       "russian": "Приходить",
-      "transcription": "килергә",
+      "transcription": "килергэ",
       "example_tt": "Кил монда",
       "example_ru": "Приходи сюда",
       "theme": "verbs",
@@ -1733,7 +1733,7 @@
     "fields": {
       "tatar": "Әйтергә",
       "russian": "Говорить",
-      "transcription": "әйтергә",
+      "transcription": "эйтергэ",
       "example_tt": "Татарча әйтәм",
       "example_ru": "Говорю по-татарски",
       "theme": "verbs",
@@ -1781,7 +1781,7 @@
     "fields": {
       "tatar": "Күрергә",
       "russian": "Видеть",
-      "transcription": "күрергә",
+      "transcription": "курергэ",
       "example_tt": "Кояш күрәм",
       "example_ru": "Вижу солнце",
       "theme": "verbs",
@@ -1813,7 +1813,7 @@
     "fields": {
       "tatar": "Үтәргә",
       "russian": "Проходить",
-      "transcription": "үтәргә",
+      "transcription": "утэргэ",
       "example_tt": "Вакыт үтә",
       "example_ru": "Время проходит",
       "theme": "verbs",
@@ -1829,7 +1829,7 @@
     "fields": {
       "tatar": "Керергә",
       "russian": "Входить",
-      "transcription": "керергә",
+      "transcription": "керергэ",
       "example_tt": "Өйгә керәм",
       "example_ru": "Вхожу в дом",
       "theme": "verbs",
@@ -1893,7 +1893,7 @@
     "fields": {
       "tatar": "Яшәргә",
       "russian": "Жить",
-      "transcription": "яшәргә",
+      "transcription": "яшэргэ",
       "example_tt": "Бәхетле яшим",
       "example_ru": "Живу счастливо",
       "theme": "verbs",
@@ -1925,7 +1925,7 @@
     "fields": {
       "tatar": "Белергә",
       "russian": "Знать",
-      "transcription": "белергә",
+      "transcription": "белергэ",
       "example_tt": "Татарча беләм",
       "example_ru": "Знаю татарский",
       "theme": "verbs",
@@ -1941,7 +1941,7 @@
     "fields": {
       "tatar": "Күрсәтергә",
       "russian": "Показывать",
-      "transcription": "күрсәтергә",
+      "transcription": "курсэтергэ",
       "example_tt": "Юлны күрсәтәм",
       "example_ru": "Показываю дорогу",
       "theme": "verbs",
@@ -2053,7 +2053,7 @@
     "fields": {
       "tatar": "Эчәргә",
       "russian": "Пить",
-      "transcription": "эчәргә",
+      "transcription": "эчэргэ",
       "example_tt": "Су эчәм",
       "example_ru": "Пью воду",
       "theme": "verbs",
@@ -2133,7 +2133,7 @@
     "fields": {
       "tatar": "Йөгерергә",
       "russian": "Бегать",
-      "transcription": "йөгерергә",
+      "transcription": "йогерергэ",
       "example_tt": "Паркта йөгерәм",
       "example_ru": "Бегаю в парке",
       "theme": "verbs",
@@ -2149,7 +2149,7 @@
     "fields": {
       "tatar": "Йөзәргә",
       "russian": "Плавать",
-      "transcription": "йөзәргә",
+      "transcription": "йозэргэ",
       "example_tt": "Суда йөзәм",
       "example_ru": "Плаваю в воде",
       "theme": "verbs",
@@ -2181,7 +2181,7 @@
     "fields": {
       "tatar": "Сөйләргә",
       "russian": "Говорить",
-      "transcription": "сөйләргә",
+      "transcription": "сойлэргэ",
       "example_tt": "Русча сөйләшәм",
       "example_ru": "Говорю по-русски",
       "theme": "verbs",
@@ -2197,7 +2197,7 @@
     "fields": {
       "tatar": "Тыңларга",
       "russian": "Слушать",
-      "transcription": "тыңларга",
+      "transcription": "тынгларга",
       "example_tt": "Музыка тыңлыйм",
       "example_ru": "Слушаю музыку",
       "theme": "verbs",
@@ -2213,7 +2213,7 @@
     "fields": {
       "tatar": "Аңларга",
       "russian": "Понимать",
-      "transcription": "аңларга",
+      "transcription": "англарга",
       "example_tt": "Сине аңлыйм",
       "example_ru": "Понимаю тебя",
       "theme": "verbs",
@@ -2245,7 +2245,7 @@
     "fields": {
       "tatar": "Хәтерләргә",
       "russian": "Помнить",
-      "transcription": "хәтерләргә",
+      "transcription": "хэтерлэргэ",
       "example_tt": "Сине хәтерлим",
       "example_ru": "Помню тебя",
       "theme": "verbs",
@@ -2293,7 +2293,7 @@
     "fields": {
       "tatar": "Көләргә",
       "russian": "Смеяться",
-      "transcription": "көләргә",
+      "transcription": "колэргэ",
       "example_tt": "Балалар көлә",
       "example_ru": "Дети смеются",
       "theme": "verbs",
@@ -2309,7 +2309,7 @@
     "fields": {
       "tatar": "Еларга",
       "russian": "Плакать",
-      "transcription": "еларга",
+      "transcription": "эларга",
       "example_tt": "Бала елый",
       "example_ru": "Ребёнок плачет",
       "theme": "verbs",
@@ -2325,7 +2325,7 @@
     "fields": {
       "tatar": "Җырларга",
       "russian": "Петь",
-      "transcription": "җырларга",
+      "transcription": "джырларга",
       "example_tt": "Җыр җырлыйм",
       "example_ru": "Пою песню",
       "theme": "verbs",
@@ -2341,7 +2341,7 @@
     "fields": {
       "tatar": "Бие́ргә",
       "russian": "Танцевать",
-      "transcription": "биергә",
+      "transcription": "бие́ргэ",
       "example_tt": "Биибез",
       "example_ru": "Танцуем",
       "theme": "verbs",
@@ -2373,7 +2373,7 @@
     "fields": {
       "tatar": "Йөзәргә",
       "russian": "Плавать",
-      "transcription": "йөзәргә",
+      "transcription": "йозэргэ",
       "example_tt": "Елгада йөзәм",
       "example_ru": "Плаваю в реке",
       "theme": "verbs",
@@ -2389,7 +2389,7 @@
     "fields": {
       "tatar": "Чәчәргә",
       "russian": "Сеять",
-      "transcription": "чәчәргә",
+      "transcription": "чэчэргэ",
       "example_tt": "Иген чәчәм",
       "example_ru": "Сею зерно",
       "theme": "verbs",
@@ -2421,7 +2421,7 @@
     "fields": {
       "tatar": "Пешерергә",
       "russian": "Варить",
-      "transcription": "пешерергә",
+      "transcription": "пешерергэ",
       "example_tt": "Аш пешерәм",
       "example_ru": "Варю суп",
       "theme": "verbs",
@@ -2485,7 +2485,7 @@
     "fields": {
       "tatar": "Җыярга",
       "russian": "Собирать",
-      "transcription": "җыярга",
+      "transcription": "джыярга",
       "example_tt": "Уенчыклар җыям",
       "example_ru": "Собираю игрушки",
       "theme": "verbs",
@@ -2501,7 +2501,7 @@
     "fields": {
       "tatar": "Бүләргә",
       "russian": "Делить",
-      "transcription": "бүләргә",
+      "transcription": "булэргэ",
       "example_tt": "Алма бүләм",
       "example_ru": "Делю яблоко",
       "theme": "verbs",
@@ -2549,7 +2549,7 @@
     "fields": {
       "tatar": "Түләргә",
       "russian": "Платить",
-      "transcription": "түләргә",
+      "transcription": "тулэргэ",
       "example_tt": "Акча түлим",
       "example_ru": "Плачу деньги",
       "theme": "verbs",
@@ -2581,7 +2581,7 @@
     "fields": {
       "tatar": "Үлчәргә",
       "russian": "Мерить",
-      "transcription": "үлчәргә",
+      "transcription": "улчэргэ",
       "example_tt": "Озынлык үлчим",
       "example_ru": "Измеряю длину",
       "theme": "verbs",
@@ -2613,7 +2613,7 @@
     "fields": {
       "tatar": "Этәргә",
       "russian": "Толкать",
-      "transcription": "этәргә",
+      "transcription": "этэргэ",
       "example_tt": "Ишек этәм",
       "example_ru": "Толкаю дверь",
       "theme": "verbs",
@@ -2629,7 +2629,7 @@
     "fields": {
       "tatar": "Күтәрергә",
       "russian": "Поднимать",
-      "transcription": "күтәрергә",
+      "transcription": "кутэрергэ",
       "example_tt": "Таш күтәрәм",
       "example_ru": "Поднимаю камень",
       "theme": "verbs",
@@ -2645,7 +2645,7 @@
     "fields": {
       "tatar": "Төшрергә",
       "russian": "Опускать",
-      "transcription": "төшрергә",
+      "transcription": "тошрергэ",
       "example_tt": "Йөкне төшерәм",
       "example_ru": "Опускаю груз",
       "theme": "verbs",
@@ -2677,7 +2677,7 @@
     "fields": {
       "tatar": "Чәнергә",
       "russian": "Колоть",
-      "transcription": "чәнергә",
+      "transcription": "чэнергэ",
       "example_tt": "Утын чәнәм",
       "example_ru": "Колю дрова",
       "theme": "verbs",
@@ -2693,7 +2693,7 @@
     "fields": {
       "tatar": "Кирергә",
       "russian": "Резать",
-      "transcription": "кирергә",
+      "transcription": "кирергэ",
       "example_tt": "Ипи кисәм",
       "example_ru": "Режу хлеб",
       "theme": "verbs",
@@ -2709,7 +2709,7 @@
     "fields": {
       "tatar": "Тегәргә",
       "russian": "Шить",
-      "transcription": "тегәргә",
+      "transcription": "тегэргэ",
       "example_tt": "Күлмәк тегәм",
       "example_ru": "Шью платье",
       "theme": "verbs",
@@ -2725,7 +2725,7 @@
     "fields": {
       "tatar": "Бәйләргә",
       "russian": "Вязать",
-      "transcription": "бәйләргә",
+      "transcription": "бэйлэргэ",
       "example_tt": "Бияләй бәйлим",
       "example_ru": "Вяжу варежки",
       "theme": "verbs",
@@ -2741,7 +2741,7 @@
     "fields": {
       "tatar": "Чигәргә",
       "russian": "Вышивать",
-      "transcription": "чигәргә",
+      "transcription": "чигэргэ",
       "example_tt": "Чигү чигәм",
       "example_ru": "Вышиваю вышивку",
       "theme": "verbs",
@@ -2789,7 +2789,7 @@
     "fields": {
       "tatar": "Төзәтергә",
       "russian": "Исправлять",
-      "transcription": "төзәтергә",
+      "transcription": "тозэтергэ",
       "example_tt": "Хатаны төзәтәм",
       "example_ru": "Исправляю ошибку",
       "theme": "verbs",
@@ -2805,7 +2805,7 @@
     "fields": {
       "tatar": "Җимерergә",
       "russian": "Ломать",
-      "transcription": "җимерергә",
+      "transcription": "джимерergэ",
       "example_tt": "Өй җимерәм",
       "example_ru": "Ломаю дом",
       "theme": "verbs",
@@ -2837,7 +2837,7 @@
     "fields": {
       "tatar": "Төзергә",
       "russian": "Строить",
-      "transcription": "төзергә",
+      "transcription": "тозергэ",
       "example_tt": "Күпер төзим",
       "example_ru": "Строю мост",
       "theme": "verbs",
@@ -2901,7 +2901,7 @@
     "fields": {
       "tatar": "Җылытырга",
       "russian": "Греть",
-      "transcription": "җылытырга",
+      "transcription": "джылытырга",
       "example_tt": "Чәй җылытам",
       "example_ru": "Грею чай",
       "theme": "verbs",
@@ -2949,7 +2949,7 @@
     "fields": {
       "tatar": "Сүндерергә",
       "russian": "Тушить",
-      "transcription": "сүндерергә",
+      "transcription": "сундерергэ",
       "example_tt": "Ут сүндерәм",
       "example_ru": "Тушу огонь",
       "theme": "verbs",
@@ -2997,7 +2997,7 @@
     "fields": {
       "tatar": "Бикләргә",
       "russian": "Запирать",
-      "transcription": "бикләргә",
+      "transcription": "биклэргэ",
       "example_tt": "Ишек биклим",
       "example_ru": "Запираю дверь",
       "theme": "verbs",
@@ -3029,7 +3029,7 @@
     "fields": {
       "tatar": "Этәргә",
       "russian": "Толкать",
-      "transcription": "этәргә",
+      "transcription": "этэргэ",
       "example_tt": "Арба этәм",
       "example_ru": "Толкаю телегу",
       "theme": "verbs",
@@ -3077,7 +3077,7 @@
     "fields": {
       "tatar": "Бирелергә",
       "russian": "Сдаваться",
-      "transcription": "бирелергә",
+      "transcription": "бирелергэ",
       "example_tt": "Бирелмә",
       "example_ru": "Не сдавайся",
       "theme": "verbs",
@@ -3093,7 +3093,7 @@
     "fields": {
       "tatar": "Җиңәргә",
       "russian": "Побеждать",
-      "transcription": "җиңәргә",
+      "transcription": "джингэргэ",
       "example_tt": "Ярышта җиңәм",
       "example_ru": "Побеждаю в соревновании",
       "theme": "verbs",
@@ -3109,7 +3109,7 @@
     "fields": {
       "tatar": "Җиңелергә",
       "russian": "Проигрывать",
-      "transcription": "җиңелергә",
+      "transcription": "джингелергэ",
       "example_tt": "Уенда җиңелдем",
       "example_ru": "Проиграл в игре",
       "theme": "verbs",
@@ -3125,7 +3125,7 @@
     "fields": {
       "tatar": "Ярдәм итәргә",
       "russian": "Помогать",
-      "transcription": "ярдәм итәргә",
+      "transcription": "ярдэм итэргэ",
       "example_tt": "Әнигә ярдәм итәм",
       "example_ru": "Помогаю маме",
       "theme": "verbs",
@@ -3157,7 +3157,7 @@
     "fields": {
       "tatar": "Җавап бирергә",
       "russian": "Отвечать",
-      "transcription": "җавап бирергә",
+      "transcription": "джавап бирергэ",
       "example_tt": "Сорауга җавап бирәм",
       "example_ru": "Отвечаю на вопрос",
       "theme": "verbs",
@@ -3189,7 +3189,7 @@
     "fields": {
       "tatar": "Әйтергә",
       "russian": "Сказать",
-      "transcription": "әйтергә",
+      "transcription": "эйтергэ",
       "example_tt": "Хәбәр әйтәм",
       "example_ru": "Говорю новость",
       "theme": "verbs",
@@ -3221,7 +3221,7 @@
     "fields": {
       "tatar": "Кечкенә",
       "russian": "Маленький",
-      "transcription": "кечкенә",
+      "transcription": "кечкенэ",
       "example_tt": "Кечкенә бала",
       "example_ru": "Маленький ребёнок",
       "theme": "adjectives",
@@ -3285,7 +3285,7 @@
     "fields": {
       "tatar": "Яңа",
       "russian": "Новый",
-      "transcription": "яңа",
+      "transcription": "янга",
       "example_tt": "Яңа китап",
       "example_ru": "Новая книга",
       "theme": "adjectives",
@@ -3397,7 +3397,7 @@
     "fields": {
       "tatar": "Тәбәнәк",
       "russian": "Низкий",
-      "transcription": "тәбәнәк",
+      "transcription": "тэбэнэк",
       "example_tt": "Тәбәнәк өстәл",
       "example_ru": "Низкий стол",
       "theme": "adjectives",
@@ -3413,7 +3413,7 @@
     "fields": {
       "tatar": "Киң",
       "russian": "Широкий",
-      "transcription": "киң",
+      "transcription": "кинг",
       "example_tt": "Киң урам",
       "example_ru": "Широкая улица",
       "theme": "adjectives",
@@ -3461,7 +3461,7 @@
     "fields": {
       "tatar": "Җиңел",
       "russian": "Лёгкий",
-      "transcription": "җиңел",
+      "transcription": "джингел",
       "example_tt": "Җиңел сумка",
       "example_ru": "Лёгкая сумка",
       "theme": "adjectives",
@@ -3477,7 +3477,7 @@
     "fields": {
       "tatar": "Тәмле",
       "russian": "Вкусный",
-      "transcription": "тәмле",
+      "transcription": "тэмле",
       "example_tt": "Тәмле аш",
       "example_ru": "Вкусный суп",
       "theme": "adjectives",
@@ -3605,7 +3605,7 @@
     "fields": {
       "tatar": "Бәхетле",
       "russian": "Счастливый",
-      "transcription": "бәхетле",
+      "transcription": "бэхетле",
       "example_tt": "Бәхетле бала",
       "example_ru": "Счастливый ребёнок",
       "theme": "adjectives",
@@ -3637,7 +3637,7 @@
     "fields": {
       "tatar": "Көчле",
       "russian": "Сильный",
-      "transcription": "көчле",
+      "transcription": "кочле",
       "example_tt": "Көчле җил",
       "example_ru": "Сильный ветер",
       "theme": "adjectives",
@@ -3653,7 +3653,7 @@
     "fields": {
       "tatar": "Зәгыйфь",
       "russian": "Слабый",
-      "transcription": "зәгыйфь",
+      "transcription": "зэгыйфь",
       "example_tt": "Зәгыйфь тавыш",
       "example_ru": "Слабый голос",
       "theme": "adjectives",
@@ -3701,7 +3701,7 @@
     "fields": {
       "tatar": "Җылы",
       "russian": "Тёплый",
-      "transcription": "җылы",
+      "transcription": "джылы",
       "example_tt": "Җылы көн",
       "example_ru": "Тёплый день",
       "theme": "adjectives",
@@ -3781,7 +3781,7 @@
     "fields": {
       "tatar": "Кәкре",
       "russian": "Кривой",
-      "transcription": "кәкре",
+      "transcription": "кэкре",
       "example_tt": "Кәкре агач",
       "example_ru": "Кривое дерево",
       "theme": "adjectives",
@@ -3829,7 +3829,7 @@
     "fields": {
       "tatar": "Бергә",
       "russian": "Вместе",
-      "transcription": "бергә",
+      "transcription": "бергэ",
       "example_tt": "Бергә эшлибез",
       "example_ru": "Работаем вместе",
       "theme": "adverbs",
@@ -3877,7 +3877,7 @@
     "fields": {
       "tatar": "Күп",
       "russian": "Много",
-      "transcription": "күп",
+      "transcription": "куп",
       "example_tt": "Күп китап",
       "example_ru": "Много книг",
       "theme": "adverbs",
@@ -3925,7 +3925,7 @@
     "fields": {
       "tatar": "Әле",
       "russian": "Ещё",
-      "transcription": "әле",
+      "transcription": "эле",
       "example_tt": "Әле килмәде",
       "example_ru": "Ещё не пришёл",
       "theme": "adverbs",
@@ -3957,7 +3957,7 @@
     "fields": {
       "tatar": "Бүген",
       "russian": "Сегодня",
-      "transcription": "бүген",
+      "transcription": "буген",
       "example_tt": "Бүген җылы",
       "example_ru": "Сегодня тепло",
       "theme": "adverbs",
@@ -3973,7 +3973,7 @@
     "fields": {
       "tatar": "Иртәгә",
       "russian": "Завтра",
-      "transcription": "иртәгә",
+      "transcription": "иртэгэ",
       "example_tt": "Иртәгә киләм",
       "example_ru": "Завтра приду",
       "theme": "adverbs",
@@ -3989,7 +3989,7 @@
     "fields": {
       "tatar": "Кичә",
       "russian": "Вчера",
-      "transcription": "кичә",
+      "transcription": "кичэ",
       "example_tt": "Кичә яңгыр яуды",
       "example_ru": "Вчера шёл дождь",
       "theme": "adverbs",
@@ -4005,7 +4005,7 @@
     "fields": {
       "tatar": "Хәзер",
       "russian": "Сейчас",
-      "transcription": "хәзер",
+      "transcription": "хэзер",
       "example_tt": "Хәзер эшлим",
       "example_ru": "Сейчас работаю",
       "theme": "adverbs",
@@ -4021,7 +4021,7 @@
     "fields": {
       "tatar": "Соң",
       "russian": "Поздно",
-      "transcription": "соң",
+      "transcription": "сонг",
       "example_tt": "Соң булды",
       "example_ru": "Стало поздно",
       "theme": "adverbs",
@@ -4037,7 +4037,7 @@
     "fields": {
       "tatar": "Иртә",
       "russian": "Рано",
-      "transcription": "иртә",
+      "transcription": "иртэ",
       "example_tt": "Иртә тордым",
       "example_ru": "Встал рано",
       "theme": "adverbs",
@@ -4069,7 +4069,7 @@
     "fields": {
       "tatar": "Ерак",
       "russian": "Далеко",
-      "transcription": "ерак",
+      "transcription": "эрак",
       "example_tt": "Ерак ил",
       "example_ru": "Далёкая страна",
       "theme": "adverbs",
@@ -4213,7 +4213,7 @@
     "fields": {
       "tatar": "Нәрсә",
       "russian": "Что",
-      "transcription": "нәрсә",
+      "transcription": "нэрсэ",
       "example_tt": "Нәрсә бу?",
       "example_ru": "Что это?",
       "theme": "pronouns",
@@ -4293,7 +4293,7 @@
     "fields": {
       "tatar": "Ничә",
       "russian": "Сколько",
-      "transcription": "ничә",
+      "transcription": "ничэ",
       "example_tt": "Ничә яшь?",
       "example_ru": "Сколько лет?",
       "theme": "pronouns",
@@ -4325,7 +4325,7 @@
     "fields": {
       "tatar": "Әйе",
       "russian": "Да",
-      "transcription": "әйе",
+      "transcription": "эйе",
       "example_tt": "Әйе, мин киләм",
       "example_ru": "Да, я приду",
       "theme": "particles",
@@ -4357,7 +4357,7 @@
     "fields": {
       "tatar": "Һәм",
       "russian": "И",
-      "transcription": "һәм",
+      "transcription": "хэм",
       "example_tt": "Мин һәм син",
       "example_ru": "Я и ты",
       "theme": "particles",
@@ -4373,7 +4373,7 @@
     "fields": {
       "tatar": "Әмма",
       "russian": "Но",
-      "transcription": "әмма",
+      "transcription": "эмма",
       "example_tt": "Ул килде, әмма соң",
       "example_ru": "Он пришёл, но поздно",
       "theme": "particles",
@@ -4405,7 +4405,7 @@
     "fields": {
       "tatar": "Чөнки",
       "russian": "Потому что",
-      "transcription": "чөнки",
+      "transcription": "чонки",
       "example_tt": "Килмәдем, чөнки авырдым",
       "example_ru": "Не пришёл, потому что заболел",
       "theme": "particles",
@@ -4421,7 +4421,7 @@
     "fields": {
       "tatar": "Әгәр",
       "russian": "Если",
-      "transcription": "әгәр",
+      "transcription": "эгэр",
       "example_tt": "Әгәр килсәң, шалтырат",
       "example_ru": "Если придёшь, позвони",
       "theme": "particles",
@@ -4437,7 +4437,7 @@
     "fields": {
       "tatar": "Бигрәк",
       "russian": "Особенно",
-      "transcription": "бигрәк",
+      "transcription": "бигрэк",
       "example_tt": "Бигрәк тәмле",
       "example_ru": "Особенно вкусно",
       "theme": "adverbs",
@@ -4453,7 +4453,7 @@
     "fields": {
       "tatar": "Әкренләп",
       "russian": "Постепенно",
-      "transcription": "әкренләп",
+      "transcription": "экренлэп",
       "example_tt": "Әкренләп өйрәнәм",
       "example_ru": "Постепенно учу",
       "theme": "adverbs",
@@ -4469,7 +4469,7 @@
     "fields": {
       "tatar": "Тәүлек",
       "russian": "Сутки",
-      "transcription": "тәүлек",
+      "transcription": "тэулек",
       "example_tt": "Бер тәүлек",
       "example_ru": "Одни сутки",
       "theme": "time",
@@ -4517,7 +4517,7 @@
     "fields": {
       "tatar": "Ел",
       "russian": "Год",
-      "transcription": "ел",
+      "transcription": "эл",
       "example_tt": "Яңа ел",
       "example_ru": "Новый год",
       "theme": "time",
@@ -4549,7 +4549,7 @@
     "fields": {
       "tatar": "Сәгать",
       "russian": "Час",
-      "transcription": "сәгать",
+      "transcription": "сэгать",
       "example_tt": "Бер сәгать",
       "example_ru": "Один час",
       "theme": "time",
@@ -4597,7 +4597,7 @@
     "fields": {
       "tatar": "Көндез",
       "russian": "Днём",
-      "transcription": "көндез",
+      "transcription": "кондез",
       "example_tt": "Көндез эшлим",
       "example_ru": "Днём работаю",
       "theme": "time",
@@ -4613,7 +4613,7 @@
     "fields": {
       "tatar": "Төнлә",
       "russian": "Ночью",
-      "transcription": "төнлә",
+      "transcription": "тонлэ",
       "example_tt": "Төнлә йоклыйм",
       "example_ru": "Ночью сплю",
       "theme": "time",
@@ -4629,7 +4629,7 @@
     "fields": {
       "tatar": "Иртән",
       "russian": "Утром",
-      "transcription": "иртән",
+      "transcription": "иртэн",
       "example_tt": "Иртән тордым",
       "example_ru": "Утром встал",
       "theme": "time",
@@ -4661,7 +4661,7 @@
     "fields": {
       "tatar": "Хәзерге",
       "russian": "Текущий",
-      "transcription": "хәзерге",
+      "transcription": "хэзерге",
       "example_tt": "Хәзерге вакыт",
       "example_ru": "Текущее время",
       "theme": "time",
@@ -4677,7 +4677,7 @@
     "fields": {
       "tatar": "Үткән",
       "russian": "Прошлый",
-      "transcription": "үткән",
+      "transcription": "уткэн",
       "example_tt": "Үткән ел",
       "example_ru": "Прошлый год",
       "theme": "time",
@@ -4693,7 +4693,7 @@
     "fields": {
       "tatar": "Киләчәк",
       "russian": "Будущий",
-      "transcription": "киләчәк",
+      "transcription": "килэчэк",
       "example_tt": "Киләчәк көн",
       "example_ru": "Будущий день",
       "theme": "time",
@@ -4725,7 +4725,7 @@
     "fields": {
       "tatar": "Иптәш",
       "russian": "Товарищ",
-      "transcription": "иптәш",
+      "transcription": "иптэш",
       "example_tt": "Иптәшем килде",
       "example_ru": "Товарищ пришёл",
       "theme": "people",
@@ -4837,7 +4837,7 @@
     "fields": {
       "tatar": "Әби",
       "russian": "Бабушка",
-      "transcription": "әби",
+      "transcription": "эби",
       "example_tt": "Әби өйдә",
       "example_ru": "Бабушка дома",
       "theme": "family",
@@ -4885,7 +4885,7 @@
     "fields": {
       "tatar": "Сеңел",
       "russian": "Младшая сестра",
-      "transcription": "сеңел",
+      "transcription": "сенгел",
       "example_tt": "Сеңелем укый",
       "example_ru": "Младшая сестра читает",
       "theme": "family",
@@ -4917,7 +4917,7 @@
     "fields": {
       "tatar": "Гаилә",
       "russian": "Семья",
-      "transcription": "гаилә",
+      "transcription": "гаилэ",
       "example_tt": "Безнең гаилә",
       "example_ru": "Наша семья",
       "theme": "family",
@@ -5013,7 +5013,7 @@
     "fields": {
       "tatar": "Бәрәңге",
       "russian": "Картофель",
-      "transcription": "бәрәңге",
+      "transcription": "бэрэнгге",
       "example_tt": "Бәрәңге ашыйм",
       "example_ru": "Ем картошку",
       "theme": "food",
@@ -5045,7 +5045,7 @@
     "fields": {
       "tatar": "Кәбестә",
       "russian": "Капуста",
-      "transcription": "кәбестә",
+      "transcription": "кэбестэ",
       "example_tt": "Кәбестә ашыйм",
       "example_ru": "Ем капусту",
       "theme": "food",
@@ -5109,7 +5109,7 @@
     "fields": {
       "tatar": "Җиләк",
       "russian": "Ягода",
-      "transcription": "җиләк",
+      "transcription": "джилэк",
       "example_tt": "Җиләк ашыйм",
       "example_ru": "Ем ягоду",
       "theme": "food",
@@ -5173,7 +5173,7 @@
     "fields": {
       "tatar": "Шикәр",
       "russian": "Сахар",
-      "transcription": "шикәр",
+      "transcription": "шикэр",
       "example_tt": "Шикәр салам",
       "example_ru": "Кладу сахар",
       "theme": "food",
@@ -5237,7 +5237,7 @@
     "fields": {
       "tatar": "Кәһвә",
       "russian": "Кофе",
-      "transcription": "кәһвә",
+      "transcription": "кэхвэ",
       "example_tt": "Кәһвә эчәм",
       "example_ru": "Пью кофе",
       "theme": "food",
@@ -5269,7 +5269,7 @@
     "fields": {
       "tatar": "Дөге",
       "russian": "Рис",
-      "transcription": "дөге",
+      "transcription": "доге",
       "example_tt": "Дөге ашыйм",
       "example_ru": "Ем рис",
       "theme": "food",
@@ -5381,7 +5381,7 @@
     "fields": {
       "tatar": "Чәкчәк",
       "russian": "Чак-чак",
-      "transcription": "чәкчәк",
+      "transcription": "чэкчэк",
       "example_tt": "Чәкчәк ашыйм",
       "example_ru": "Ем чак-чак",
       "theme": "food",
@@ -5397,7 +5397,7 @@
     "fields": {
       "tatar": "Өчпочмак",
       "russian": "Треугольник (эчпочмак)",
-      "transcription": "өчпочмак",
+      "transcription": "очпочмак",
       "example_tt": "Өчпочмак ашыйм",
       "example_ru": "Ем эчпочмак",
       "theme": "food",
@@ -5461,7 +5461,7 @@
     "fields": {
       "tatar": "Үрдәк",
       "russian": "Утка",
-      "transcription": "үрдәк",
+      "transcription": "урдэк",
       "example_tt": "Үрдәк йөзә",
       "example_ru": "Утка плавает",
       "theme": "animals",
@@ -5493,7 +5493,7 @@
     "fields": {
       "tatar": "Бүре",
       "russian": "Волк",
-      "transcription": "бүре",
+      "transcription": "буре",
       "example_tt": "Бүре урманда",
       "example_ru": "Волк в лесу",
       "theme": "animals",
@@ -5509,7 +5509,7 @@
     "fields": {
       "tatar": "Төлке",
       "russian": "Лиса",
-      "transcription": "төлке",
+      "transcription": "толке",
       "example_tt": "Төлке хәйләкәр",
       "example_ru": "Лиса хитрая",
       "theme": "animals",
@@ -5653,7 +5653,7 @@
     "fields": {
       "tatar": "Кәҗә",
       "russian": "Коза",
-      "transcription": "кәҗә",
+      "transcription": "кэджэ",
       "example_tt": "Кәҗә утла",
       "example_ru": "Коза пасётся",
       "theme": "animals",
@@ -5685,7 +5685,7 @@
     "fields": {
       "tatar": "Дуңгыз",
       "russian": "Свинья",
-      "transcription": "дуңгыз",
+      "transcription": "дунггыз",
       "example_tt": "Дуңгыз пычрак",
       "example_ru": "Свинья грязная",
       "theme": "animals",
@@ -5701,7 +5701,7 @@
     "fields": {
       "tatar": "Ишәк",
       "russian": "Осёл",
-      "transcription": "ишәк",
+      "transcription": "ишэк",
       "example_tt": "Ишәк йөк тарта",
       "example_ru": "Осёл везёт груз",
       "theme": "animals",
@@ -5717,7 +5717,7 @@
     "fields": {
       "tatar": "Үгез",
       "russian": "Бык",
-      "transcription": "үгез",
+      "transcription": "угез",
       "example_tt": "Үгез көчле",
       "example_ru": "Бык сильный",
       "theme": "animals",
@@ -5733,7 +5733,7 @@
     "fields": {
       "tatar": "Көчек",
       "russian": "Щенок",
-      "transcription": "көчек",
+      "transcription": "кочек",
       "example_tt": "Көчек уйный",
       "example_ru": "Щенок играет",
       "theme": "animals",
@@ -5797,7 +5797,7 @@
     "fields": {
       "tatar": "Чәчәк",
       "russian": "Цветок",
-      "transcription": "чәчәк",
+      "transcription": "чэчэк",
       "example_tt": "Чәчәк матур",
       "example_ru": "Цветок красивый",
       "theme": "nature",
@@ -5813,7 +5813,7 @@
     "fields": {
       "tatar": "Үлән",
       "russian": "Трава",
-      "transcription": "үлән",
+      "transcription": "улэн",
       "example_tt": "Үлән яшел",
       "example_ru": "Трава зелёная",
       "theme": "nature",
@@ -5877,7 +5877,7 @@
     "fields": {
       "tatar": "Елга",
       "russian": "Река",
-      "transcription": "елга",
+      "transcription": "элга",
       "example_tt": "Елга тирән",
       "example_ru": "Река глубокая",
       "theme": "nature",
@@ -5893,7 +5893,7 @@
     "fields": {
       "tatar": "Күл",
       "russian": "Озеро",
-      "transcription": "күл",
+      "transcription": "кул",
       "example_tt": "Күл зур",
       "example_ru": "Озеро большое",
       "theme": "nature",
@@ -5909,7 +5909,7 @@
     "fields": {
       "tatar": "Диңгез",
       "russian": "Море",
-      "transcription": "диңгез",
+      "transcription": "динггез",
       "example_tt": "Диңгез тирән",
       "example_ru": "Море глубокое",
       "theme": "nature",
@@ -5925,7 +5925,7 @@
     "fields": {
       "tatar": "Яңгыр",
       "russian": "Дождь",
-      "transcription": "яңгыр",
+      "transcription": "янггыр",
       "example_tt": "Яңгыр ява",
       "example_ru": "Идёт дождь",
       "theme": "nature",
@@ -5957,7 +5957,7 @@
     "fields": {
       "tatar": "Җил",
       "russian": "Ветер",
-      "transcription": "җил",
+      "transcription": "джил",
       "example_tt": "Җил исә",
       "example_ru": "Дует ветер",
       "theme": "nature",
@@ -6021,7 +6021,7 @@
     "fields": {
       "tatar": "Күк күкрәү",
       "russian": "Гроза",
-      "transcription": "күк күкрәү",
+      "transcription": "кук кукрэу",
       "example_tt": "Күк күкри",
       "example_ru": "Гремит гром",
       "theme": "nature",
@@ -6037,7 +6037,7 @@
     "fields": {
       "tatar": "Салават күпере",
       "russian": "Радуга",
-      "transcription": "салават күпере",
+      "transcription": "салават купере",
       "example_tt": "Салават күпере чыкты",
       "example_ru": "Радуга появилась",
       "theme": "nature",
@@ -6117,7 +6117,7 @@
     "fields": {
       "tatar": "Бәс",
       "russian": "Иней",
-      "transcription": "бәс",
+      "transcription": "бэс",
       "example_tt": "Бәс төшкән",
       "example_ru": "Иней выпал",
       "theme": "nature",
@@ -6165,7 +6165,7 @@
     "fields": {
       "tatar": "Яңгырлы",
       "russian": "Дождливо",
-      "transcription": "яңгырлы",
+      "transcription": "янггырлы",
       "example_tt": "Яңгырлы көн",
       "example_ru": "Дождливый день",
       "theme": "nature",
@@ -6197,7 +6197,7 @@
     "fields": {
       "tatar": "Җилле",
       "russian": "Ветрено",
-      "transcription": "җилле",
+      "transcription": "джилле",
       "example_tt": "Җилле һава",
       "example_ru": "Ветреная погода",
       "theme": "nature",
@@ -6341,7 +6341,7 @@
     "fields": {
       "tatar": "Бәхет",
       "russian": "Счастье",
-      "transcription": "бәхет",
+      "transcription": "бэхет",
       "example_tt": "Бәхет телим",
       "example_ru": "Желаю счастья",
       "theme": "abstract",
@@ -6357,7 +6357,7 @@
     "fields": {
       "tatar": "Мәхәббәт",
       "russian": "Любовь",
-      "transcription": "мәхәббәт",
+      "transcription": "мэхэббэт",
       "example_tt": "Мәхәббәт зур",
       "example_ru": "Любовь велика",
       "theme": "abstract",
@@ -6405,7 +6405,7 @@
     "fields": {
       "tatar": "Сәламәтлек",
       "russian": "Здоровье",
-      "transcription": "сәламәтлек",
+      "transcription": "сэламэтлек",
       "example_tt": "Сәламәтлек кирәк",
       "example_ru": "Здоровье нужно",
       "theme": "abstract",
@@ -6485,7 +6485,7 @@
     "fields": {
       "tatar": "Шәһәр",
       "russian": "Город",
-      "transcription": "шәһәр",
+      "transcription": "шэхэр",
       "example_tt": "Зур шәһәр",
       "example_ru": "Большой город",
       "theme": "abstract",
@@ -6549,7 +6549,7 @@
     "fields": {
       "tatar": "Өй",
       "russian": "Дом",
-      "transcription": "өй",
+      "transcription": "ой",
       "example_tt": "Матур өй",
       "example_ru": "Красивый дом",
       "theme": "abstract",
@@ -6565,7 +6565,7 @@
     "fields": {
       "tatar": "Китапханә",
       "russian": "Библиотека",
-      "transcription": "китапханә",
+      "transcription": "китапханэ",
       "example_tt": "Китапханәгә барам",
       "example_ru": "Иду в библиотеку",
       "theme": "school",
@@ -6581,7 +6581,7 @@
     "fields": {
       "tatar": "Дәрес",
       "russian": "Урок",
-      "transcription": "дәрес",
+      "transcription": "дэрес",
       "example_tt": "Дәрес башланды",
       "example_ru": "Урок начался",
       "theme": "school",
@@ -6629,7 +6629,7 @@
     "fields": {
       "tatar": "Дәфтәр",
       "russian": "Тетрадь",
-      "transcription": "дәфтәр",
+      "transcription": "дэфтэр",
       "example_tt": "Дәфтәргә язам",
       "example_ru": "Пишу в тетради",
       "theme": "school",
@@ -6661,7 +6661,7 @@
     "fields": {
       "tatar": "Өстәл",
       "russian": "Парта",
-      "transcription": "өстәл",
+      "transcription": "остэл",
       "example_tt": "Өстәлдә китап",
       "example_ru": "На парте книга",
       "theme": "school",
@@ -6773,7 +6773,7 @@
     "fields": {
       "tatar": "Җавап",
       "russian": "Ответ",
-      "transcription": "җавап",
+      "transcription": "джавап",
       "example_tt": "Җавап бирәм",
       "example_ru": "Даю ответ",
       "theme": "school",
@@ -6789,7 +6789,7 @@
     "fields": {
       "tatar": "Тәнәфес",
       "russian": "Перемена",
-      "transcription": "тәнәфес",
+      "transcription": "тэнэфес",
       "example_tt": "Тәнәфестә уйныйбыз",
       "example_ru": "На перемене играем",
       "theme": "school",
@@ -6821,7 +6821,7 @@
     "fields": {
       "tatar": "Мәктәп",
       "russian": "Школа",
-      "transcription": "мәктәп",
+      "transcription": "мэктэп",
       "example_tt": "Мәктәп якын",
       "example_ru": "Школа близко",
       "theme": "school",
@@ -6901,7 +6901,7 @@
     "fields": {
       "tatar": "Күрше",
       "russian": "Сосед",
-      "transcription": "күрше",
+      "transcription": "курше",
       "example_tt": "Күрше килде",
       "example_ru": "Сосед пришёл",
       "theme": "people",
@@ -6933,7 +6933,7 @@
     "fields": {
       "tatar": "Егет",
       "russian": "Парень",
-      "transcription": "егет",
+      "transcription": "эгет",
       "example_tt": "Көчле егет",
       "example_ru": "Сильный парень",
       "theme": "people",
@@ -6965,7 +6965,7 @@
     "fields": {
       "tatar": "Кәрт",
       "russian": "Старуха",
-      "transcription": "кәрт",
+      "transcription": "кэрт",
       "example_tt": "Кәрт сөйли",
       "example_ru": "Старуха говорит",
       "theme": "people",
@@ -6997,7 +6997,7 @@
     "fields": {
       "tatar": "Яшьләр",
       "russian": "Молодёжь",
-      "transcription": "яшьләр",
+      "transcription": "яшьлэр",
       "example_tt": "Яшьләр җыелды",
       "example_ru": "Молодёжь собралась",
       "theme": "people",
@@ -7061,7 +7061,7 @@
     "fields": {
       "tatar": "Мәдәният",
       "russian": "Культура",
-      "transcription": "мәдәният",
+      "transcription": "мэдэният",
       "example_tt": "Татар мәдәнияте",
       "example_ru": "Татарская культура",
       "theme": "abstract",
@@ -7077,7 +7077,7 @@
     "fields": {
       "tatar": "Сәнгать",
       "russian": "Искусство",
-      "transcription": "сәнгать",
+      "transcription": "сэнгать",
       "example_tt": "Сәнгать әсәре",
       "example_ru": "Произведение искусства",
       "theme": "abstract",
@@ -7109,7 +7109,7 @@
     "fields": {
       "tatar": "Җыр",
       "russian": "Песня",
-      "transcription": "җыр",
+      "transcription": "джыр",
       "example_tt": "Җыр җырлыйм",
       "example_ru": "Пою песню",
       "theme": "abstract",
@@ -7173,7 +7173,7 @@
     "fields": {
       "tatar": "Сәламәтлек",
       "russian": "Здоровье",
-      "transcription": "сәламәтлек",
+      "transcription": "сэламэтлек",
       "example_tt": "Сәламәтлек яхшы",
       "example_ru": "Здоровье хорошее",
       "theme": "abstract",
@@ -7365,7 +7365,7 @@
     "fields": {
       "tatar": "Бәя",
       "russian": "Цена",
-      "transcription": "бәя",
+      "transcription": "бэя",
       "example_tt": "Бәя кыйбат",
       "example_ru": "Цена дорогая",
       "theme": "people",
@@ -7445,7 +7445,7 @@
     "fields": {
       "tatar": "Әйбәт",
       "russian": "Отлично",
-      "transcription": "әйбәт",
+      "transcription": "эйбэт",
       "example_tt": "Әйбәт эшләдең",
       "example_ru": "Отлично сделал",
       "theme": "adverbs",
@@ -7461,7 +7461,7 @@
     "fields": {
       "tatar": "Шәп",
       "russian": "Здорово",
-      "transcription": "шәп",
+      "transcription": "шэп",
       "example_tt": "Шәп кеше",
       "example_ru": "Здоровский человек",
       "theme": "adverbs",
@@ -7525,7 +7525,7 @@
     "fields": {
       "tatar": "Һәрвакыт",
       "russian": "Всегда",
-      "transcription": "һәрвакыт",
+      "transcription": "хэрвакыт",
       "example_tt": "Һәрвакыт киләм",
       "example_ru": "Всегда прихожу",
       "theme": "adverbs",
@@ -7573,7 +7573,7 @@
     "fields": {
       "tatar": "Еш",
       "russian": "Часто",
-      "transcription": "еш",
+      "transcription": "эш",
       "example_tt": "Еш киләм",
       "example_ru": "Часто прихожу",
       "theme": "adverbs",
@@ -7637,7 +7637,7 @@
     "fields": {
       "tatar": "Әле",
       "russian": "Ещё",
-      "transcription": "әле",
+      "transcription": "эле",
       "example_tt": "Әле килмәде",
       "example_ru": "Ещё не пришёл",
       "theme": "particles",
@@ -7685,7 +7685,7 @@
     "fields": {
       "tatar": "Менә",
       "russian": "Вот",
-      "transcription": "менә",
+      "transcription": "менэ",
       "example_tt": "Менә китап",
       "example_ru": "Вот книга",
       "theme": "particles",
@@ -7701,7 +7701,7 @@
     "fields": {
       "tatar": "Әнә",
       "russian": "Вон",
-      "transcription": "әнә",
+      "transcription": "энэ",
       "example_tt": "Әнә ул",
       "example_ru": "Вон он",
       "theme": "particles",
@@ -7717,7 +7717,7 @@
     "fields": {
       "tatar": "Хәерле иртә",
       "russian": "Доброе утро",
-      "transcription": "хәерле иртә",
+      "transcription": "хэерле иртэ",
       "example_tt": "Хәерле иртә!",
       "example_ru": "Доброе утро!",
       "theme": "greetings",
@@ -7733,7 +7733,7 @@
     "fields": {
       "tatar": "Хәерле көн",
       "russian": "Добрый день",
-      "transcription": "хәерле көн",
+      "transcription": "хэерле кон",
       "example_tt": "Хәерле көн!",
       "example_ru": "Добрый день!",
       "theme": "greetings",
@@ -7749,7 +7749,7 @@
     "fields": {
       "tatar": "Хәерле кич",
       "russian": "Добрый вечер",
-      "transcription": "хәерле кич",
+      "transcription": "хэерле кич",
       "example_tt": "Хәерле кич!",
       "example_ru": "Добрый вечер!",
       "theme": "greetings",
@@ -7765,7 +7765,7 @@
     "fields": {
       "tatar": "Исәнмесез",
       "russian": "Здравствуйте",
-      "transcription": "исәнмесез",
+      "transcription": "исэнмесез",
       "example_tt": "Исәнмесез!",
       "example_ru": "Здравствуйте!",
       "theme": "greetings",
@@ -7781,7 +7781,7 @@
     "fields": {
       "tatar": "Исәнме",
       "russian": "Здравствуй",
-      "transcription": "исәнме",
+      "transcription": "исэнме",
       "example_tt": "Исәнме, дус!",
       "example_ru": "Здравствуй, друг!",
       "theme": "greetings",
@@ -7829,7 +7829,7 @@
     "fields": {
       "tatar": "Рәхмәт",
       "russian": "Спасибо",
-      "transcription": "рәхмәт",
+      "transcription": "рэхмэт",
       "example_tt": "Рәхмәт сиңа!",
       "example_ru": "Спасибо тебе!",
       "theme": "greetings",
@@ -7845,7 +7845,7 @@
     "fields": {
       "tatar": "Зинһар",
       "russian": "Пожалуйста",
-      "transcription": "зинһар",
+      "transcription": "зинхар",
       "example_tt": "Зинһар, ярдәм ит",
       "example_ru": "Пожалуйста, помоги",
       "theme": "greetings",
@@ -7877,7 +7877,7 @@
     "fields": {
       "tatar": "Хәлләр ничек?",
       "russian": "Как дела?",
-      "transcription": "хәлләр ничек?",
+      "transcription": "хэллэр ничек?",
       "example_tt": "Хәлләр ничек?",
       "example_ru": "Как дела?",
       "theme": "greetings",
@@ -7893,7 +7893,7 @@
     "fields": {
       "tatar": "Нихәл?",
       "russian": "Как дела?",
-      "transcription": "нихәл?",
+      "transcription": "нихэл?",
       "example_tt": "Нихәл, син?",
       "example_ru": "Как дела, ты?",
       "theme": "greetings",
@@ -7925,7 +7925,7 @@
     "fields": {
       "tatar": "Әйбәт",
       "russian": "Отлично",
-      "transcription": "әйбәт",
+      "transcription": "эйбэт",
       "example_tt": "Әйбәт, рәхмәт",
       "example_ru": "Отлично, спасибо",
       "theme": "greetings",
@@ -8069,7 +8069,7 @@
     "fields": {
       "tatar": "Хәл",
       "russian": "Состояние",
-      "transcription": "хәл",
+      "transcription": "хэл",
       "example_tt": "Хәл яхшы",
       "example_ru": "Состояние хорошее",
       "theme": "abstract",
@@ -8085,7 +8085,7 @@
     "fields": {
       "tatar": "Көч",
       "russian": "Сила",
-      "transcription": "көч",
+      "transcription": "коч",
       "example_tt": "Көч бар",
       "example_ru": "Есть сила",
       "theme": "abstract",
@@ -8117,7 +8117,7 @@
     "fields": {
       "tatar": "Йөрәк",
       "russian": "Сердце",
-      "transcription": "йөрәк",
+      "transcription": "йорэк",
       "example_tt": "Йөрәк тибә",
       "example_ru": "Сердце бьётся",
       "theme": "abstract",
@@ -8133,7 +8133,7 @@
     "fields": {
       "tatar": "Күңел",
       "russian": "Настроение",
-      "transcription": "күңел",
+      "transcription": "кунгел",
       "example_tt": "Күңел күтәренке",
       "example_ru": "Настроение приподнятое",
       "theme": "abstract",
@@ -8165,7 +8165,7 @@
     "fields": {
       "tatar": "Теләк",
       "russian": "Желание",
-      "transcription": "теләк",
+      "transcription": "телэк",
       "example_tt": "Теләк бар",
       "example_ru": "Есть желание",
       "theme": "abstract",
@@ -8181,7 +8181,7 @@
     "fields": {
       "tatar": "Өмет",
       "russian": "Надежда",
-      "transcription": "өмет",
+      "transcription": "омет",
       "example_tt": "Өмет бар",
       "example_ru": "Есть надежда",
       "theme": "abstract",
@@ -8245,7 +8245,7 @@
     "fields": {
       "tatar": "Нәтиҗә",
       "russian": "Результат",
-      "transcription": "нәтиҗә",
+      "transcription": "нэтиджэ",
       "example_tt": "Нәтиҗә яхшы",
       "example_ru": "Результат хороший",
       "theme": "abstract",
@@ -8261,7 +8261,7 @@
     "fields": {
       "tatar": "Сәбәп",
       "russian": "Причина",
-      "transcription": "сәбәп",
+      "transcription": "сэбэп",
       "example_tt": "Сәбәп нинди?",
       "example_ru": "Причина какая?",
       "theme": "abstract",
@@ -8293,7 +8293,7 @@
     "fields": {
       "tatar": "Мөмкинлек",
       "russian": "Возможность",
-      "transcription": "мөмкинлек",
+      "transcription": "момкинлек",
       "example_tt": "Мөмкинлек зур",
       "example_ru": "Возможность большая",
       "theme": "abstract",
@@ -8309,7 +8309,7 @@
     "fields": {
       "tatar": "Хәвеф",
       "russian": "Опасность",
-      "transcription": "хәвеф",
+      "transcription": "хэвеф",
       "example_tt": "Хәвеф бар",
       "example_ru": "Есть опасность",
       "theme": "abstract",
@@ -8341,7 +8341,7 @@
     "fields": {
       "tatar": "Тәртип",
       "russian": "Порядок",
-      "transcription": "тәртип",
+      "transcription": "тэртип",
       "example_tt": "Тәртип бар",
       "example_ru": "Есть порядок",
       "theme": "abstract",
@@ -8357,7 +8357,7 @@
     "fields": {
       "tatar": "Бәйрәм",
       "russian": "Праздник",
-      "transcription": "бәйрәм",
+      "transcription": "бэйрэм",
       "example_tt": "Бәйрәм башланды",
       "example_ru": "Праздник начался",
       "theme": "abstract",
@@ -8373,7 +8373,7 @@
     "fields": {
       "tatar": "Туган көн",
       "russian": "День рождения",
-      "transcription": "туган көн",
+      "transcription": "туган кон",
       "example_tt": "Туган көн бәйрәме",
       "example_ru": "Праздник дня рождения",
       "theme": "abstract",
@@ -8389,7 +8389,7 @@
     "fields": {
       "tatar": "Бүләк",
       "russian": "Подарок",
-      "transcription": "бүләк",
+      "transcription": "булэк",
       "example_tt": "Бүләк бирәм",
       "example_ru": "Дарю подарок",
       "theme": "abstract",
@@ -8421,7 +8421,7 @@
     "fields": {
       "tatar": "Мәҗлес",
       "russian": "Застолье",
-      "transcription": "мәҗлес",
+      "transcription": "мэджлес",
       "example_tt": "Мәҗлес яхшы",
       "example_ru": "Застолье хорошее",
       "theme": "abstract",
@@ -8437,7 +8437,7 @@
     "fields": {
       "tatar": "Кунакханә",
       "russian": "Гостиница",
-      "transcription": "кунакханә",
+      "transcription": "кунакханэ",
       "example_tt": "Кунакханәдә торам",
       "example_ru": "Живу в гостинице",
       "theme": "abstract",
@@ -8517,7 +8517,7 @@
     "fields": {
       "tatar": "Музей",
       "russian": "Музей",
-      "transcription": "музей",
+      "transcription": "музэй",
       "example_tt": "Музейга барам",
       "example_ru": "Иду в музей",
       "theme": "abstract",
@@ -8565,7 +8565,7 @@
     "fields": {
       "tatar": "Яшелчә",
       "russian": "Овощ",
-      "transcription": "яшелчә",
+      "transcription": "яшелчэ",
       "example_tt": "Яшелчә ашыйм",
       "example_ru": "Ем овощ",
       "theme": "food",
@@ -8581,7 +8581,7 @@
     "fields": {
       "tatar": "Җимеш",
       "russian": "Фрукт",
-      "transcription": "җимеш",
+      "transcription": "джимеш",
       "example_tt": "Җимеш ашыйм",
       "example_ru": "Ем фрукт",
       "theme": "food",
@@ -8597,7 +8597,7 @@
     "fields": {
       "tatar": "Ашханә",
       "russian": "Столовая",
-      "transcription": "ашханә",
+      "transcription": "ашханэ",
       "example_tt": "Ашханәдә ашыйм",
       "example_ru": "Ем в столовой",
       "theme": "food",
@@ -8629,7 +8629,7 @@
     "fields": {
       "tatar": "Тәлинкә",
       "russian": "Тарелка",
-      "transcription": "тәлинкә",
+      "transcription": "тэлинкэ",
       "example_tt": "Тәлинкәгә салам",
       "example_ru": "Кладу на тарелку",
       "theme": "food",
@@ -8661,7 +8661,7 @@
     "fields": {
       "tatar": "Чәнечке",
       "russian": "Вилка",
-      "transcription": "чәнечке",
+      "transcription": "чэнечке",
       "example_tt": "Чәнечке белән ашыйм",
       "example_ru": "Ем вилкой",
       "theme": "food",
@@ -8709,7 +8709,7 @@
     "fields": {
       "tatar": "Чәйнек",
       "russian": "Чайник",
-      "transcription": "чәйнек",
+      "transcription": "чэйнек",
       "example_tt": "Чәйнек кайный",
       "example_ru": "Чайник кипит",
       "theme": "food",
@@ -8741,7 +8741,7 @@
     "fields": {
       "tatar": "Кәстрүл",
       "russian": "Кастрюля",
-      "transcription": "кәстрүл",
+      "transcription": "кэструл",
       "example_tt": "Кәстрүлдә аш",
       "example_ru": "Суп в кастрюле",
       "theme": "food",
@@ -8821,7 +8821,7 @@
     "fields": {
       "tatar": "Һава",
       "russian": "Воздух",
-      "transcription": "һава",
+      "transcription": "хава",
       "example_tt": "Һава чиста",
       "example_ru": "Воздух чистый",
       "theme": "nature",
@@ -8837,7 +8837,7 @@
     "fields": {
       "tatar": "Күк",
       "russian": "Небо",
-      "transcription": "күк",
+      "transcription": "кук",
       "example_tt": "Күк зәңгәр",
       "example_ru": "Небо синее",
       "theme": "nature",
@@ -8853,7 +8853,7 @@
     "fields": {
       "tatar": "Җир",
       "russian": "Земля",
-      "transcription": "җир",
+      "transcription": "джир",
       "example_tt": "Җир яшел",
       "example_ru": "Земля зелёная",
       "theme": "nature",
@@ -8965,7 +8965,7 @@
     "fields": {
       "tatar": "Көмеш",
       "russian": "Серебро",
-      "transcription": "көмеш",
+      "transcription": "комеш",
       "example_tt": "Көмеш ялтырый",
       "example_ru": "Серебро блестит",
       "theme": "nature",
@@ -9045,7 +9045,7 @@
     "fields": {
       "tatar": "Күмер",
       "russian": "Уголь",
-      "transcription": "күмер",
+      "transcription": "кумер",
       "example_tt": "Күмер кара",
       "example_ru": "Уголь чёрный",
       "theme": "nature",
@@ -9077,7 +9077,7 @@
     "fields": {
       "tatar": "Шикәр",
       "russian": "Сахар",
-      "transcription": "шикәр",
+      "transcription": "шикэр",
       "example_tt": "Шикәр татлы",
       "example_ru": "Сахар сладкий",
       "theme": "nature",
@@ -9109,7 +9109,7 @@
     "fields": {
       "tatar": "Сөт",
       "russian": "Молоко",
-      "transcription": "сөт",
+      "transcription": "сот",
       "example_tt": "Сөт ак",
       "example_ru": "Молоко белое",
       "theme": "nature",
@@ -9173,7 +9173,7 @@
     "fields": {
       "tatar": "Гөл",
       "russian": "Цветок",
-      "transcription": "гөл",
+      "transcription": "гол",
       "example_tt": "Гөл матур",
       "example_ru": "Цветок красивый",
       "theme": "nature",
@@ -9237,7 +9237,7 @@
     "fields": {
       "tatar": "Чәчәк",
       "russian": "Цветок",
-      "transcription": "чәчәк",
+      "transcription": "чэчэк",
       "example_tt": "Чәчәк ата",
       "example_ru": "Цветок цветёт",
       "theme": "nature",
@@ -9253,7 +9253,7 @@
     "fields": {
       "tatar": "Җиләк",
       "russian": "Ягода",
-      "transcription": "җиләк",
+      "transcription": "джилэк",
       "example_tt": "Җиләк татлы",
       "example_ru": "Ягода сладкая",
       "theme": "nature",
@@ -9269,7 +9269,7 @@
     "fields": {
       "tatar": "Гөмбә",
       "russian": "Гриб",
-      "transcription": "гөмбә",
+      "transcription": "гомбэ",
       "example_tt": "Гөмбә урманда",
       "example_ru": "Гриб в лесу",
       "theme": "nature",
@@ -9333,7 +9333,7 @@
     "fields": {
       "tatar": "Елга",
       "russian": "Река",
-      "transcription": "елга",
+      "transcription": "элга",
       "example_tt": "Елга тирән",
       "example_ru": "Река глубокая",
       "theme": "nature",
@@ -9349,7 +9349,7 @@
     "fields": {
       "tatar": "Күл",
       "russian": "Озеро",
-      "transcription": "күл",
+      "transcription": "кул",
       "example_tt": "Күл зур",
       "example_ru": "Озеро большое",
       "theme": "nature",
@@ -9365,7 +9365,7 @@
     "fields": {
       "tatar": "Диңгез",
       "russian": "Море",
-      "transcription": "диңгез",
+      "transcription": "динггез",
       "example_tt": "Диңгез тирән",
       "example_ru": "Море глубокое",
       "theme": "nature",
@@ -9429,7 +9429,7 @@
     "fields": {
       "tatar": "Күк",
       "russian": "Небо",
-      "transcription": "күк",
+      "transcription": "кук",
       "example_tt": "Күк зәңгәр",
       "example_ru": "Небо синее",
       "theme": "nature",
@@ -9445,7 +9445,7 @@
     "fields": {
       "tatar": "Җил",
       "russian": "Ветер",
-      "transcription": "җил",
+      "transcription": "джил",
       "example_tt": "Җил исә",
       "example_ru": "Ветер дует",
       "theme": "nature",
@@ -9461,7 +9461,7 @@
     "fields": {
       "tatar": "Яңгыр",
       "russian": "Дождь",
-      "transcription": "яңгыр",
+      "transcription": "янггыр",
       "example_tt": "Яңгыр ява",
       "example_ru": "Дождь идёт",
       "theme": "nature",
@@ -9541,7 +9541,7 @@
     "fields": {
       "tatar": "Күк күкрәү",
       "russian": "Гроза",
-      "transcription": "күк күкрәү",
+      "transcription": "кук кукрэу",
       "example_tt": "Күк күкри",
       "example_ru": "Гром гремит",
       "theme": "nature",
@@ -9557,7 +9557,7 @@
     "fields": {
       "tatar": "Салават күпере",
       "russian": "Радуга",
-      "transcription": "салават күпере",
+      "transcription": "салават купере",
       "example_tt": "Салават күпере чыкты",
       "example_ru": "Радуга появилась",
       "theme": "nature",

@@ -14,5 +14,5 @@ urlpatterns = [
     path("words/", views.GenerateWordsView.as_view(), name="words"),
     path("distractors/", views.GenerateDistractorsView.as_view(), name="distractors"),
     path("explain/", views.ExplainView.as_view(), name="explain"),
-    path("competition-tasks/", views.GenerateCompetitionTasksView.as_view(), name="competition_tasks"),
+    path("lesson-blocks/", views.GenerateLessonBlocksView.as_view(), name="lesson_blocks"),
 ]

@@ -5,17 +5,16 @@
     <div class="d-flex align-items-center justify-content-between py-2 py-md-3">
 
       <a href="{% url 'homepage:home' %}" class="d-flex align-items-center gap-2 text-decoration-none">
-        <img src="{% static 'img/logo.svg' %}" alt="TatarLesson" height="38" width="38">
+        <img src="{% static 'img/logo.svg' %}" alt="Әйдә укырга!" height="38" width="38">
         <span class="fw-semibold fs-5 site-logo-text" style="font-family: 'Inter', sans-serif; letter-spacing: -0.4px;">
-          TatarLesson
+          Әйдә укырга!
         </span>
       </a>
 
       <nav class="d-none d-md-flex align-items-center gap-1 main-nav">
         <a href="{% url 'homepage:home' %}" class="nav-link {% if request.resolver_match.view_name == 'homepage:home' %}active{% endif %}">Главная</a>
-        <a href="{% url 'dashboard:home' %}" class="nav-link {% if 'dashboard' in request.resolver_match.namespace %}active{% endif %}">Панель</a>
-        <a href="{% url 'competitions:list' %}" class="nav-link">Соревнования</a>
-        <a href="{% url 'dashboard:words' %}" class="nav-link">Словарь</a>
+        <a href="{% url 'competitions:list' %}" class="nav-link {% if 'competitions' in request.resolver_match.namespace %}active{% endif %}">Соревнования</a>
+        <a href="{% url 'dashboard:words' %}" class="nav-link {% if 'words' in request.resolver_match.namespace %}active{% endif %}">Словарь</a>
       </nav>
 
       <div class="d-flex align-items-center gap-3 header-actions">
@@ -33,7 +32,6 @@
           <ul class="dropdown-menu dropdown-menu-end p-2 shadow-sm border-0 rounded-4 mt-2"
               aria-labelledby="mobileNavToggleBtn" style="min-width: 180px;">
             <li><a href="{% url 'homepage:home' %}" class="dropdown-item d-flex align-items-center gap-2 py-2 rounded-3"><i class="bi bi-house fs-6"></i> Главная</a></li>
-            <li><a href="{% url 'dashboard:home' %}" class="dropdown-item d-flex align-items-center gap-2 py-2 rounded-3"><i class="bi bi-grid fs-6"></i> Панель</a></li>
             <li><a href="{% url 'competitions:list' %}" class="dropdown-item d-flex align-items-center gap-2 py-2 rounded-3"><i class="bi bi-trophy fs-6"></i> Соревнования</a></li>
             <li><a href="{% url 'dashboard:words' %}" class="dropdown-item d-flex align-items-center gap-2 py-2 rounded-3"><i class="bi bi-journal-text fs-6"></i> Словарь</a></li>
           </ul>

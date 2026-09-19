@@ -3,54 +3,268 @@
 
 {% block title %}Мои уроки{% endblock %}
 
-{% block dashboard_content %}
-<div class="dashboard-home">
-  <div class="dashboard-header">
-    <h1>Мои уроки</h1>
-    <p>Создавайте уроки из блоков и делитесь с классом</p>
-  </div>
+{% block extra_css %}
+{{ block.super }}
+<style>
+  .ls { --ls-line: var(--border-color); --ls-soft: var(--text-muted); }
+  .ls-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--ls-line);
+  }
+  .ls-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--ls-soft);
+    margin-bottom: 10px;
+  }
+  .ls-title {
+    font-size: clamp(1.6rem, 3.2vw, 2.2rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.1;
+  }
+  .ls-title em {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-style: italic;
+    font-weight: 400;
+  }
+  .ls-sub {
+    color: var(--text-secondary);
+    font-size: 15px;
+    margin: 8px 0 0;
+  }
+  .ls-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all .15s ease;
+    border: 1px solid var(--ls-line);
+    background: var(--bg-sidebar);
+    color: var(--text-primary);
+    cursor: pointer;
+  }
+  .ls-btn:hover {
+    border-color: var(--text-primary);
+    color: var(--text-primary);
+    text-decoration: none;
+  }
+  .ls-btn-primary {
+    background: #0B6E4F;
+    border-color: #0B6E4F;
+    color: #fff;
+  }
+  .ls-btn-primary:hover {
+    background: #14A06E;
+    border-color: #14A06E;
+    color: #fff;
+  }
 
-  <div style="margin-bottom: 24px;">
-    <a href="{% url 'dashboard:lesson_builder' %}"
-       style="display:inline-flex;align-items:center;gap:8px;padding:12px 22px;background:#0B6E4F;color:#fff;border-radius:12px;font-weight:600;text-decoration:none;">
+  .ls-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  .ls-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 22px;
+    background: var(--bg-sidebar);
+    border: 1px solid var(--ls-line);
+    border-radius: 16px;
+    transition: all .18s ease;
+  }
+  .ls-card:hover {
+    border-color: #0B6E4F;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px -14px rgba(11, 110, 79, .28);
+  }
+  .ls-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .ls-code {
+    font-family: 'Inter', ui-monospace, monospace;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #0B6E4F;
+    font-size: 15px;
+  }
+  .ls-pill {
+    font-size: 10.5px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+  .ls-pill-pub  { background: rgba(11, 110, 79, .1);  color: #0B6E4F; }
+  .ls-pill-priv { background: rgba(107, 114, 128, .15); color: var(--text-secondary); }
+
+  .ls-card h3 {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 14px;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+
+  .ls-meta {
+    display: flex;
+    gap: 16px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--ls-line);
+    margin-top: auto;
+  }
+  .ls-meta span { display: inline-flex; align-items: center; gap: 6px; }
+
+  .ls-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .ls-action {
+    flex: 1;
+    min-width: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid var(--ls-line);
+    background: transparent;
+    color: var(--text-secondary);
+    transition: all .15s ease;
+    cursor: pointer;
+  }
+  .ls-action:hover {
+    border-color: #0B6E4F;
+    color: #0B6E4F;
+    text-decoration: none;
+  }
+  .ls-action-play {
+    background: #0B6E4F;
+    border-color: #0B6E4F;
+    color: #fff;
+  }
+  .ls-action-play:hover {
+    background: #14A06E;
+    border-color: #14A06E;
+    color: #fff;
+  }
+
+  .ls-empty {
+    padding: 80px 24px;
+    text-align: center;
+    border: 2px dashed var(--ls-line);
+    border-radius: 20px;
+    color: var(--text-secondary);
+    background: var(--bg-sidebar);
+  }
+  .ls-empty i {
+    font-size: 46px;
+    color: #0B6E4F;
+    opacity: .4;
+    display: block;
+    margin-bottom: 16px;
+  }
+  .ls-empty h2 {
+    font-size: 19px;
+    color: var(--text-primary);
+    margin: 0 0 8px;
+  }
+  .ls-empty p { margin: 0 0 22px; font-size: 14px; }
+
+  @media (max-width: 640px) {
+    .ls-head { align-items: flex-start; }
+    .ls-grid { grid-template-columns: 1fr; }
+    .ls-card { padding: 18px; }
+  }
+</style>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="dashboard-home ls">
+
+  <div class="ls-head">
+    <div>
+      <div class="ls-eyebrow">УРОКИ</div>
+      <h1 class="ls-title">Мои <em>уроки</em></h1>
+      <p class="ls-sub">Создавайте уроки из блоков и делитесь с классом</p>
+    </div>
+    <a href="{% url 'dashboard:lesson_builder' %}" class="ls-btn ls-btn-primary">
       <i class="bi bi-plus-lg"></i> Создать урок
     </a>
   </div>
 
   {% if lessons %}
-    <div class="lessons-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;">
+    <div class="ls-grid">
       {% for lesson in lessons %}
-        <div style="background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:16px;padding:22px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-            <span style="font-family:monospace;font-weight:700;color:#0B6E4F;letter-spacing:2px;">{{ lesson.code }}</span>
-            <span style="font-size:12px;color:var(--text-muted);">{{ lesson.get_status_display|default:"" }}</span>
+        <div class="ls-card">
+          <div class="ls-card-top">
+            <span class="ls-code">{{ lesson.code }}</span>
+            {% if lesson.is_public %}
+              <span class="ls-pill ls-pill-pub">Публичный</span>
+            {% else %}
+              <span class="ls-pill ls-pill-priv">Личный</span>
+            {% endif %}
           </div>
 
-          <h3 style="margin:0 0 12px;font-size:18px;">{{ lesson.title }}</h3>
+          <h3>{{ lesson.title }}</h3>
 
-          <div style="display:flex;gap:14px;font-size:13px;color:var(--text-secondary);margin-bottom:16px;">
+          <div class="ls-meta">
             <span><i class="bi bi-stack"></i> {{ lesson.blocks.count }} блоков</span>
             <span><i class="bi bi-star"></i> {{ lesson.total_points }} баллов</span>
           </div>
 
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <a href="{% url 'dashboard:lesson_edit' lesson.pk %}"
-               style="padding:8px 14px;border:1px solid var(--border-color);border-radius:10px;color:var(--text-secondary);text-decoration:none;font-size:13px;">
-              <i class="bi bi-pencil"></i> Изменить
+          <div class="ls-actions">
+            <a href="{% url 'lessons:lesson_play' lesson.code %}" class="ls-action ls-action-play">
+              <i class="bi bi-play-fill"></i> Играть
             </a>
-            <a href="{% url 'dashboard:lesson_stats' lesson.pk %}"
-               style="padding:8px 14px;border:1px solid var(--border-color);border-radius:10px;color:var(--text-secondary);text-decoration:none;font-size:13px;">
-              <i class="bi bi-bar-chart"></i> Статистика
+            <a href="{% url 'dashboard:lesson_edit' lesson.pk %}" class="ls-action">
+              <i class="bi bi-pencil"></i>
+            </a>
+            <a href="{% url 'dashboard:lesson_stats' lesson.pk %}" class="ls-action">
+              <i class="bi bi-bar-chart"></i>
             </a>
           </div>
         </div>
       {% endfor %}
     </div>
   {% else %}
-    <div style="padding:60px 20px;text-align:center;border:2px dashed var(--border-color);border-radius:20px;">
-      <i class="bi bi-journal-plus" style="font-size:48px;color:#0B6E4F;opacity:.4;display:block;margin-bottom:16px;"></i>
-      <h2 style="font-size:20px;margin:0 0 8px;">У вас пока нет уроков</h2>
-      <p style="color:var(--text-secondary);margin:0;">Нажмите «Создать урок», чтобы начать</p>
+    <div class="ls-empty">
+      <i class="bi bi-journal-plus"></i>
+      <h2>У вас пока нет уроков</h2>
+      <p>Создайте первый урок — это займёт пару минут</p>
+      <a href="{% url 'dashboard:lesson_builder' %}" class="ls-btn ls-btn-primary">
+        <i class="bi bi-plus-lg"></i> Создать урок
+      </a>
     </div>
   {% endif %}
 </div>

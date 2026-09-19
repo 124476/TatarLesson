@@ -5,169 +5,158 @@
   {% if selected_task %}{{ selected_task.title }}{% else %}{{ competition.title }}{% endif %}
 {% endblock %}
 
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/competitions/detail.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="container py-5" style="max-width:1100px;">
 
-  <a href="{% url 'competitions:list' %}" class="text-decoration-none text-muted small">
-    ← Все соревнования
-  </a>
+<div class="cmpd">
+  <div class="cmpd-container">
 
-  <div class="mt-3 mb-4">
-    <span class="badge {% if status == 'running' %}bg-success{% elif status == 'upcoming' %}bg-warning text-dark{% else %}bg-secondary{% endif %} mb-2">
-      {% if status == 'running' %}🟢 Идёт{% elif status == 'upcoming' %}⏳ Скоро{% else %}✅ Завершено{% endif %}
-    </span>
-    <h1 class="fw-bold mb-1">{{ competition.title }}</h1>
-    {% if competition.description %}
-      <p class="text-muted mb-0">{{ competition.description }}</p>
-    {% endif %}
-  </div>
+    <!-- ═══════════════ ХЛЕБНАЯ КРОШКА ═══════════════ -->
+    <a href="{% url 'competitions:list' %}" class="cmpd-back">
+      ← Все соревнования
+    </a>
 
-  <div class="row g-3 mb-4">
-    <div class="col-md-3">
-      <div class="card h-100 border-0 shadow-sm">
-        <div class="card-body">
-          <div class="text-uppercase small text-muted fw-semibold mb-1">Начало</div>
-          <div class="fw-bold">{{ competition.start_time|date:"d.m.Y H:i" }}</div>
-        </div>
+    <!-- ═══════════════ ШАПКА ═══════════════ -->
+    <header class="cmpd-hero">
+      <div class="cmpd-hero-meta">
+        <span class="cmpd-status cmpd-status-{{ status }}">
+          {% if status == 'running' %}
+            <span class="cmpd-dot"></span> идёт
+          {% elif status == 'upcoming' %}
+            скоро
+          {% else %}
+            завершено
+          {% endif %}
+        </span>
       </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card h-100 border-0 shadow-sm">
-        <div class="card-body">
-          <div class="text-uppercase small text-muted fw-semibold mb-1">Окончание</div>
-          <div class="fw-bold">{{ competition.end_time|date:"d.m.Y H:i" }}</div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card h-100 border-0 shadow-sm">
-        <div class="card-body">
-          <div class="text-uppercase small text-muted fw-semibold mb-1">Задач</div>
-          <div class="fw-bold">{{ competition.tasks.count }}</div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card h-100 border-0 shadow-sm">
-        <div class="card-body">
-          <div class="text-uppercase small text-muted fw-semibold mb-1">Участников</div>
-          <div class="fw-bold">{{ competition.participants.count }}</div>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  {% if status == 'upcoming' %}
-    <div class="alert alert-warning d-flex align-items-center gap-3">
-      <i class="bi bi-hourglass-split fs-4"></i>
-      <div>
+      <h1 class="cmpd-title">{{ competition.title }}</h1>
+
+      {% if competition.description %}
+        <p class="cmpd-lead">{{ competition.description }}</p>
+      {% endif %}
+
+      <div class="cmpd-stats">
+        <div class="cmpd-stat">
+          <div class="cmpd-stat-label">Начало</div>
+          <div class="cmpd-stat-value">{{ competition.start_time|date:"d.m.Y" }}<br>{{ competition.start_time|date:"H:i" }}</div>
+        </div>
+        <div class="cmpd-stat">
+          <div class="cmpd-stat-label">Окончание</div>
+          <div class="cmpd-stat-value">{{ competition.end_time|date:"d.m.Y" }}<br>{{ competition.end_time|date:"H:i" }}</div>
+        </div>
+        <div class="cmpd-stat">
+          <div class="cmpd-stat-label">Задач</div>
+          <div class="cmpd-stat-value">{{ competition.tasks.count }}</div>
+        </div>
+        <div class="cmpd-stat">
+          <div class="cmpd-stat-label">Участников</div>
+          <div class="cmpd-stat-value">{{ competition.participants.count }}</div>
+        </div>
+        {% if user.is_authenticated and competition.is_running %}
+          <div class="cmpd-stat cmpd-stat-accent">
+            <div class="cmpd-stat-label">Мои баллы</div>
+            <div class="cmpd-stat-value">{{ my_score }}</div>
+          </div>
+        {% endif %}
+      </div>
+    </header>
+
+    <!-- ═══════════════ АЛЕРТЫ ═══════════════ -->
+    {% if status == 'upcoming' %}
+      <div class="cmpd-alert">
         <strong>Соревнование ещё не началось.</strong>
         Задачи откроются {{ competition.start_time|date:"d.m.Y H:i" }}.
       </div>
-    </div>
-  {% endif %}
+    {% endif %}
 
-  {% if status == 'running' and not user.is_authenticated %}
-    <div class="alert alert-info d-flex align-items-center gap-3">
-      <i class="bi bi-box-arrow-in-right fs-4"></i>
-      <div>
+    {% if status == 'running' and not user.is_authenticated %}
+      <div class="cmpd-alert">
         <strong>Хотите участвовать?</strong>
-        <a href="{% url 'accounts:auth' %}?next={{ request.path }}" class="alert-link">Войдите</a>,
+        <a href="{% url 'accounts:auth' %}?next={{ request.path }}">Войдите</a>,
         чтобы отправлять решения.
       </div>
-    </div>
-  {% endif %}
+    {% endif %}
 
-  {% if not competition.is_upcoming %}
-    {% include "competitions/_tabs_nav.html" with active_tab="tasks" my_submissions_count=my_submissions.count %}
+    <!-- ═══════════════ ТАБЫ ═══════════════ -->
+    {% if not competition.is_upcoming %}
+      {% include "competitions/_tabs_nav.html" with active_tab="tasks" my_submissions_count=my_submissions.count %}
 
-    <div class="tab-content">
+      <div class="tab-content">
 
-      <!-- ============== ЗАДАЧИ (список ИЛИ одна задача) ============== -->
-      <div class="tab-pane fade show active" id="tab-tasks">
+        <!-- ═══════════════ ЗАДАЧИ ═══════════════ -->
+        <div class="tab-pane fade show active" id="tab-tasks">
 
-        {% if selected_task %}
-          {# ---------- ОДНА ЗАДАЧА ---------- #}
-          <a href="{% url 'competitions:detail' competition.pk %}"
-             class="text-decoration-none text-muted small">
-            ← К списку задач
-          </a>
+          {% if selected_task %}
+            {# ═══ ОДНА ЗАДАЧА ═══ #}
+            <a href="{% url 'competitions:detail' competition.pk %}" class="cmpd-back cmpd-back-inline">
+              ← К списку задач
+            </a>
 
-          <div class="d-flex justify-content-between align-items-center mt-3 mb-4 flex-wrap gap-3">
-            <h2 class="fw-bold mb-0">{{ selected_task.title }}</h2>
-            <div class="text-muted small">
-              <span class="badge bg-success-subtle text-success">{{ selected_task.points }} баллов</span>
-              <span class="badge bg-secondary-subtle text-secondary">
-                Попыток: {{ attempts_left }} / {{ selected_task.max_attempts }}
-              </span>
+            <div class="cmpd-task-head">
+              <h2 class="cmpd-task-title">{{ selected_task.title }}</h2>
+              <div class="cmpd-task-badges">
+                <span class="cmpd-badge cmpd-badge-points">{{ selected_task.points }} баллов</span>
+                <span class="cmpd-badge cmpd-badge-attempts">
+                  Попыток: {{ attempts_left }} / {{ selected_task.max_attempts }}
+                </span>
+              </div>
             </div>
-          </div>
 
-          <div class="card border-0 shadow-sm mb-4">
-            <div class="card-body p-4">
-              <div style="white-space:pre-wrap;line-height:1.7;">{{ selected_task.statement }}</div>
+            <div class="cmpd-statement">
+              {{ selected_task.statement }}
             </div>
-          </div>
 
-          {% if status == 'running' and user.is_authenticated and attempts_left > 0 %}
-            <div class="card border-0 shadow-sm">
-              <div class="card-body p-4">
-                <h5 class="mb-3">Отправить решение</h5>
+            {% if status == 'running' and user.is_authenticated and attempts_left > 0 %}
+              <div class="cmpd-solve">
+                <h3 class="cmpd-solve-title">Отправить решение</h3>
 
                 {% if selected_task.task_type == 'text' %}
-                  <input type="text" id="answerInput" class="form-control form-control-lg"
-                         placeholder="Введите ответ">
+                  <input type="text" id="answerInput" class="cmpd-input" placeholder="Введите ответ">
 
                 {% elif selected_task.task_type == 'choice' %}
-                  <div id="options">
+                  <div id="options" class="cmpd-options">
                     {% for opt in selected_task.options %}
-                      <div class="form-check mb-2 p-3 border rounded-3">
-                        <input class="form-check-input" type="radio" name="answer"
-                               value="{{ opt.text }}" id="opt{{ forloop.counter }}">
-                        <label class="form-check-label w-100" for="opt{{ forloop.counter }}">
-                          {{ opt.text }}
-                        </label>
-                      </div>
+                      <label class="cmpd-option">
+                        <input type="radio" name="answer" value="{{ opt.text }}">
+                        <span>{{ opt.text }}</span>
+                      </label>
                     {% endfor %}
                   </div>
 
                 {% elif selected_task.task_type == 'multiple_choice' %}
-                  <div id="options">
+                  <div id="options" class="cmpd-options">
                     {% for opt in selected_task.options %}
-                      <div class="form-check mb-2 p-3 border rounded-3">
-                        <input class="form-check-input" type="checkbox" name="answer"
-                               value="{{ opt.text }}" id="opt{{ forloop.counter }}">
-                        <label class="form-check-label w-100" for="opt{{ forloop.counter }}">
-                          {{ opt.text }}
-                        </label>
-                      </div>
+                      <label class="cmpd-option">
+                        <input type="checkbox" name="answer" value="{{ opt.text }}">
+                        <span>{{ opt.text }}</span>
+                      </label>
                     {% endfor %}
                   </div>
-                  <div class="form-text">Выберите все правильные варианты</div>
+                  <div class="cmpd-hint">Выберите все правильные варианты</div>
 
                 {% elif selected_task.task_type == 'build' %}
-                  <p class="text-muted mb-2">
+                  <div class="cmpd-hint">
                     Подсказка: <strong>{{ selected_task.build_hint }}</strong>
-                  </p>
-                  <p class="text-muted small mb-3">Собери слово из букв:</p>
-                  <div class="p-4 bg-light rounded-3 text-center mb-3">
-                    <div id="buildTarget" class="fs-3 fw-bold text-success"
-                         style="letter-spacing:8px;min-height:40px;"></div>
                   </div>
-                  <div id="buildLetters" class="d-flex flex-wrap gap-2 justify-content-center"></div>
-                  <div class="text-center mt-3">
-                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="buildReset()">
+                  <div class="cmpd-build-target">
+                    <div id="buildTarget"></div>
+                  </div>
+                  <div id="buildLetters" class="cmpd-build-letters"></div>
+                  <div class="cmpd-build-reset">
+                    <button type="button" class="cmpd-btn cmpd-btn-sm" onclick="buildReset()">
                       ↺ Сбросить
                     </button>
                   </div>
 
                 {% elif selected_task.task_type == 'pairs' %}
-                  <p class="text-muted small mb-3">
-                    Соедини линиями пары: татарское слово → русский перевод
-                  </p>
-                  <div class="pairs-wrap position-relative">
-                    <svg class="pairs-svg position-absolute w-100 h-100"
-                         style="inset:0;pointer-events:none;z-index:2;overflow:visible;">
+                  <div class="cmpd-hint">Соедини пары: татарское слово → русский перевод</div>
+                  <div class="pairs-wrap cmpd-pairs-wrap">
+                    <svg class="pairs-svg cmpd-pairs-svg">
                       <defs>
                         <marker id="arrow-{{ selected_task.id }}" markerWidth="10" markerHeight="10"
                                 refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
@@ -175,114 +164,106 @@
                         </marker>
                       </defs>
                     </svg>
-                    <div class="pairs-grid position-relative d-grid"
-                         style="grid-template-columns:1fr 1fr;gap:64px;z-index:1;"></div>
+                    <div class="pairs-grid cmpd-pairs-grid"></div>
                   </div>
 
                 {% elif selected_task.task_type == 'voice' %}
-                  <p class="text-muted mb-3">
-                    Произнеси слово вслух:
-                    <strong>{{ selected_task.voice_text|default:selected_task.correct_answer }}</strong>
-                  </p>
-                  <button type="button" class="btn btn-success mb-3" onclick="playVoice()">
+                  <div class="cmpd-hint">
+                    Произнеси слово вслух: <strong>{{ selected_task.voice_text|default:selected_task.correct_answer }}</strong>
+                  </div>
+                  <button type="button" class="cmpd-btn" onclick="playVoice()">
                     🔊 Послушать образец
                   </button>
-                  <div>
-                    <button type="button" class="btn btn-lg btn-success rounded-pill px-5" id="voiceBtn">
+                  <div class="cmpd-voice-area">
+                    <button type="button" class="cmpd-voice-btn" id="voiceBtn">
                       🎙️ Говорить
                     </button>
                   </div>
-                  <div id="voiceResult" class="mt-3 small"></div>
+                  <div id="voiceResult" class="cmpd-voice-result"></div>
                 {% endif %}
 
                 {% if selected_task.task_type != 'voice' %}
-                  <button type="button" class="btn btn-success btn-lg mt-4"
+                  <button type="button" class="cmpd-btn cmpd-btn-primary cmpd-btn-lg"
                           id="submitBtn" onclick="submitSolution()">
                     Отправить
                   </button>
                 {% endif %}
 
-                <div id="submitResult" class="mt-3"></div>
+                <div id="submitResult"></div>
               </div>
-            </div>
 
-          {% elif status == 'running' and not user.is_authenticated %}
-            <div class="alert alert-info">
-              <a href="{% url 'accounts:auth' %}?next={{ request.path }}" class="alert-link">Войдите</a>,
-              чтобы отправить решение.
-            </div>
-          {% elif attempts_left <= 0 %}
-            <div class="alert alert-secondary">Исчерпаны попытки ({{ selected_task.max_attempts }})</div>
-          {% endif %}
+            {% elif status == 'running' and not user.is_authenticated %}
+              <div class="cmpd-alert">
+                <a href="{% url 'accounts:auth' %}?next={{ request.path }}">Войдите</a>,
+                чтобы отправить решение.
+              </div>
+            {% elif attempts_left <= 0 %}
+              <div class="cmpd-alert">Исчерпаны попытки ({{ selected_task.max_attempts }})</div>
+            {% endif %}
 
-          {% if task_my_submissions %}
-            <h5 class="mt-5 mb-3">📤 Мои посылки по задаче</h5>
-            <div class="table-responsive">
-              <table class="table table-sm table-hover bg-white shadow-sm rounded">
-                <thead class="table-light">
+            {% if task_my_submissions %}
+              <h3 class="cmpd-section-label">Мои посылки по задаче</h3>
+              <table class="cmpd-table">
+                <thead>
                   <tr>
-                    <th>#</th>
+                    <th style="width:56px;">#</th>
                     <th>Ответ</th>
-                    <th>Результат</th>
-                    <th>Время</th>
+                    <th style="width:100px;">Результат</th>
+                    <th style="width:100px;">Время</th>
                   </tr>
                 </thead>
                 <tbody>
                   {% for s in task_my_submissions %}
                     <tr>
-                      <td>{{ s.attempt_number }}</td>
-                      <td class="font-monospace small">{{ s.answer|truncatechars:80 }}</td>
+                      <td class="cmpd-mono">{{ s.attempt_number }}</td>
+                      <td class="cmpd-mono cmpd-truncate">{{ s.answer|truncatechars:80 }}</td>
                       <td>
                         {% if s.is_correct %}
-                          <span class="badge bg-success-subtle text-success">✅ {{ s.points_earned }}</span>
+                          <span class="cmpd-tag cmpd-tag-success">{{ s.points_earned }}</span>
                         {% else %}
-                          <span class="badge bg-danger-subtle text-danger">❌ 0</span>
+                          <span class="cmpd-tag cmpd-tag-danger">0</span>
                         {% endif %}
                       </td>
-                      <td class="text-muted small">{{ s.created_at|date:"H:i:s" }}</td>
+                      <td class="cmpd-muted">{{ s.created_at|date:"H:i:s" }}</td>
                     </tr>
                   {% endfor %}
                 </tbody>
               </table>
-            </div>
+            {% endif %}
+
+          {% else %}
+            {# ═══ СПИСОК ЗАДАЧ ═══ #}
+            {% if tasks %}
+              <div class="cmpd-task-list">
+                {% for task in tasks %}
+                  <a href="{% url 'competitions:task' competition.pk task.pk %}" class="cmpd-task-row">
+                    <span class="cmpd-task-num">{{ forloop.counter|stringformat:"02d" }}</span>
+                    <div class="cmpd-task-info">
+                      <div class="cmpd-task-name">{{ task.title }}</div>
+                      <div class="cmpd-task-type">{{ task.get_task_type_display }}</div>
+                    </div>
+                    <div class="cmpd-task-points">{{ task.points }}<span>б.</span></div>
+                    <span class="cmpd-task-arrow">→</span>
+                  </a>
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="cmpd-empty">Задач пока нет</div>
+            {% endif %}
           {% endif %}
 
-        {% else %}
-          {# ---------- СПИСОК ЗАДАЧ ---------- #}
-          {% if tasks %}
-            <div class="list-group shadow-sm">
-              {% for task in tasks %}
-                <a href="{% url 'competitions:task' competition.pk task.pk %}"
-                   class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3">
-                  <span class="badge bg-success-subtle text-success rounded-circle"
-                        style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:16px;">
-                    {{ forloop.counter }}
-                  </span>
-                  <div class="flex-grow-1">
-                    <div class="fw-semibold">{{ task.title }}</div>
-                    <div class="small text-muted">{{ task.get_task_type_display }}</div>
-                  </div>
-                  <div class="text-muted small">{{ task.points }} б.</div>
-                  <i class="bi bi-chevron-right text-muted"></i>
-                </a>
-              {% endfor %}
-            </div>
-          {% else %}
-            <div class="alert alert-secondary text-center">Задач пока нет</div>
-          {% endif %}
-        {% endif %}
+        </div>
+
+        {% include "competitions/_tab_my.html" with submissions=my_submissions active_tab="tasks" %}
+        {% include "competitions/_tab_standings.html" with standings_rows=standings_rows tasks=tasks competition=competition active_tab="tasks" %}
 
       </div>
+    {% endif %}
 
-      {% include "competitions/_tab_my.html" with submissions=my_submissions active_tab="tasks" %}
-{% include "competitions/_tab_standings.html" with standings_rows=standings_rows tasks=tasks competition=competition active_tab="tasks" %}
-
-    </div>
-  {% endif %}
-
+  </div>
 </div>
 
-{# ============== JS для выбранной задачи ============== #}
+{# ═══════════════ JS для задачи ═══════════════ #}
 {% if selected_task %}
 <script>
 const TASK_TYPE = "{{ selected_task.task_type }}";
@@ -290,7 +271,6 @@ const TASK_ID = {{ selected_task.id }};
 const COMP_ID = {{ competition.id }};
 const SUBMIT_URL = `/competitions/${COMP_ID}/submit/${TASK_ID}/`;
 
-/* BUILD */
 {% if selected_task.task_type == 'build' %}
 (function initBuild() {
   const word = "{{ selected_task.build_word }}";
@@ -299,35 +279,26 @@ const SUBMIT_URL = `/competitions/${COMP_ID}/submit/${TASK_ID}/`;
   const target = document.getElementById('buildTarget');
   const lettersArea = document.getElementById('buildLetters');
   let current = '';
-
   shuffled.forEach(letter => {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = 'btn btn-outline-success';
-    btn.style.cssText = 'width:52px;height:52px;font-size:20px;font-weight:600;';
+    btn.className = 'cmpd-build-btn';
     btn.textContent = letter;
     btn.onclick = () => {
       current += letter;
       target.textContent = current;
       btn.disabled = true;
-      btn.classList.add('opacity-25');
     };
     lettersArea.appendChild(btn);
   });
-
-  // 👇 Сброс поля и возврат всех букв
   window.buildReset = function () {
     current = '';
     target.textContent = '';
-    lettersArea.querySelectorAll('button').forEach(b => {
-      b.disabled = false;
-      b.classList.remove('opacity-25');
-    });
+    lettersArea.querySelectorAll('button').forEach(b => { b.disabled = false; });
   };
 })();
 {% endif %}
 
-/* PAIRS */
 {% if selected_task.task_type == 'pairs' %}
 (function initPairs() {
   const pairs = {{ selected_task.pairs|safe }};
@@ -339,18 +310,18 @@ const SUBMIT_URL = `/competitions/${COMP_ID}/submit/${TASK_ID}/`;
   const leftItems = shuffle(pairs.map(p => ({ text: p[0], side: 'left' })));
   const rightItems = shuffle(pairs.map(p => ({ text: p[1], side: 'right' })));
   const leftCol = document.createElement('div');
-  leftCol.className = 'd-flex flex-column gap-3';
+  leftCol.className = 'cmpd-pairs-col';
   const rightCol = document.createElement('div');
-  rightCol.className = 'd-flex flex-column gap-3';
+  rightCol.className = 'cmpd-pairs-col';
   let selLeft = null, selRight = null;
   const connections = [];
+
   function makeCard(item) {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = 'btn btn-outline-success py-3';
+    btn.className = 'cmpd-pair-card';
     btn.textContent = item.text;
     btn.dataset.side = item.side;
-    btn.style.cssText = 'position:relative;z-index:3;';
     btn.onclick = () => onClick(btn, item);
     return btn;
   }
@@ -378,8 +349,8 @@ const SUBMIT_URL = `/competitions/${COMP_ID}/submit/${TASK_ID}/`;
       const c = connections[i];
       if (c.l === card || c.r === card) {
         c.line.remove();
-        c.l.classList.remove('btn-success');
-        c.r.classList.remove('btn-success');
+        c.l.classList.remove('active');
+        c.r.classList.remove('active');
         connections.splice(i, 1);
       }
     }
@@ -391,13 +362,13 @@ const SUBMIT_URL = `/competitions/${COMP_ID}/submit/${TASK_ID}/`;
   function onClick(btn, item) {
     if (isConnected(btn)) { remove(btn); return; }
     if (item.side === 'left') {
-      if (selLeft) selLeft.classList.remove('btn-success');
+      if (selLeft) selLeft.classList.remove('active');
       selLeft = btn;
-      btn.classList.add('btn-success');
+      btn.classList.add('active');
     } else {
-      if (selRight) selRight.classList.remove('btn-success');
+      if (selRight) selRight.classList.remove('active');
       selRight = btn;
-      btn.classList.add('btn-success');
+      btn.classList.add('active');
     }
     if (selLeft && selRight) {
       const line = drawLine(selLeft, selRight);
@@ -424,7 +395,6 @@ const SUBMIT_URL = `/competitions/${COMP_ID}/submit/${TASK_ID}/`;
 })();
 {% endif %}
 
-/* VOICE */
 function playVoice() {
   const text = "{{ selected_task.voice_text|default:selected_task.correct_answer|escapejs }}";
   new Audio('/competitions/api/synthesize/?text=' + encodeURIComponent(text)).play();
@@ -464,7 +434,6 @@ document.getElementById('voiceBtn')?.addEventListener('click', async () => {
 });
 {% endif %}
 
-/* ОТПРАВКА */
 let collectedAnswer = '';
 
 function getCookie(name) {
@@ -499,7 +468,6 @@ async function submitSolution() {
 
 async function sendAnswer(answer) {
   const btn = document.getElementById('submitBtn');
-  const result = document.getElementById('submitResult');
   if (btn) { btn.disabled = true; btn.textContent = 'Отправка...'; }
   try {
     const res = await fetch(SUBMIT_URL, {
@@ -511,12 +479,12 @@ async function sendAnswer(answer) {
     if (data.status === 'ok') {
       if (data.is_correct) {
         if (data.already_solved) {
-          showToast('✅ Принято', 'info');
+          showToast('Принято', 'info');
         } else {
-          showToast(`✅ Верно! ${data.points} баллов`, 'success');
+          showToast(`Верно! ${data.points} баллов`, 'success');
         }
       } else {
-        showToast(`❌ Неверно. Осталось попыток: ${data.attempts_left}`, 'error');
+        showToast(`Неверно. Осталось попыток: ${data.attempts_left}`, 'error');
       }
       setTimeout(() => window.location.reload(), 1500);
     } else {

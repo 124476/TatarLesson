@@ -15,12 +15,12 @@ class Migration(migrations.Migration):
             name="type",
             field=models.CharField(
                 choices=[
-                    ("audio", "🎧 Аудирование"),
-                    ("translate", "📖 Перевод"),
-                    ("build", "🧩 Собери слово"),
-                    ("pairs", "🔗 Найди пару"),
-                    ("quick", "⏱️ Быстрый раунд"),
-                    ("gap", "📝 Вставь пропуск"),
+                    ("audio", "Аудирование"),
+                    ("translate", "Перевод"),
+                    ("build", "Собери слово"),
+                    ("pairs", "Найди пару"),
+                    ("quick", "Быстрый раунд"),
+                    ("gap", "Вставь пропуск"),
                 ],
                 max_length=32,
                 verbose_name="Тип",

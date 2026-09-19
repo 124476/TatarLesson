@@ -1,0 +1,1219 @@
+/* ═══════════════════════════════════════════════════════
+   Соревнования — админка
+   ═══════════════════════════════════════════════════════ */
+
+.cmpa,
+.app-modal-overlay {
+  --cmp-bg:        #fafafa;
+  --cmp-surface:   #ffffff;
+  --cmp-line:      #e6e6e1;
+  --cmp-line-soft: #f0f0eb;
+  --cmp-text:      #111111;
+  --cmp-text-soft: #4a5250;
+  --cmp-text-mut:  #8f9694;
+  --cmp-accent:    #0B6E4F;
+  --cmp-accent-hi: #14A06E;
+  --cmp-live:      #16a34a;
+  --cmp-warn:      #d97706;
+  --cmp-danger:    #dc2626;
+
+  /* Перекрываем переменные app-modal.css */
+  --modal-bg:          #ffffff;
+  --modal-border:      #e6e6e1;
+  --modal-header-bg:   #ffffff;
+  --modal-footer-bg:   #ffffff;
+  --modal-title-color: #111111;
+  --modal-muted:       #8f9694;
+
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+               Roboto, 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.cmpa {
+  color: var(--cmp-text);
+}
+
+[data-theme="dark"] .cmpa,
+[data-theme="dark"] .app-modal-overlay {
+  --cmp-bg:        #1a1a1e;
+  --cmp-surface:   #24242a;
+  --cmp-line:      #2a2a30;
+  --cmp-line-soft: #232328;
+  --cmp-text:      #e8e8e8;
+  --cmp-text-soft: #aaaaaa;
+  --cmp-text-mut:  #777777;
+  --cmp-accent:    #14A06E;
+  --cmp-accent-hi: #17b87e;
+  --cmp-live:      #22c55e;
+  --cmp-warn:      #f59e0b;
+  --cmp-danger:    #f87171;
+
+  --modal-bg:          #24242a;
+  --modal-border:      #2a2a30;
+  --modal-header-bg:   #24242a;
+  --modal-footer-bg:   #24242a;
+  --modal-title-color: #e8e8e8;
+  --modal-muted:       #777777;
+}
+
+/* Явные переопределения структуры модалки внутри admin-контекста */
+.app-modal-overlay .app-modal-box {
+  background: var(--cmp-surface);
+  color: var(--cmp-text);
+  border: 1px solid var(--cmp-line);
+  border-radius: 14px;
+}
+
+.app-modal-overlay .app-modal-header {
+  background: var(--cmp-surface);
+  border-bottom: 1px solid var(--cmp-line);
+  padding: 22px 26px 18px;
+}
+
+.app-modal-overlay .app-modal-title {
+  color: var(--cmp-text);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.app-modal-overlay .app-modal-close {
+  color: var(--cmp-text-mut);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+.app-modal-overlay .app-modal-close:hover {
+  background: var(--cmp-line-soft);
+  color: var(--cmp-text);
+}
+
+.app-modal-overlay .app-modal-body {
+  background: var(--cmp-surface);
+  padding: 26px;
+}
+
+.app-modal-overlay .app-modal-footer {
+  background: var(--cmp-surface);
+  border-top: 1px solid var(--cmp-line);
+  padding: 18px 26px;
+  gap: 10px;
+}
+
+/* Заменяем кнопки app-modal на стиль cmpa */
+.app-modal-overlay .app-modal-footer .cmpa-btn {
+  padding: 12px 22px;
+  font-size: 14px;
+}
+
+.cmpa *,
+.cmpa *::before,
+.cmpa *::after,
+.app-modal-overlay *,
+.app-modal-overlay *::before,
+.app-modal-overlay *::after {
+  box-sizing: border-box;
+}
+
+/* ── Шапка ── */
+.cmpa-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--cmp-line);
+}
+
+.cmpa-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cmp-text-mut);
+  margin-bottom: 14px;
+}
+
+.cmpa-title {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--cmp-text);
+  margin: 0 0 6px;
+}
+
+.cmpa-lead {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-style: italic;
+  font-size: 15px;
+  color: var(--cmp-text-soft);
+  margin: 0;
+}
+
+/* ── Кнопки ── */
+.cmpa-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: 1px solid var(--cmp-line);
+  background: var(--cmp-surface);
+  color: var(--cmp-text);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.cmpa-btn:hover {
+  border-color: var(--cmp-text);
+  color: var(--cmp-text);
+  text-decoration: none;
+}
+
+.cmpa-btn-primary {
+  background: var(--cmp-text);
+  color: var(--cmp-bg);
+  border-color: var(--cmp-text);
+}
+
+.cmpa-btn-primary:hover {
+  background: var(--cmp-accent);
+  border-color: var(--cmp-accent);
+  color: #fff;
+}
+
+.cmpa-btn-lg {
+  padding: 14px 26px;
+  font-size: 15px;
+}
+
+.cmpa-btn-sm {
+  padding: 9px 14px;
+  font-size: 13px;
+}
+
+.cmpa-btn-arrow {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+.cmpa-btn:hover .cmpa-btn-arrow {
+  transform: translateX(3px);
+}
+
+/* ── Секции ── */
+.cmpa-section {
+  margin-bottom: 36px;
+}
+
+.cmpa-section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.cmpa-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cmp-text-mut);
+  margin: 0;
+}
+
+/* ── Карточка-обёртка ── */
+.cmpa-card {
+  padding: 28px 28px;
+  background: var(--cmp-surface);
+  border: 1px solid var(--cmp-line);
+  border-radius: 14px;
+}
+
+/* ── Формы ── */
+.cmpa-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.cmpa-form-grid-full {
+  grid-column: 1 / -1;
+}
+
+.cmpa-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cmpa-field label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--cmp-text-soft);
+}
+
+.cmpa-input,
+.cmpa-textarea,
+.cmpa-select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--cmp-line);
+  border-radius: 10px;
+  background: var(--cmp-bg);
+  color: var(--cmp-text);
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.5;
+  outline: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.cmpa-input:focus,
+.cmpa-textarea:focus,
+.cmpa-select:focus {
+  border-color: var(--cmp-accent);
+  background: var(--cmp-surface);
+}
+
+.cmpa-input::placeholder,
+.cmpa-textarea::placeholder {
+  color: var(--cmp-text-mut);
+  opacity: 0.7;
+}
+
+.cmpa-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.cmpa-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' fill='none' stroke='%238f9694' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 40px;
+}
+
+[data-theme="dark"] .cmpa-select {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' fill='none' stroke='%23777777' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+}
+
+.cmpa-hint {
+  font-size: 12.5px;
+  color: var(--cmp-text-mut);
+  margin: 4px 0 0;
+  line-height: 1.5;
+}
+
+/* ── Чекбоксы ── */
+.cmpa-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--cmp-text);
+  user-select: none;
+}
+
+.cmpa-check input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--cmp-accent);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ── Превью задачи (в списке) ── */
+.cmpa-task {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  background: var(--cmp-surface);
+  border: 1px solid var(--cmp-line);
+  border-radius: 12px;
+  transition: border-color 0.15s ease;
+}
+
+.cmpa-task:hover {
+  border-color: var(--cmp-text);
+}
+
+.cmpa-task-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--cmp-line-soft);
+  color: var(--cmp-text-soft);
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-style: italic;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+
+.cmpa-task-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.cmpa-task-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--cmp-text);
+  letter-spacing: -0.01em;
+  margin: 0 0 4px;
+}
+
+.cmpa-task-meta {
+  font-size: 12.5px;
+  color: var(--cmp-text-mut);
+}
+
+.cmpa-task-actions {
+  display: flex;
+  gap: 6px;
+}
+
+/* ── Иконка-кнопка ── */
+.cmpa-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--cmp-line);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--cmp-text-mut);
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+  font-size: 14px;
+  padding: 0;
+}
+
+.cmpa-icon-btn:hover {
+  border-color: var(--cmp-text);
+  color: var(--cmp-text);
+  text-decoration: none;
+}
+
+.cmpa-icon-danger:hover {
+  border-color: var(--cmp-danger);
+  color: var(--cmp-danger);
+  background: rgba(220, 38, 38, 0.04);
+}
+
+/* ── Таблица ── */
+.cmpa-table-wrap {
+  background: var(--cmp-surface);
+  border: 1px solid var(--cmp-line);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.cmpa-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.cmpa-table thead {
+  background: var(--cmp-line-soft);
+}
+
+.cmpa-table th {
+  text-align: left;
+  padding: 14px 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cmp-text-mut);
+}
+
+.cmpa-table td {
+  padding: 18px 20px;
+  border-top: 1px solid var(--cmp-line);
+  vertical-align: top;
+}
+
+.cmpa-table tbody tr:hover {
+  background: var(--cmp-line-soft);
+}
+
+.cmpa-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--cmp-text);
+  letter-spacing: -0.01em;
+  margin-bottom: 4px;
+}
+
+.cmpa-desc {
+  font-size: 13px;
+  color: var(--cmp-text-mut);
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+
+.cmpa-muted-sm {
+  font-size: 12.5px;
+  color: var(--cmp-text-mut);
+  line-height: 1.5;
+}
+
+.cmpa-mono {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 13px;
+  color: var(--cmp-text-soft);
+}
+
+.cmpa-center { text-align: center; }
+.cmpa-right { text-align: right; }
+
+/* ── Теги ── */
+.cmpa-tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.cmpa-tag-live {
+  background: rgba(22, 163, 74, 0.12);
+  color: var(--cmp-live);
+}
+
+.cmpa-tag-warn {
+  background: rgba(217, 119, 6, 0.12);
+  color: var(--cmp-warn);
+}
+
+.cmpa-tag-muted {
+  background: var(--cmp-line-soft);
+  color: var(--cmp-text-mut);
+}
+
+[data-theme="dark"] .cmpa-tag-live { background: rgba(34, 197, 94, 0.16); }
+[data-theme="dark"] .cmpa-tag-warn { background: rgba(245, 158, 11, 0.16); }
+[data-theme="dark"] .cmpa-tag-muted { background: #2a2a30; }
+
+/* ── Пусто ── */
+.cmpa-empty {
+  padding: 80px 32px;
+  text-align: center;
+  border: 1px dashed var(--cmp-line);
+  border-radius: 16px;
+}
+
+.cmpa-empty i {
+  font-size: 36px;
+  color: var(--cmp-text-mut);
+  opacity: 0.5;
+  display: block;
+  margin-bottom: 20px;
+}
+
+.cmpa-empty p {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-style: italic;
+  font-size: 1.125rem;
+  color: var(--cmp-text-soft);
+  margin: 0 0 24px;
+}
+
+/* ── Задачи (пустое состояние в конструкторе) ── */
+.cmpa-tasks-empty {
+  padding: 48px 24px;
+  text-align: center;
+  border: 1px dashed var(--cmp-line);
+  border-radius: 12px;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-style: italic;
+  color: var(--cmp-text-mut);
+  font-size: 15px;
+}
+
+/* ── Список задач ── */
+.cmpa-tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Модальное содержимое ── */
+.cmpa-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.cmpa-modal-grid-full {
+  grid-column: 1 / -1;
+}
+
+.cmpa-modal-error {
+  color: var(--cmp-danger);
+  font-size: 13px;
+  min-height: 20px;
+  margin: 12px 0 0;
+}
+
+/* ── Модальные формы внутри app-modal-box ── */
+.app-modal-box .cmpa-input,
+.app-modal-box .cmpa-textarea,
+.app-modal-box .cmpa-select {
+  background: var(--cmp-bg);
+}
+
+/* ── Алерт ── */
+.cmpa-alert {
+  padding: 14px 18px;
+  border: 1px solid var(--cmp-line);
+  border-left: 3px solid var(--cmp-accent);
+  border-radius: 10px;
+  background: var(--cmp-surface);
+  font-size: 14px;
+  color: var(--cmp-text-soft);
+  line-height: 1.55;
+  margin-bottom: 24px;
+}
+
+.cmpa-alert i {
+  color: var(--cmp-accent);
+  margin-right: 8px;
+}
+
+/* ── Опции в модалке задачи ── */
+.cmpa-option-row,
+.cmpa-pair-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.cmpa-option-row input[type="radio"],
+.cmpa-option-row input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--cmp-accent);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.cmpa-pair-arrow {
+  color: var(--cmp-text-mut);
+  flex-shrink: 0;
+}
+
+/* ── Лоадер ── */
+.cmpa-loader {
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.cmpa-loader-spinner {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--cmp-line);
+  border-top-color: var(--cmp-accent);
+  border-radius: 50%;
+  animation: cmpa-spin 0.8s linear infinite;
+}
+
+@keyframes cmpa-spin {
+  to { transform: rotate(360deg); }
+}
+
+.cmpa-loader-text {
+  margin: 16px 0 0;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-style: italic;
+  color: var(--cmp-text-mut);
+  font-size: 15px;
+}
+
+/* ── Превью AI-задач ── */
+.cmpa-ai-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cmpa-ai-card {
+  padding: 16px 18px;
+  border: 1px solid var(--cmp-line);
+  border-radius: 10px;
+  background: var(--cmp-bg);
+}
+
+.cmpa-ai-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.cmpa-ai-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--cmp-text);
+}
+
+.cmpa-ai-card-badge {
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: rgba(11, 110, 79, 0.1);
+  color: var(--cmp-accent);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+[data-theme="dark"] .cmpa-ai-card-badge {
+  background: rgba(20, 160, 110, 0.16);
+}
+
+.cmpa-ai-card-statement {
+  font-size: 13px;
+  color: var(--cmp-text-mut);
+  line-height: 1.5;
+  margin: 0 0 8px;
+}
+
+.cmpa-ai-card-extra {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 12px;
+  color: var(--cmp-text-soft);
+}
+
+/* ── Word picker ── */
+.cmpa-word-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 4px;
+  margin-top: 16px;
+}
+
+.cmpa-word-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--cmp-line);
+  border-radius: 10px;
+  background: var(--cmp-bg);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  width: 100%;
+  font-family: inherit;
+}
+
+.cmpa-word-row:hover {
+  border-color: var(--cmp-accent);
+  background: var(--cmp-surface);
+}
+
+.cmpa-word-main { text-align: left; }
+.cmpa-word-tt { font-weight: 600; color: var(--cmp-text); font-size: 14px; }
+.cmpa-word-ru { font-size: 13px; color: var(--cmp-text-mut); }
+.cmpa-word-meta {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.cmpa-word-badge {
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--cmp-line-soft);
+  color: var(--cmp-text-mut);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* ── Строка с селектом + кнопкой (для task modal) ── */
+.cmpa-select-row {
+  display: flex;
+  gap: 8px;
+}
+
+.cmpa-select-row .cmpa-select {
+  flex: 1;
+}
+
+.cmpa-select-row .cmpa-btn {
+  padding: 12px 14px;
+  flex-shrink: 0;
+}
+
+/* ── Чекбоксы в модалке AI (компактнее) ── */
+.cmpa-checks-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 20px;
+  padding-top: 4px;
+}
+
+.cmpa-checks-row .cmpa-check {
+  font-size: 13.5px;
+}
+
+/* ── Убираем uppercase из заголовков секций в модалке AI ── */
+.app-modal-overlay .cmpa-field > label {
+  text-transform: none;
+}
+
+/* ── Адаптив ── */
+@media (max-width: 768px) {
+  .cmpa-head {
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding-bottom: 24px;
+  }
+
+  .cmpa-title { font-size: 26px; }
+
+  .cmpa-table-wrap {
+    overflow-x: auto;
+  }
+
+  .cmpa-table {
+    min-width: 640px;
+    font-size: 13px;
+  }
+
+  .cmpa-table th,
+  .cmpa-table td {
+    padding: 12px 14px;
+  }
+
+  .cmpa-form-grid,
+  .cmpa-modal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cmpa-card {
+    padding: 22px 20px;
+  }
+
+  .cmpa-task {
+    padding: 14px 16px;
+    gap: 12px;
+  }
+}
+
+/* ── Строка "Сохранить" ── */
+.cmpa-save-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* ── Динамические списки (options/pairs) ── */
+.cmpa-dyn-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.cmpa-add-btn {
+  align-self: flex-start;
+}
+
+/* ── Результат AI ── */
+.cmpa-result-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.cmpa-result-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--cmp-text);
+}
+
+.cmpa-result-title span {
+  color: var(--cmp-accent);
+}
+
+/* ── Word picker hint ── */
+.cmpa-word-hint {
+  padding: 24px 20px;
+  text-align: center;
+  color: var(--cmp-text-mut);
+  font-size: 14px;
+}
+
+.cmpa-word-hint-danger {
+  color: var(--cmp-danger);
+}
+
+/* ═══════════════════════════════════════════════════════
+   AI-ГЕНЕРАЦИЯ — новая форма
+   ═══════════════════════════════════════════════════════ */
+
+.gen {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ── Секция ── */
+.gen-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.gen-section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.gen-section-num {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-style: italic;
+  font-size: 15px;
+  color: var(--cmp-accent);
+  letter-spacing: 0.02em;
+}
+
+.gen-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cmp-text-soft);
+}
+
+.gen-section-hint {
+  margin-left: auto;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--cmp-text-mut);
+}
+
+/* ── Тема ── */
+.gen-theme-input {
+  font-size: 16px !important;
+  padding: 14px 18px !important;
+}
+
+.gen-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.gen-preset {
+  padding: 7px 14px;
+  border: 1px solid var(--cmp-line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--cmp-text-soft);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.gen-preset:hover {
+  border-color: var(--cmp-text);
+  color: var(--cmp-text);
+}
+
+.gen-preset.active {
+  background: var(--cmp-text);
+  border-color: var(--cmp-text);
+  color: var(--cmp-bg);
+}
+
+/* ── Сегменты количества ── */
+.gen-segments {
+  display: inline-flex;
+  padding: 4px;
+  background: var(--cmp-line-soft);
+  border: 1px solid var(--cmp-line);
+  border-radius: 10px;
+  align-self: flex-start;
+  gap: 2px;
+}
+
+.gen-segment {
+  min-width: 62px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--cmp-text-soft);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.gen-segment:hover {
+  color: var(--cmp-text);
+}
+
+.gen-segment.active {
+  background: var(--cmp-surface);
+  color: var(--cmp-text);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="dark"] .gen-segment.active {
+  background: #2f2f36;
+  box-shadow: none;
+}
+
+/* ── Типы задач: карточки 2 в ряд ── */
+.gen-types {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.gen-type {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--cmp-line);
+  border-radius: 12px;
+  background: var(--cmp-bg);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  user-select: none;
+}
+
+.gen-type:hover {
+  border-color: var(--cmp-text-soft);
+}
+
+.gen-type.active {
+  border-color: var(--cmp-accent);
+  background: rgba(11, 110, 79, 0.05);
+}
+
+[data-theme="dark"] .gen-type.active {
+  background: rgba(20, 160, 110, 0.08);
+}
+
+/* Скрываем дефолтный чекбокс */
+.gen-type input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.gen-type > i {
+  font-size: 18px;
+  color: var(--cmp-text-mut);
+  flex-shrink: 0;
+  transition: color 0.15s ease;
+}
+
+.gen-type.active > i {
+  color: var(--cmp-accent);
+}
+
+.gen-type-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.gen-type-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--cmp-text);
+  letter-spacing: -0.005em;
+  margin-bottom: 2px;
+}
+
+.gen-type-desc {
+  font-size: 12px;
+  color: var(--cmp-text-mut);
+  line-height: 1.4;
+}
+
+/* Индикатор выбора — галочка справа */
+.gen-type-check {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid var(--cmp-line);
+  border-radius: 6px;
+  flex-shrink: 0;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.gen-type.active .gen-type-check {
+  background: var(--cmp-accent);
+  border-color: var(--cmp-accent);
+}
+
+.gen-type.active .gen-type-check::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* ── Источник слов ── */
+.gen-source {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  border: 1px solid var(--cmp-line);
+  border-radius: 12px;
+  background: var(--cmp-bg);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.gen-source:hover {
+  border-color: var(--cmp-text-soft);
+}
+
+.gen-source input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.gen-source-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.gen-source-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--cmp-text);
+  margin-bottom: 3px;
+}
+
+.gen-source-desc {
+  font-size: 12.5px;
+  color: var(--cmp-text-mut);
+  line-height: 1.5;
+}
+
+/* Switch-переключатель */
+.gen-switch {
+  position: relative;
+  width: 44px;
+  height: 26px;
+  border-radius: 999px;
+  background: var(--cmp-line);
+  flex-shrink: 0;
+  transition: background 0.2s ease;
+}
+
+.gen-switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--cmp-surface);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gen-source input:checked ~ .gen-switch {
+  background: var(--cmp-accent);
+}
+
+.gen-source input:checked ~ .gen-switch::after {
+  transform: translateX(18px);
+}
+
+[data-theme="dark"] .gen-switch::after {
+  background: #e8e8e8;
+}
+
+[data-theme="dark"] .gen-source input:checked ~ .gen-switch::after {
+  background: #fff;
+}
+
+/* ── Адаптив ── */
+@media (max-width: 640px) {
+  .gen-types {
+    grid-template-columns: 1fr;
+  }
+
+  .gen-segments {
+    align-self: stretch;
+  }
+
+  .gen-segment {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 8px;
+  }
+
+  .gen-section-hint {
+    display: none;
+  }
+
+  .gen-theme-input {
+    font-size: 15px !important;
+    padding: 12px 14px !important;
+  }
+}

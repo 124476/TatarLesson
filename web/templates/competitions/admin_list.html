@@ -3,96 +3,103 @@
 
 {% block title %}Управление соревнованиями{% endblock %}
 
-{% block dashboard_content %}
-<div class="dashboard-home">
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/competitions/admin.css' %}">
+{% endblock %}
 
-  <div class="dashboard-header d-flex justify-content-between align-items-start flex-wrap gap-3">
+{% block dashboard_content %}
+<div class="cmpa">
+
+  <header class="cmpa-head">
     <div>
-      <h1>🏆 Управление соревнованиями</h1>
-      <p>Создание и редактирование соревнований</p>
+      <div class="cmpa-eyebrow">АДМИН-ПАНЕЛЬ</div>
+      <h1 class="cmpa-title">Соревнования</h1>
+      <p class="cmpa-lead">Создание и редактирование турниров</p>
     </div>
-    <a href="{% url 'competitions:admin_create' %}" class="btn btn-success">
-      <i class="bi bi-plus-lg"></i> Создать соревнование
+
+    <a href="{% url 'competitions:admin_create' %}" class="cmpa-btn cmpa-btn-primary">
+      Создать
+      <span class="cmpa-btn-arrow">→</span>
     </a>
-  </div>
+  </header>
 
   {% if competitions %}
-    <div class="card border-0 shadow-sm mt-4">
-      <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-          <thead class="table-light">
+    <div class="cmpa-table-wrap">
+      <table class="cmpa-table">
+        <thead>
+          <tr>
+            <th>Название</th>
+            <th style="width:200px;">Время</th>
+            <th style="width:80px;" class="cmpa-center">Задач</th>
+            <th style="width:120px;">Статус</th>
+            <th style="width:160px;" class="cmpa-right">Действия</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for comp in competitions %}
             <tr>
-              <th>Название</th>
-              <th style="width:180px;">Время</th>
-              <th style="width:80px;" class="text-center">Задач</th>
-              <th style="width:120px;">Статус</th>
-              <th style="width:140px;" class="text-end">Действия</th>
+              <td>
+                <div class="cmpa-name">{{ comp.title }}</div>
+                {% if comp.description %}
+                  <div class="cmpa-desc">{{ comp.description|truncatechars:70 }}</div>
+                {% endif %}
+                {% if not comp.is_published %}
+                  <span class="cmpa-tag cmpa-tag-warn">черновик</span>
+                {% endif %}
+              </td>
+              <td class="cmpa-muted-sm">
+                {{ comp.start_time|date:"d.m.Y H:i" }}<br>
+                → {{ comp.end_time|date:"d.m.Y H:i" }}
+              </td>
+              <td class="cmpa-center cmpa-mono">{{ comp.tasks.count }}</td>
+              <td>
+                <span class="cmpa-tag
+                  {% if comp.get_status == 'running' %}cmpa-tag-live
+                  {% elif comp.get_status == 'upcoming' %}cmpa-tag-warn
+                  {% else %}cmpa-tag-muted{% endif %}">
+                  {% if comp.get_status == 'running' %}идёт
+                  {% elif comp.get_status == 'upcoming' %}скоро
+                  {% else %}завершено{% endif %}
+                </span>
+              </td>
+              <td class="cmpa-right">
+                <div class="cmpa-task-actions" style="justify-content:flex-end;">
+                  <a href="{% url 'competitions:admin_edit' comp.pk %}"
+                     class="cmpa-icon-btn" title="Изменить">
+                    <i class="bi bi-pencil"></i>
+                  </a>
+                  <a href="{% url 'competitions:detail' comp.pk %}"
+                     class="cmpa-icon-btn" title="Открыть">
+                    <i class="bi bi-eye"></i>
+                  </a>
+                  <button type="button"
+                          class="cmpa-icon-btn cmpa-icon-danger"
+                          title="Удалить"
+                          onclick="openDeleteModal({{ comp.pk }}, '{{ comp.title|escapejs }}')">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {% for comp in competitions %}
-              <tr>
-                <td>
-                  <div class="fw-semibold">{{ comp.title }}</div>
-                  {% if comp.description %}
-                    <div class="small text-muted">{{ comp.description|truncatechars:60 }}</div>
-                  {% endif %}
-                  {% if not comp.is_published %}
-                    <span class="badge bg-warning-subtle text-warning mt-1">Черновик</span>
-                  {% endif %}
-                </td>
-                <td class="small text-muted">
-                  {{ comp.start_time|date:"d.m.Y H:i" }}<br>
-                  до {{ comp.end_time|date:"d.m.Y H:i" }}
-                </td>
-                <td class="text-center">{{ comp.tasks.count }}</td>
-                <td>
-                  <span class="badge
-                    {% if comp.get_status == 'running' %}bg-success-subtle text-success
-                    {% elif comp.get_status == 'upcoming' %}bg-warning-subtle text-warning
-                    {% else %}bg-secondary-subtle text-secondary{% endif %}">
-                    {% if comp.get_status == 'running' %}🟢 Идёт
-                    {% elif comp.get_status == 'upcoming' %}⏳ Скоро
-                    {% else %}✅ Завершено{% endif %}
-                  </span>
-                </td>
-                <td class="text-end">
-                  <div class="btn-group btn-group-sm">
-                    <a href="{% url 'competitions:admin_edit' comp.pk %}"
-                       class="btn btn-outline-secondary" title="Изменить">
-                      <i class="bi bi-pencil"></i>
-                    </a>
-                    <a href="{% url 'competitions:detail' comp.pk %}"
-                       class="btn btn-outline-secondary" title="Открыть">
-                      <i class="bi bi-eye"></i>
-                    </a>
-                    <button type="button"
-                            class="btn btn-outline-danger"
-                            title="Удалить"
-                            onclick="openDeleteModal({{ comp.pk }}, '{{ comp.title|escapejs }}')">
-                      <i class="bi bi-trash"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
   {% else %}
-    <div class="text-center py-5 border rounded-4 mt-4"
-         style="border-style:dashed !important;">
-      <i class="bi bi-trophy display-1 text-muted opacity-25"></i>
-      <p class="fs-5 mt-3 mb-3">Соревнований пока нет</p>
-      <a href="{% url 'competitions:admin_create' %}" class="btn btn-success">
-        Создать первое →
+    <div class="cmpa-empty">
+      <i class="bi bi-trophy"></i>
+      <p>Соревнований пока нет</p>
+      <a href="{% url 'competitions:admin_create' %}" class="cmpa-btn cmpa-btn-primary">
+        Создать первое
+        <span class="cmpa-btn-arrow">→</span>
       </a>
     </div>
   {% endif %}
+
 </div>
 
-<!-- ==================== МОДАЛКА УДАЛЕНИЯ ==================== -->
+<!-- Модалка удаления -->
 <div class="app-modal-overlay" id="deleteModal">
   <div class="app-modal-box app-modal-box-sm">
     <div class="app-modal-header">
@@ -100,14 +107,10 @@
         <i class="bi bi-exclamation-triangle-fill"></i>
       </div>
       <h3 class="app-modal-title">Удалить соревнование?</h3>
-      <p class="app-modal-subtitle">
-        <strong id="deleteCompName"></strong>
-      </p>
+      <p class="app-modal-subtitle"><strong id="deleteCompName"></strong></p>
     </div>
     <div class="app-modal-body text-center">
-      <p class="text-muted mb-0">
-        Все задачи и посылки участников будут удалены. Это действие нельзя отменить.
-      </p>
+      <p class="text-muted mb-0">Все задачи и посылки участников будут удалены. Это действие нельзя отменить.</p>
     </div>
     <div class="app-modal-footer">
       <button type="button" class="app-modal-btn app-modal-btn-secondary"
@@ -118,7 +121,6 @@
   </div>
 </div>
 
-<!-- Контейнер для тостов -->
 <div id="toastContainer" class="toast-container"></div>
 
 {% endblock %}
@@ -140,18 +142,15 @@ function closeDeleteModal() {
 
 async function confirmDelete() {
   if (!deleteCompId) return;
-
   const btn = document.getElementById('deleteConfirmBtn');
   btn.disabled = true;
-  btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Удаление...';
-
+  btn.innerHTML = 'Удаление...';
   try {
     const res = await fetch('/competitions/manage/' + deleteCompId + '/delete/', {
       method: 'POST',
       headers: { 'X-CSRFToken': getCookie('csrftoken') },
     });
     const data = await res.json();
-
     if (data.status === 'ok') {
       closeDeleteModal();
       showToast('Соревнование удалено', 'success');
@@ -169,7 +168,6 @@ async function confirmDelete() {
   }
 }
 
-// Закрытие по Escape / клику на фон
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeDeleteModal();
 });

@@ -3,14 +3,325 @@
 
 {% block title %}Конструктор урока{% endblock %}
 
+{% block extra_css %}
+{{ block.super }}
+<style>
+  /* ═══════════════════════════════════════════════════════════
+     ЛОКАЛЬНЫЕ МОДАЛКИ (не зависят от внешнего CSS)
+     ═══════════════════════════════════════════════════════════ */
+  .lb-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(10, 10, 12, 0.55);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    overflow-y: auto;
+  }
+  .lb-modal-overlay.open {
+    display: flex;
+    animation: lbFadeIn .18s ease;
+  }
+  @keyframes lbFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .lb-modal-box {
+    position: relative;
+    width: 100%;
+    max-width: 720px;
+    max-height: calc(100vh - 40px);
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-page, #fff);
+    color: var(--text-primary, #111);
+    border: 1px solid var(--border-color, #e6e6e1);
+    border-radius: 18px;
+    box-shadow: 0 30px 80px -20px rgba(0, 0, 0, .35);
+    overflow: hidden;
+    animation: lbSlideUp .22s cubic-bezier(.2, .8, .2, 1);
+  }
+  .lb-modal-box-sm { max-width: 560px; }
+  @keyframes lbSlideUp {
+    from { transform: translateY(12px) scale(.98); opacity: 0; }
+    to   { transform: translateY(0) scale(1);      opacity: 1; }
+  }
+
+  .lb-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-color, #e6e6e1);
+  }
+  .lb-modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .lb-modal-close {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color, #e6e6e1);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-secondary, #4a5250);
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 0;
+    transition: all .15s ease;
+  }
+  .lb-modal-close i {
+    font-size: 15px;
+    display: block;
+    line-height: 1;
+  }
+  .lb-modal-close:hover {
+    color: #dc2626;
+    border-color: rgba(220, 38, 38, .4);
+    background: rgba(220, 38, 38, .06);
+  }
+
+  .lb-modal-body {
+    padding: 22px 24px;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .lb-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 24px;
+    border-top: 1px solid var(--border-color, #e6e6e1);
+    background: var(--bg-sidebar, #f7f7f5);
+  }
+
+  .lb-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 11px 20px;
+    border-radius: 11px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s ease;
+    border: 1px solid transparent;
+    text-decoration: none;
+  }
+  .lb-btn-secondary {
+    background: transparent;
+    border-color: var(--border-color, #e6e6e1);
+    color: var(--text-secondary, #4a5250);
+  }
+  .lb-btn-secondary:hover {
+    border-color: var(--text-primary, #111);
+    color: var(--text-primary, #111);
+  }
+  .lb-btn-primary {
+    background: #0B6E4F;
+    border-color: #0B6E4F;
+    color: #fff;
+  }
+  .lb-btn-primary:hover:not(:disabled) {
+    background: #14A06E;
+    border-color: #14A06E;
+    transform: translateY(-1px);
+  }
+  .lb-btn-primary:disabled {
+    opacity: .55;
+    cursor: default;
+  }
+
+  /* ── Поля формы ── */
+  .lb-field { margin-bottom: 18px; }
+  .lb-field:last-child { margin-bottom: 0; }
+  .lb-field > label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary, #4a5250);
+    margin-bottom: 8px;
+    letter-spacing: -0.005em;
+  }
+  .lb-input {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid var(--border-color, #e6e6e1);
+    border-radius: 10px;
+    background: var(--bg-page, #fff);
+    color: var(--text-primary, #111);
+    font-family: inherit;
+    font-size: 15px;
+    outline: none;
+    transition: border-color .15s ease, box-shadow .15s ease;
+    box-sizing: border-box;
+  }
+  .lb-input:focus {
+    border-color: #0B6E4F;
+    box-shadow: 0 0 0 3px rgba(11, 110, 79, .12);
+  }
+  .lb-hint {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--text-muted, #8f9694);
+  }
+
+  .lb-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  /* ── Чипы типов заданий ── */
+  .lb-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .lb-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 14px;
+    border: 1px solid var(--border-color, #e6e6e1);
+    border-radius: 22px;
+    background: var(--bg-page, #fff);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary, #4a5250);
+    cursor: pointer;
+    user-select: none;
+    transition: all .15s ease;
+  }
+  .lb-chip:hover {
+    border-color: #0B6E4F;
+    color: #0B6E4F;
+  }
+  .lb-chip input {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    border: 1.5px solid var(--border-color, #c9c9c4);
+    border-radius: 5px;
+    background: transparent;
+    position: relative;
+    cursor: pointer;
+    transition: all .15s ease;
+    flex-shrink: 0;
+  }
+  .lb-chip input:checked {
+    background: #0B6E4F;
+    border-color: #0B6E4F;
+  }
+  .lb-chip input:checked::after {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 4px;
+    height: 8px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .lb-chip:has(input:checked) {
+    border-color: #0B6E4F;
+    color: #0B6E4F;
+    background: rgba(11, 110, 79, .06);
+    font-weight: 600;
+  }
+
+  .lb-error {
+    margin: 14px 0 0;
+    font-size: 13px;
+    color: #dc2626;
+    min-height: 18px;
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     Кнопка «Сгенерировать урок» в шапке
+     ═══════════════════════════════════════════════════════════ */
+  .gen-open-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 20px;
+    border: 1px solid #0B6E4F;
+    background: linear-gradient(135deg, #0B6E4F 0%, #14A06E 100%);
+    color: #fff;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .18s ease;
+    box-shadow: 0 4px 14px -6px rgba(11, 110, 79, .5);
+  }
+  .gen-open-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px -6px rgba(11, 110, 79, .55);
+  }
+  .gen-open-btn i { font-size: 15px; }
+
+  /* ── Мобильный адаптив ── */
+  @media (max-width: 640px) {
+    .lb-modal-overlay { padding: 12px; align-items: flex-end; }
+    .lb-modal-box {
+      max-height: calc(100vh - 24px);
+      border-radius: 18px 18px 0 0;
+    }
+    .lb-modal-header { padding: 16px 18px; }
+    .lb-modal-header h3 { font-size: 16px; }
+    .lb-modal-body { padding: 18px; }
+    .lb-modal-footer {
+      padding: 14px 18px;
+      flex-direction: column-reverse;
+    }
+    .lb-modal-footer .lb-btn { width: 100%; }
+    .lb-grid-2 { grid-template-columns: 1fr; }
+    .gen-open-btn { padding: 10px 16px; font-size: 13px; }
+  }
+</style>
+{% endblock %}
+
 {% block dashboard_content %}
 <div class="dashboard-home" id="builderApp"
      data-lesson-id="{{ lesson.id|default:'' }}"
      data-save-url="{% url 'lessons:lesson_save' %}">
 
-  <div class="dashboard-header">
-    <h1>{% if lesson %}Редактирование урока{% else %}Новый урок{% endif %}</h1>
-    <p>Соберите урок из блоков</p>
+  <div class="dashboard-header" style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;">
+    <div>
+      <h1>{% if lesson %}Редактирование урока{% else %}Новый урок{% endif %}</h1>
+      <p>Соберите урок из блоков или сгенерируйте через AI</p>
+    </div>
+    <button type="button" class="gen-open-btn" onclick="openLessonGenModal()">
+      <i class="bi bi-stars"></i>
+      Сгенерировать урок
+    </button>
   </div>
 
   <!-- ==================== НАСТРОЙКИ УРОКА ==================== -->
@@ -106,28 +417,28 @@
   </div>
 </div>
 
-<!-- МОДАЛКА НАСТРОЙКИ БЛОКА -->
-<div class="modal-overlay" id="blockModal">
-  <div class="modal-box">
+<!-- ═══════════════ МОДАЛКА НАСТРОЙКИ БЛОКА ═══════════════ -->
+<div class="lb-modal-overlay" id="blockModal">
+  <div class="lb-modal-box">
 
-    <div class="modal-header">
+    <div class="lb-modal-header">
       <h3 id="blockModalTitle">Настройка блока</h3>
-      <button type="button" class="modal-close" onclick="closeBlockModal()" aria-label="Закрыть">
+      <button type="button" class="lb-modal-close" onclick="closeBlockModal()" aria-label="Закрыть">
         <i class="bi bi-x-lg"></i>
       </button>
     </div>
 
-    <div class="modal-body">
+    <div class="lb-modal-body">
 
       <!-- ====== ДЛЯ ОБЫЧНЫХ БЛОКОВ ====== -->
       <div id="normalFields">
 
-        <div class="block-form-grid">
+        <div class="lb-grid-2">
 
-          <div class="block-form-col">
-            <div class="block-form-hint">
+          <div>
+            <div class="lb-field">
               <label><i class="bi bi-book"></i> Выбрать слово из словаря</label>
-              <select id="dictionarySelect" class="block-form-input">
+              <select id="dictionarySelect" class="lb-input">
                 <option value="">— Или введите слово вручную —</option>
                 {% regroup all_words by get_theme_display as themes_list %}
                 {% for theme in themes_list %}
@@ -145,28 +456,26 @@
                   </optgroup>
                 {% endfor %}
               </select>
-              <div class="block-form-subhint">
-                Выберите — поля ниже заполнятся автоматически
-              </div>
+              <div class="lb-hint">Выберите — поля ниже заполнятся автоматически</div>
             </div>
 
-            <div class="block-form-field">
+            <div class="lb-field">
               <label>Что показать ученику *</label>
-              <input type="text" id="modalWord" placeholder="Например: Китап" class="block-form-input">
-              <div class="block-form-subhint">Обычно — татарское слово</div>
+              <input type="text" id="modalWord" placeholder="Например: Китап" class="lb-input">
+              <div class="lb-hint">Обычно — татарское слово</div>
             </div>
           </div>
 
-          <div class="block-form-col">
-            <div class="block-form-field">
+          <div>
+            <div class="lb-field">
               <label>Правильный ответ *</label>
-              <input type="text" id="modalCorrect" placeholder="Например: Книга" class="block-form-input">
-              <div class="block-form-subhint">Ученик НЕ увидит это до ответа</div>
+              <input type="text" id="modalCorrect" placeholder="Например: Книга" class="lb-input">
+              <div class="lb-hint">Ученик НЕ увидит это до ответа</div>
             </div>
 
-            <div class="block-form-field">
+            <div class="lb-field">
               <label>Баллов</label>
-              <input type="number" id="modalPoints" value="10" min="1" max="100" class="block-form-input">
+              <input type="number" id="modalPoints" value="10" min="1" max="100" class="lb-input">
             </div>
           </div>
 
@@ -176,10 +485,10 @@
       <!-- ====== ДЛЯ «НАЙДИ ПАРУ» ====== -->
       <div id="pairsField" style="display:none;">
 
-        <div class="block-form-hint" style="margin-bottom:20px;">
+        <div class="lb-field">
           <label><i class="bi bi-book"></i> Добавить пару из словаря</label>
-          <div class="block-form-row">
-            <select id="dictionaryPairsSelect" class="block-form-input">
+          <div style="display:flex;gap:8px;">
+            <select id="dictionaryPairsSelect" class="lb-input" style="flex:1;">
               <option value="">— Выберите слово —</option>
               {% regroup all_words by get_theme_display as themes_list %}
               {% for theme in themes_list %}
@@ -194,30 +503,122 @@
                 </optgroup>
               {% endfor %}
             </select>
-            <button type="button" class="block-form-btn-add" onclick="addPairFromDictionary()">
+            <button type="button" class="lb-btn lb-btn-secondary" onclick="addPairFromDictionary()" style="padding:11px 16px;white-space:nowrap;">
               <i class="bi bi-plus-lg"></i> Добавить
             </button>
           </div>
         </div>
 
-        <label class="block-form-label">Пары слов (татарский → русский)</label>
-        <div id="pairsList" class="pairs-list"></div>
+        <label style="display:block;font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">
+          Пары слов (татарский → русский)
+        </label>
+        <div id="pairsList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;"></div>
 
-        <button type="button" class="block-form-btn-dashed" onclick="addPairRow()">
+        <button type="button" onclick="addPairRow()"
+                style="width:100%;padding:11px;border:1px dashed var(--border-color);border-radius:10px;background:transparent;color:var(--text-secondary);cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;">
           <i class="bi bi-plus-lg"></i> Добавить пустую пару
         </button>
 
-        <div class="block-form-field" style="margin-top:20px;">
+        <div class="lb-field" style="margin-top:20px;">
           <label>Баллов</label>
-          <input type="number" id="modalPointsPairs" value="10" min="1" max="100" class="block-form-input">
+          <input type="number" id="modalPointsPairs" value="10" min="1" max="100" class="lb-input">
         </div>
+      </div>
+
+
+      <!-- ====== ДЛЯ «ВСТАВЬ ПРОПУСК» ====== -->
+      <div id="gapField" style="display:none;">
+
+        <div class="lb-field">
+          <label>Предложение с пропуском *</label>
+          <input type="text" id="modalGapSentence"
+                 placeholder="Мин ___ укыйм." class="lb-input">
+          <div class="lb-hint">Три подчёркивания <code>___</code> станут слотом для ответа</div>
+        </div>
+
+        <div class="lb-field">
+          <label>Правильный ответ *</label>
+          <input type="text" id="modalGapCorrect"
+                 placeholder="китап" class="lb-input">
+          <div class="lb-hint">Татарское слово, которое должно встать в пропуск</div>
+        </div>
+
+        <div class="lb-field">
+          <label>Перевод предложения</label>
+          <input type="text" id="modalGapHint"
+                 placeholder="Я читаю книгу" class="lb-input">
+          <div class="lb-hint">Показывается под предложением мелким шрифтом</div>
+        </div>
+
+        <div class="lb-field">
+          <label>Баллов</label>
+          <input type="number" id="modalGapPoints" value="10" min="1" max="100" class="lb-input">
+        </div>
+
       </div>
 
     </div>
 
-    <div class="modal-footer">
-      <button type="button" class="modal-btn-secondary" onclick="closeBlockModal()">Отмена</button>
-      <button type="button" class="modal-btn-primary" onclick="applyBlockConfig()">Добавить</button>
+    <div class="lb-modal-footer">
+      <button type="button" class="lb-btn lb-btn-secondary" onclick="closeBlockModal()">Отмена</button>
+      <button type="button" class="lb-btn lb-btn-primary" onclick="applyBlockConfig()">Добавить</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ МОДАЛКА ГЕНЕРАЦИИ УРОКА ═══════════════ -->
+<div class="lb-modal-overlay" id="lessonGenModal">
+  <div class="lb-modal-box lb-modal-box-sm">
+
+    <div class="lb-modal-header">
+      <h3>✨ Сгенерировать урок</h3>
+      <button type="button" class="lb-modal-close" onclick="closeLessonGenModal()" aria-label="Закрыть">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="lb-modal-body">
+
+      <div class="lb-field">
+        <label>Тема урока *</label>
+        <input type="text" id="genTheme" placeholder="Например: семья, еда, животные" class="lb-input">
+        <div class="lb-hint">Чем конкретнее тема — тем лучше результат</div>
+      </div>
+
+      <div class="lb-field">
+        <label>Типы заданий</label>
+        <div class="lb-chips">
+          <label class="lb-chip"><input type="checkbox" value="translate" checked> Перевод</label>
+          <label class="lb-chip"><input type="checkbox" value="audio"> Аудирование</label>
+          <label class="lb-chip"><input type="checkbox" value="build" checked> Собери слово</label>
+          <label class="lb-chip"><input type="checkbox" value="pairs" checked> Пары</label>
+          <label class="lb-chip"><input type="checkbox" value="quick"> Быстрый раунд</label>
+          <label class="lb-chip"><input type="checkbox" value="gap"> Вставь пропуск</label>
+        </div>
+      </div>
+
+      <div class="lb-grid-2" style="margin-top:18px;">
+        <div class="lb-field" style="margin-bottom:0;">
+          <label>Кол-во заданий</label>
+          <input type="number" id="genCount" value="8" min="3" max="20" class="lb-input">
+        </div>
+        <div class="lb-field" style="margin-bottom:0;">
+          <label>Источник слов</label>
+          <select id="genSource" class="lb-input">
+            <option value="true">Словарь + AI</option>
+            <option value="false">Только AI</option>
+          </select>
+        </div>
+      </div>
+
+      <p id="genError" class="lb-error"></p>
+    </div>
+
+    <div class="lb-modal-footer">
+      <button type="button" class="lb-btn lb-btn-secondary" onclick="closeLessonGenModal()">Отмена</button>
+      <button type="button" class="lb-btn lb-btn-primary" id="genSubmitBtn" onclick="generateLesson()">
+        <i class="bi bi-stars"></i> Сгенерировать
+      </button>
     </div>
   </div>
 </div>
@@ -227,12 +628,12 @@
 {% block extra_js %}
 <script>
 const BLOCK_TYPES = {
-  audio:     { name: '🎧 Аудирование',   icon: 'headphones',         hasPairs: false },
-  translate: { name: '📖 Перевод',       icon: 'translate',          hasPairs: false },
-  build:     { name: '🧩 Собери слово',  icon: 'puzzle',             hasPairs: false },
-  pairs:     { name: '🔗 Найди пару',    icon: 'link-45deg',         hasPairs: true },
-  quick:     { name: '⏱️ Быстрый раунд', icon: 'stopwatch',          hasPairs: false },
-  gap:       { name: '📝 Вставь пропуск', icon: 'input-cursor-text', hasPairs: false },
+  audio:     { name: 'Аудирование',   icon: 'headphones',         hasPairs: false },
+  translate: { name: 'Перевод',       icon: 'translate',          hasPairs: false },
+  build:     { name: 'Собери слово',  icon: 'puzzle',             hasPairs: false },
+  pairs:     { name: 'Найди пару',    icon: 'link-45deg',         hasPairs: true },
+  quick:     { name: 'Быстрый раунд', icon: 'stopwatch',          hasPairs: false },
+  gap:       { name: 'Вставь пропуск', icon: 'input-cursor-text', hasPairs: false },
 };
 
 let currentBlockType = null;
@@ -242,6 +643,7 @@ document.querySelectorAll('.block-chip').forEach(chip => {
   chip.addEventListener('click', () => openBlockModal(chip.dataset.type));
 });
 
+// ══════════════ БЛОК: ОТКРЫТИЕ/ЗАКРЫТИЕ ══════════════
 function openBlockModal(type) {
   currentBlockType = type;
   const info = BLOCK_TYPES[type];
@@ -257,22 +659,38 @@ function openBlockModal(type) {
   const dictPairsSelect = document.getElementById('dictionaryPairsSelect');
   if (dictPairsSelect) dictPairsSelect.value = '';
 
-  document.getElementById('normalFields').style.display = info.hasPairs ? 'none' : 'block';
-  document.getElementById('pairsField').style.display = info.hasPairs ? 'block' : 'none';
+  const normalFields = document.getElementById('normalFields');
+  const pairsField   = document.getElementById('pairsField');
+  const gapField     = document.getElementById('gapField');
 
-  if (info.hasPairs) {
+  const isGap    = type === 'gap';
+  const isPairs  = info.hasPairs;
+
+  normalFields.style.display = (isPairs || isGap) ? 'none'  : 'block';
+  pairsField.style.display   = isPairs ? 'block' : 'none';
+  gapField.style.display     = isGap   ? 'block' : 'none';
+
+  if (isPairs) {
     addPairRow();
     addPairRow();
   }
 
-  document.getElementById('blockModal').style.display = 'flex';
+  if (isGap) {
+    document.getElementById('modalGapSentence').value = '';
+    document.getElementById('modalGapCorrect').value  = '';
+    document.getElementById('modalGapHint').value     = '';
+    document.getElementById('modalGapPoints').value   = 10;
+}
+
+  document.getElementById('blockModal').classList.add('open');
 }
 
 function closeBlockModal() {
-  document.getElementById('blockModal').style.display = 'none';
+  document.getElementById('blockModal').classList.remove('open');
   currentBlockType = null;
 }
 
+// ══════════════ БЛОК: СЛОВАРЬ ══════════════
 document.getElementById('dictionarySelect')?.addEventListener('change', function () {
   if (!this.value) return;
 
@@ -297,13 +715,11 @@ function addPairRow(tt = '', ru = '') {
   const row = document.createElement('div');
   row.style.cssText = 'display:flex;gap:8px;align-items:center;';
   row.innerHTML = `
-    <input type="text" class="pair-tt" placeholder="Татарский" value="${escapeAttr(tt)}"
-           style="flex:1;padding:10px 12px;border:1px solid var(--border-color);border-radius:10px;background:var(--bg-page);color:var(--text-primary);outline:none;">
+    <input type="text" class="pair-tt lb-input" placeholder="Татарский" value="${escapeAttr(tt)}" style="flex:1;">
     <span style="color:var(--text-muted);">→</span>
-    <input type="text" class="pair-ru" placeholder="Русский" value="${escapeAttr(ru)}"
-           style="flex:1;padding:10px 12px;border:1px solid var(--border-color);border-radius:10px;background:var(--bg-page);color:var(--text-primary);outline:none;">
+    <input type="text" class="pair-ru lb-input" placeholder="Русский" value="${escapeAttr(ru)}" style="flex:1;">
     <button type="button" onclick="this.parentElement.remove()"
-            style="width:36px;height:36px;border:1px solid var(--border-color);border-radius:8px;background:transparent;color:#dc2626;cursor:pointer;flex-shrink:0;">
+            style="width:38px;height:38px;border:1px solid var(--border-color);border-radius:10px;background:transparent;color:#dc2626;cursor:pointer;flex-shrink:0;">
       <i class="bi bi-x-lg"></i>
     </button>
   `;
@@ -335,11 +751,33 @@ function addPairFromDictionary() {
 function applyBlockConfig() {
   if (!currentBlockType) return;
   const info = BLOCK_TYPES[currentBlockType];
-  const points = parseInt(document.getElementById('modalPoints').value) || 10;
+
+  let points = 10;
+  if (currentBlockType === 'gap') {
+    points = parseInt(document.getElementById('modalGapPoints').value) || 10;
+  } else {
+    points = parseInt(document.getElementById('modalPoints').value) || 10;
+  }
 
   const config = { points };
 
-  if (info.hasPairs) {
+  if (currentBlockType === 'gap') {
+    const sentence = document.getElementById('modalGapSentence').value.trim();
+    const correct  = document.getElementById('modalGapCorrect').value.trim();
+    const hint     = document.getElementById('modalGapHint').value.trim();
+
+    if (!sentence) { showToast('Введите предложение с ___', 'error'); return; }
+    if (!sentence.includes('___')) {
+      showToast('Поставьте ___ там, где должен быть пропуск', 'error');
+      return;
+    }
+    if (!correct) { showToast('Введите правильный ответ', 'error'); return; }
+
+    config.sentence = sentence;
+    config.correct  = correct;
+    config.hint     = hint;
+    config.word     = correct;  // для превью
+  } else if (info.hasPairs) {
     const pairs = [];
     document.querySelectorAll('#pairsList > div').forEach(row => {
       const tt = row.querySelector('.pair-tt').value.trim();
@@ -388,6 +826,8 @@ function applyBlockConfig() {
   let preview = '';
   if (info.hasPairs) {
     preview = config.pairs.length + ' пар';
+  } else if (currentBlockType === 'gap') {
+    preview = config.sentence;
   } else {
     preview = config.word + ' → ' + config.correct;
   }
@@ -400,7 +840,7 @@ function applyBlockConfig() {
     </div>
     <div style="flex:1;">
       <div style="font-weight:600;">${info.name}</div>
-      <div style="font-size:12px;color:var(--text-muted);">${preview}</div>
+      <div style="font-size:12px;color:var(--text-muted);">${escapeAttr(preview)}</div>
     </div>
     <div style="display:flex;align-items:center;gap:6px;">
       <input type="number" class="points-input" value="${points}" min="1" max="100"
@@ -418,6 +858,7 @@ function applyBlockConfig() {
   closeBlockModal();
 }
 
+// ══════════════ УДАЛЕНИЕ БЛОКОВ ══════════════
 document.addEventListener('click', e => {
   if (e.target.closest('.btn-remove')) {
     e.target.closest('.block-item').remove();
@@ -430,6 +871,147 @@ document.addEventListener('click', e => {
   }
 });
 
+// Закрытие модалок по клику на фон и Escape
+document.querySelectorAll('.lb-modal-overlay').forEach(ov => {
+  ov.addEventListener('click', e => {
+    if (e.target === ov) ov.classList.remove('open');
+  });
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.lb-modal-overlay.open').forEach(o => o.classList.remove('open'));
+  }
+});
+
+// ══════════════════════════════════════════════════════════════════
+// ГЕНЕРАЦИЯ УРОКА ЧЕРЕЗ AI
+// ══════════════════════════════════════════════════════════════════
+
+const GENERATE_URL = "{% url 'generation:lesson_blocks' %}";
+
+function openLessonGenModal() {
+  document.getElementById('genTheme').value = '';
+  document.getElementById('genCount').value = 8;
+  document.getElementById('genError').textContent = '';
+  document.getElementById('lessonGenModal').classList.add('open');
+  setTimeout(() => document.getElementById('genTheme').focus(), 80);
+}
+
+function closeLessonGenModal() {
+  document.getElementById('lessonGenModal').classList.remove('open');
+}
+
+async function generateLesson() {
+  const theme   = document.getElementById('genTheme').value.trim();
+  const count   = parseInt(document.getElementById('genCount').value) || 8;
+  const useDict = document.getElementById('genSource').value === 'true';
+  const types   = Array.from(document.querySelectorAll('.lb-chip input:checked'))
+                       .map(i => i.value);
+
+  const errorBox = document.getElementById('genError');
+  const btn = document.getElementById('genSubmitBtn');
+  errorBox.textContent = '';
+
+  if (!theme) {
+    errorBox.textContent = 'Укажите тему';
+    return;
+  }
+  if (!types.length) {
+    errorBox.textContent = 'Выберите хотя бы один тип заданий';
+    return;
+  }
+
+  btn.disabled = true;
+  const original = btn.innerHTML;
+  btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Генерация…';
+
+  try {
+    const res = await fetch(GENERATE_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken'),
+      },
+      body: JSON.stringify({
+        theme: theme,
+        types: types,
+        count: count,
+        use_dictionary: useDict,
+      }),
+    });
+    const data = await res.json();
+
+    if (data.status !== 'ok' || !data.blocks) {
+      errorBox.textContent = data.error || 'Не удалось сгенерировать';
+      return;
+    }
+
+    const titleInput = document.getElementById('lessonTitle');
+    if (!titleInput.value.trim()) {
+      titleInput.value = theme.charAt(0).toUpperCase() + theme.slice(1);
+    }
+
+    document.getElementById('blocksEmpty')?.remove();
+    data.blocks.forEach(b => addGeneratedBlock(b));
+
+    closeLessonGenModal();
+    showToast(`Сгенерировано ${data.blocks.length} блоков`, 'success');
+  } catch (e) {
+    errorBox.textContent = 'Ошибка сети: ' + e.message;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = original;
+  }
+}
+
+function addGeneratedBlock(b) {
+  const info = BLOCK_TYPES[b.type] || { name: b.type, icon: 'stack', hasPairs: false };
+  const list = document.getElementById('blocksList');
+  const newId = 'block-config-gen-' + (blockCounter++);
+
+  const item = document.createElement('div');
+  item.className = 'block-item';
+  item.dataset.type = b.type;
+  item.dataset.configId = newId;
+  item.style.cssText = 'display:flex;align-items:center;gap:14px;padding:16px 18px;background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:14px;';
+
+  const jsonScript = document.createElement('script');
+  jsonScript.type = 'application/json';
+  jsonScript.id = newId;
+  jsonScript.textContent = JSON.stringify(b.config || {});
+  item.appendChild(jsonScript);
+
+  let preview = '';
+  if (b.type === 'pairs' && Array.isArray(b.config?.pairs)) {
+    preview = b.config.pairs.length + ' пар';
+  } else {
+    preview = (b.config?.word || '') + ' → ' + (b.config?.correct || '');
+  }
+
+  const content = document.createElement('div');
+  content.style.cssText = 'display:flex;align-items:center;gap:14px;width:100%;';
+  content.innerHTML = `
+    <div style="width:42px;height:42px;display:flex;align-items:center;justify-content:center;background:rgba(11,110,79,.08);border-radius:12px;color:#0B6E4F;font-size:20px;">
+      <i class="bi bi-${info.icon}"></i>
+    </div>
+    <div style="flex:1;min-width:0;">
+      <div style="font-weight:600;">${info.name}</div>
+      <div style="font-size:12px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeAttr(preview)}</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;">
+      <input type="number" class="points-input" value="${b.points || 10}" min="1" max="100"
+             style="width:60px;padding:6px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-page);color:var(--text-primary);text-align:center;">
+      <span style="font-size:13px;color:var(--text-secondary);">баллов</span>
+    </div>
+    <button type="button" class="btn-remove" style="width:34px;height:34px;border:1px solid var(--border-color);border-radius:8px;background:transparent;color:var(--text-secondary);cursor:pointer;">
+      <i class="bi bi-trash"></i>
+    </button>
+  `;
+  item.appendChild(content);
+  list.appendChild(item);
+}
+
+// ══════════════ СОХРАНЕНИЕ УРОКА ══════════════
 function saveLesson() {
   const app = document.getElementById('builderApp');
   const lessonId = app.dataset.lessonId || null;

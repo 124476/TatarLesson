@@ -6,8 +6,8 @@ from apps.generation.models import AIChatMessage
 from apps.generation.services import (
     chat_with_tatar_ai,
     explain_tatar,
-    generate_competition_tasks,
     generate_distractors,
+    generate_lesson_blocks,
     generate_words,
 )
 from apps.words.models import Word
@@ -29,7 +29,7 @@ class AIChatView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx["messages"] = AIChatMessage.objects.filter(
+        ctx["chat_messages"] = AIChatMessage.objects.filter(
             user=self.request.user,
         ).order_by("created_at")
         return ctx
@@ -160,49 +160,41 @@ class ExplainView(LoginRequiredMixin, View):
 # ГЕНЕРАЦИЯ ЗАДАЧ СОРЕВНОВАНИЯ
 # ══════════════════════════════════════════════════════════════════
 
-class GenerateCompetitionTasksView(LoginRequiredMixin, View):
+class GenerateLessonBlocksView(LoginRequiredMixin, View):
     login_url = "accounts:auth"
 
     def post(self, request):
         if not request.user.is_staff:
             return JsonResponse({"error": "Forbidden"}, status=403)
 
-        data = json.loads(request.body)
-        theme = (data.get("theme") or "").strip()
-        n_tasks = min(int(data.get("n_tasks", 5)), 15)
-        task_types = data.get("task_types") or ["text", "choice", "build"]
-        use_dictionary = data.get("use_dictionary", True)
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Неверный формат"}, status=400)
 
+        theme = (data.get("theme") or "").strip()
         if not theme:
             return JsonResponse({"error": "Укажите тему"}, status=400)
 
-        # Слова: либо из словаря, либо генерируем
-        words = None
-        if use_dictionary:
-            # Пробуем найти слова по теме в БД
-            db_words = list(
-                Word.objects
-                .filter(Q(theme=theme) | Q(russian__icontains=theme))
-                .values("tatar", "russian")[:20]
-            )
-            if len(db_words) >= 5:
-                words = db_words
+        types = data.get("types") or ["translate", "build"]
+        count = int(data.get("count", 8))
+        use_dictionary = bool(data.get("use_dictionary", True))
 
-        tasks = generate_competition_tasks(
+        blocks = generate_lesson_blocks(
             theme=theme,
-            n_tasks=n_tasks,
-            task_types=task_types,
-            words=words,
+            types=types,
+            count=count,
+            use_dictionary=use_dictionary,
         )
 
-        if not tasks:
+        if not blocks:
             return JsonResponse(
-                {"error": "Не удалось сгенерировать задачи. Попробуйте ещё раз."},
+                {"error": "Не удалось сгенерировать блоки. Попробуйте другую тему."},
                 status=502,
             )
 
         return JsonResponse({
             "status": "ok",
-            "tasks": tasks,
-            "count": len(tasks),
+            "blocks": blocks,
+            "count": len(blocks),
         })

@@ -52,12 +52,12 @@ class Lesson(BaseModel):
 
 class Block(BaseModel):
     TYPES = (
-        ("audio", "🎧 Аудирование"),
-        ("translate", "📖 Перевод"),
-        ("build", "🧩 Собери слово"),
-        ("pairs", "🔗 Найди пару"),
-        ("quick", "⏱️ Быстрый раунд"),
-        ("gap", "📝 Вставь пропуск"),
+        ("audio", "Аудирование"),
+        ("translate", "Перевод"),
+        ("build", "Собери слово"),
+        ("pairs", "Найди пару"),
+        ("quick", "Быстрый раунд"),
+        ("gap", "Вставь пропуск"),
     )
 
     lesson = models.ForeignKey(

@@ -652,3 +652,45 @@
     border-radius: 0;
   }
 }
+@media (max-width: 450px) {
+  .theme-toggle-btn,
+  .notif-btn,
+  .mobile-nav-toggle {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  .theme-toggle-btn i,
+  .notif-btn i,
+  .mobile-nav-toggle {
+    font-size: 1.1rem !important;
+  }
+
+  .login-btn {
+    height: 34px !important;
+    padding: 0 12px !important;
+    font-size: 12px !important;
+  }
+
+  .site-logo-text {
+    display: none !important;
+  }
+
+  .site-footer {
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+    height: 95px;
+  }
+
+  .footer-social-btn {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 0.9rem !important;
+  }
+
+  .site-footer p,
+  .site-footer a,
+  .site-footer span {
+    font-size: 12px !important;
+  }
+}

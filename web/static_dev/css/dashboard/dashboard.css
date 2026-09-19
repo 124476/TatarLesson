@@ -249,13 +249,13 @@
 
 @media (max-width: 768px) {
   .dashboard-container {
-    height: calc(100vh - 58px - 101.2px);
+    height: calc(100vh - 49px - 101.2px);
   }
 
   .dashboard-sidebar {
-    top: 59px;
+    top: 55px;
     position: fixed;
-    height: calc(100vh - 58px - 101.2px);
+    height: calc(100vh - 49px - 101.2px);
     width: 250px !important;
     min-width: 250px !important;
     max-width: 80vw !important;

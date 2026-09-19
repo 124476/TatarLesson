@@ -3,115 +3,99 @@
 
 {% block title %}{% if is_edit %}Редактирование{% else %}Создание{% endif %} соревнования{% endblock %}
 
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/competitions/admin.css' %}">
+{% endblock %}
+
 {% block dashboard_content %}
-<style>
-  /* ====== Word picker ====== */
-  .word-picker-list {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    max-height: 420px;
-    overflow-y: auto;
-    padding-right: 4px;
-  }
-  .word-picker-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 12px 14px;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    background: #fff;
-    text-align: left;
-    cursor: pointer;
-    transition: background .15s, border-color .15s;
-    width: 100%;
-    font: inherit;
-  }
-  .word-picker-row:hover {
-    background: #f0fdf4;
-    border-color: #86efac;
-  }
-  .word-picker-tt { font-weight: 600; color: #0f172a; }
-  .word-picker-ru { font-size: .875rem; color: #6b7280; }
-  .word-picker-meta { display: flex; gap: 6px; flex-shrink: 0; }
-</style>
+<div class="cmpa" id="compApp" data-comp-id="{{ competition.id|default:'' }}">
 
-<div class="dashboard-home" id="compApp" data-comp-id="{{ competition.id|default:'' }}">
-
-  <div class="dashboard-header d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+  <header class="cmpa-head">
     <div>
-      <h1>{% if is_edit %}Редактирование{% else %}Новое{% endif %} соревнование</h1>
-      <p>Настройте параметры и добавьте задачи</p>
+      <div class="cmpa-eyebrow">АДМИН-ПАНЕЛЬ</div>
+      <h1 class="cmpa-title">{% if is_edit %}Редактирование{% else %}Новое{% endif %} соревнование</h1>
+      <p class="cmpa-lead">Настройте параметры и добавьте задачи</p>
     </div>
-    <a href="{% url 'competitions:admin_list' %}" class="btn btn-outline-secondary">
-      <i class="bi bi-arrow-left"></i> Назад
+    <a href="{% url 'competitions:admin_list' %}" class="cmpa-btn">
+      Назад
     </a>
-  </div>
+  </header>
 
-  <!-- ==================== НАСТРОЙКИ ==================== -->
-  <div class="card border-0 shadow-sm mb-4">
-    <div class="card-body p-4">
-      <div class="row g-3">
-        <div class="col-12">
-          <label class="form-label fw-semibold">Название</label>
-          <input type="text" class="form-control" id="compTitle"
+  <!-- ═══════════════ НАСТРОЙКИ ═══════════════ -->
+  <section class="cmpa-section">
+    <div class="cmpa-section-head">
+      <div class="cmpa-section-label">Основное</div>
+    </div>
+
+    <div class="cmpa-card">
+      <div class="cmpa-form-grid">
+        <div class="cmpa-field cmpa-form-grid-full">
+          <label for="compTitle">Название</label>
+          <input type="text" class="cmpa-input" id="compTitle"
                  value="{{ competition.title|default:'' }}"
                  placeholder="Например: Осенний турнир">
         </div>
-        <div class="col-12">
-          <label class="form-label fw-semibold">Описание</label>
-          <textarea class="form-control" id="compDescription" rows="3"
+
+        <div class="cmpa-field cmpa-form-grid-full">
+          <label for="compDescription">Описание</label>
+          <textarea class="cmpa-textarea" id="compDescription" rows="3"
                     placeholder="О чём соревнование...">{{ competition.description|default:'' }}</textarea>
         </div>
-        <div class="col-md-6">
-          <label class="form-label fw-semibold">Начало</label>
-          <input type="datetime-local" class="form-control" id="compStart"
+
+        <div class="cmpa-field">
+          <label for="compStart">Начало</label>
+          <input type="datetime-local" class="cmpa-input" id="compStart"
                  value="{% if competition %}{{ competition.start_time|date:'Y-m-d\TH:i' }}{% endif %}">
         </div>
-        <div class="col-md-6">
-          <label class="form-label fw-semibold">Окончание</label>
-          <input type="datetime-local" class="form-control" id="compEnd"
+
+        <div class="cmpa-field">
+          <label for="compEnd">Окончание</label>
+          <input type="datetime-local" class="cmpa-input" id="compEnd"
                  value="{% if competition %}{{ competition.end_time|date:'Y-m-d\TH:i' }}{% endif %}">
         </div>
-        <div class="col-12">
-          <div class="form-check">
-            <input type="checkbox" class="form-check-input" id="compPublished"
+
+        <div class="cmpa-form-grid-full">
+          <label class="cmpa-check" for="compPublished">
+            <input type="checkbox" id="compPublished"
                    {% if competition.is_published %}checked{% endif %}>
-            <label class="form-check-label" for="compPublished">Опубликовать</label>
-          </div>
+            Опубликовать
+          </label>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- ==================== ЗАДАЧИ ==================== -->
-  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-    <h5 class="fw-bold mb-0">Задачи</h5>
-    <div class="d-flex gap-2">
-      <button type="button" class="btn btn-outline-success" onclick="openAIGenModal()">
-        <i class="bi bi-magic"></i> Сгенерировать с ИИ
-      </button>
-      <button type="button" class="btn btn-success" onclick="openTaskModal()">
-        <i class="bi bi-plus-lg"></i> Добавить задачу
-      </button>
+  <!-- ═══════════════ ЗАДАЧИ ═══════════════ -->
+  <section class="cmpa-section">
+    <div class="cmpa-section-head">
+      <div class="cmpa-section-label">Задачи</div>
+      <div class="cmpa-task-actions">
+        <button type="button" class="cmpa-btn cmpa-btn-primary" onclick="openTaskModal()">
+          <i class="bi bi-plus-lg"></i>
+          Добавить задачу
+        </button>
+      </div>
     </div>
-  </div>
 
-  <div id="tasksList" class="d-flex flex-column gap-3 mb-4"></div>
+    <div id="tasksList" class="cmpa-tasks-list"></div>
+  </section>
 
-  <div class="d-flex gap-2 flex-wrap align-items-center">
-    <button type="button" class="btn btn-success btn-lg" id="saveBtn" onclick="saveCompetition()">
-      <i class="bi bi-check-lg"></i> Сохранить
+  <!-- ═══════════════ СОХРАНИТЬ ═══════════════ -->
+  <div class="cmpa-save-row">
+    <button type="button" class="cmpa-btn cmpa-btn-primary cmpa-btn-lg"
+            id="saveBtn" onclick="saveCompetition()">
+      <i class="bi bi-check-lg"></i>
+      Сохранить соревнование
     </button>
-    <span id="saveError" class="text-danger"></span>
+    <span id="saveError" class="cmpa-modal-error"></span>
   </div>
+
 </div>
 
-<!-- ==================== МОДАЛКА ЗАДАЧИ ==================== -->
+<!-- ═══════════════ МОДАЛКА: ЗАДАЧА ═══════════════ -->
 <div class="app-modal-overlay" id="taskModal">
-  <div class="app-modal-box" style="max-width:960px;">
+  <div class="app-modal-box" style="max-width:920px;">
     <div class="app-modal-header">
       <h3 class="app-modal-title" id="taskModalTitle">Задача</h3>
       <button type="button" class="app-modal-close" onclick="closeTaskModal()" aria-label="Закрыть">
@@ -120,108 +104,105 @@
     </div>
 
     <div class="app-modal-body">
-      <div class="row g-3">
+      <div class="cmpa-modal-grid">
 
-        <!-- Ряд 1: тип + название -->
-        <div class="col-md-6">
-          <label class="form-label fw-semibold">Тип задачи</label>
-          <div class="d-flex gap-2">
-            <select class="form-select" id="taskType" onchange="onTypeChange()">
-              <option value="text">📝 Текстовый ответ</option>
-              <option value="choice">🔘 Один вариант</option>
-              <option value="multiple_choice">☑️ Несколько вариантов</option>
-              <option value="build">🧩 Собери слово</option>
-              <option value="pairs">🔗 Найди пару</option>
-              <option value="voice">🎙️ Голосовой перевод</option>
+        <div class="cmpa-field">
+          <label for="taskType">Тип задачи</label>
+          <div class="cmpa-select-row">
+            <select class="cmpa-select" id="taskType" onchange="onTypeChange()">
+              <option value="text">Текстовый ответ</option>
+              <option value="choice">Один вариант</option>
+              <option value="multiple_choice">Несколько вариантов</option>
+              <option value="build">Собери слово</option>
+              <option value="pairs">Найди пару</option>
+              <option value="voice">Голосовой перевод</option>
             </select>
-            <button type="button" class="btn btn-outline-success flex-shrink-0"
-                    onclick="openWordPicker()" title="Заполнить из словаря">
+            <button type="button" class="cmpa-btn" onclick="openWordPicker()" title="Заполнить из словаря">
               <i class="bi bi-book"></i>
             </button>
           </div>
         </div>
-        <div class="col-md-6">
-          <label class="form-label fw-semibold">Название задачи</label>
-          <input type="text" class="form-control" id="taskTitle" placeholder="Переведи слово">
+
+        <div class="cmpa-field">
+          <label for="taskTitle">Название задачи</label>
+          <input type="text" class="cmpa-input" id="taskTitle" placeholder="Переведи слово">
         </div>
 
-        <!-- Ряд 2: условие + поля типа -->
-        <div class="col-md-6">
-          <label class="form-label fw-semibold">Условие</label>
-          <textarea class="form-control" id="taskStatement" rows="6"
+        <div class="cmpa-field cmpa-modal-grid-full">
+          <label for="taskStatement">Условие</label>
+          <textarea class="cmpa-textarea" id="taskStatement" rows="4"
                     placeholder="Полный текст задания..."></textarea>
         </div>
 
-        <div class="col-md-6">
-          <div class="task-fields d-none" id="fieldsText">
-            <div class="mb-3">
-              <label class="form-label fw-semibold">Правильный ответ</label>
-              <input type="text" class="form-control" id="taskCorrect" placeholder="Книга">
-            </div>
-            <div class="mb-3 d-none" id="voiceTextField">
-              <label class="form-label fw-semibold">Что произнести (озвучка)</label>
-              <input type="text" class="form-control" id="taskVoiceText" placeholder="Китап">
-            </div>
+        <div class="cmpa-modal-grid-full task-fields d-none" id="fieldsText">
+          <div class="cmpa-field">
+            <label for="taskCorrect">Правильный ответ</label>
+            <input type="text" class="cmpa-input" id="taskCorrect" placeholder="Книга">
           </div>
-
-          <div class="task-fields d-none" id="fieldsBuild">
-            <div class="mb-3">
-              <label class="form-label fw-semibold">Слово для сборки (татарский)</label>
-              <input type="text" class="form-control" id="taskBuildWord" placeholder="Китап">
-            </div>
-            <div class="mb-3">
-              <label class="form-label fw-semibold">Подсказка (перевод)</label>
-              <input type="text" class="form-control" id="taskBuildHint" placeholder="Книга">
-            </div>
+          <div class="cmpa-field d-none" id="voiceTextField">
+            <label for="taskVoiceText">Что произнести (озвучка)</label>
+            <input type="text" class="cmpa-input" id="taskVoiceText" placeholder="Китап">
           </div>
         </div>
 
-        <!-- Ряд 3: варианты ответа -->
-        <div class="col-12 task-fields d-none" id="fieldsChoice">
-          <label class="form-label fw-semibold" id="choiceLabel">Варианты ответа</label>
-          <div id="optionsList" class="d-flex flex-column gap-2 mb-2"></div>
-          <button type="button" class="btn btn-sm btn-outline-success" onclick="addOption()">
-            <i class="bi bi-plus-lg"></i> Добавить вариант
-          </button>
+        <div class="cmpa-modal-grid-full task-fields d-none" id="fieldsBuild">
+          <div class="cmpa-field">
+            <label for="taskBuildWord">Слово для сборки (татарский)</label>
+            <input type="text" class="cmpa-input" id="taskBuildWord" placeholder="Китап">
+          </div>
+          <div class="cmpa-field">
+            <label for="taskBuildHint">Подсказка (перевод)</label>
+            <input type="text" class="cmpa-input" id="taskBuildHint" placeholder="Книга">
+          </div>
         </div>
 
-        <!-- Ряд 3: пары -->
-        <div class="col-12 task-fields d-none" id="fieldsPairs">
-          <label class="form-label fw-semibold">Пары (татарский → русский)</label>
-          <div id="pairsList" class="d-flex flex-column gap-2 mb-2"></div>
-          <button type="button" class="btn btn-sm btn-outline-success" onclick="addPair()">
-            <i class="bi bi-plus-lg"></i> Добавить пару
-          </button>
+        <div class="cmpa-modal-grid-full task-fields d-none" id="fieldsChoice">
+          <div class="cmpa-field">
+            <label id="choiceLabel">Варианты ответа</label>
+            <div id="optionsList" class="cmpa-dyn-list"></div>
+            <button type="button" class="cmpa-btn cmpa-btn-sm cmpa-add-btn" onclick="addOption()">
+              <i class="bi bi-plus-lg"></i> Добавить вариант
+            </button>
+          </div>
         </div>
 
-        <!-- Ряд 4: баллы + попытки -->
-        <div class="col-md-6">
-          <label class="form-label fw-semibold">Баллы</label>
-          <input type="number" class="form-control" id="taskPoints" value="100" min="1">
-        </div>
-        <div class="col-md-6">
-          <label class="form-label fw-semibold">Максимум попыток</label>
-          <input type="number" class="form-control" id="taskAttempts" value="5" min="1">
+        <div class="cmpa-modal-grid-full task-fields d-none" id="fieldsPairs">
+          <div class="cmpa-field">
+            <label>Пары (татарский — русский)</label>
+            <div id="pairsList" class="cmpa-dyn-list"></div>
+            <button type="button" class="cmpa-btn cmpa-btn-sm cmpa-add-btn" onclick="addPair()">
+              <i class="bi bi-plus-lg"></i> Добавить пару
+            </button>
+          </div>
         </div>
 
-        <div class="col-12">
-          <div id="taskError" class="text-danger small"></div>
+        <div class="cmpa-field">
+          <label for="taskPoints">Баллы</label>
+          <input type="number" class="cmpa-input" id="taskPoints" value="100" min="1">
+        </div>
+
+        <div class="cmpa-field">
+          <label for="taskAttempts">Максимум попыток</label>
+          <input type="number" class="cmpa-input" id="taskAttempts" value="5" min="1">
+        </div>
+
+        <div class="cmpa-modal-grid-full">
+          <div id="taskError" class="cmpa-modal-error"></div>
         </div>
       </div>
     </div>
 
     <div class="app-modal-footer">
-      <button type="button" class="app-modal-btn app-modal-btn-secondary"
-              onclick="closeTaskModal()">Отмена</button>
-      <button type="button" class="app-modal-btn app-modal-btn-primary"
+      <button type="button" class="cmpa-btn" onclick="closeTaskModal()">Отмена</button>
+      <button type="button" class="cmpa-btn cmpa-btn-primary"
               id="taskModalSubmitBtn" onclick="applyTask()">Добавить</button>
     </div>
   </div>
 </div>
 
-<!-- ==================== МОДАЛКА СЛОВАРЯ ==================== -->
+<!-- ═══════════════ МОДАЛКА: СЛОВАРЬ ═══════════════ -->
 <div class="app-modal-overlay" id="wordPickerModal" style="z-index:1090;">
-  <div class="app-modal-box" style="max-width:640px;">
+  <div class="app-modal-box" style="max-width:600px;">
     <div class="app-modal-header">
       <h3 class="app-modal-title">Из словаря</h3>
       <button type="button" class="app-modal-close" onclick="closeWordPicker()" aria-label="Закрыть">
@@ -230,139 +211,27 @@
     </div>
 
     <div class="app-modal-body">
-      <input type="text" class="form-control mb-3" id="wordSearch"
+      <input type="text" class="cmpa-input" id="wordSearch"
              placeholder="Поиск по татарскому или русскому..." autocomplete="off">
-      <div id="wordPickerList" class="word-picker-list"></div>
+      <div id="wordPickerList" class="cmpa-word-list"></div>
     </div>
 
     <div class="app-modal-footer">
-      <button type="button" class="app-modal-btn app-modal-btn-secondary"
-              onclick="closeWordPicker()">Закрыть</button>
+      <button type="button" class="cmpa-btn" onclick="closeWordPicker()">Закрыть</button>
     </div>
   </div>
 </div>
 
-<!-- ==================== МОДАЛКА AI-ГЕНЕРАЦИИ ==================== -->
-<div class="app-modal-overlay" id="aiGenModal" style="z-index:1085;">
-  <div class="app-modal-box" style="max-width:720px;">
-    <div class="app-modal-header">
-      <h3 class="app-modal-title">✨ Генерация задач с помощью ИИ</h3>
-      <button type="button" class="app-modal-close" onclick="closeAIGenModal()" aria-label="Закрыть">
-        <i class="bi bi-x-lg"></i>
-      </button>
-    </div>
-
-    <div class="app-modal-body">
-
-      <!-- ФОРМА -->
-      <div id="aiGenForm">
-        <div class="row g-3">
-          <div class="col-md-8">
-            <label class="form-label fw-semibold">Тема соревнования</label>
-            <input type="text" class="form-control" id="aiTheme"
-                   placeholder="Например: Семья, Еда, Животные, Природа">
-            <div class="form-text">
-              ИИ сгенерирует слова по этой теме и составит из них задачи
-            </div>
-          </div>
-
-          <div class="col-md-4">
-            <label class="form-label fw-semibold">Сколько задач</label>
-            <input type="number" class="form-control" id="aiCount" value="5" min="3" max="15">
-          </div>
-
-          <div class="col-12">
-            <label class="form-label fw-semibold">Типы задач</label>
-            <div class="d-flex flex-wrap gap-3">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="text" id="typeText" checked>
-                <label class="form-check-label" for="typeText">📝 Текстовый ответ</label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="choice" id="typeChoice" checked>
-                <label class="form-check-label" for="typeChoice">🔘 Один вариант</label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="build" id="typeBuild" checked>
-                <label class="form-check-label" for="typeBuild">🧩 Собери слово</label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="pairs" id="typePairs">
-                <label class="form-check-label" for="typePairs">🔗 Найди пару</label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="voice" id="typeVoice">
-                <label class="form-check-label" for="typeVoice">🎙️ Голосовой</label>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-12">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="aiUseDict" checked>
-              <label class="form-check-label" for="aiUseDict">
-                Использовать слова из моего словаря (если есть по теме)
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <div class="alert alert-info mt-3 mb-0 small">
-          <i class="bi bi-info-circle"></i>
-          ИИ возьмёт реальные татарские слова и составит из них задачи.
-          Это займёт 10–30 секунд.
-        </div>
-      </div>
-
-      <!-- ЛОАДЕР -->
-      <div id="aiGenLoader" style="display:none;text-align:center;padding:40px 20px;">
-        <div class="spinner-border text-success" style="width:3rem;height:3rem;"></div>
-        <p class="mt-3 mb-0 text-muted">Генерируем задачи… Это может занять до 30 секунд</p>
-      </div>
-
-      <!-- РЕЗУЛЬТАТ -->
-      <div id="aiGenResult" style="display:none;">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h6 class="mb-0">Сгенерировано задач: <span id="aiGenCount" class="text-success"></span></h6>
-          <button type="button" class="btn btn-sm btn-outline-secondary" onclick="backToAIGenForm()">
-            <i class="bi bi-arrow-left"></i> Изменить параметры
-          </button>
-        </div>
-        <div id="aiGenPreview" class="d-flex flex-column gap-2"></div>
-      </div>
-
-      <div id="aiGenError" class="text-danger mt-3" style="min-height:20px;"></div>
-    </div>
-
-    <div class="app-modal-footer">
-      <button type="button" class="app-modal-btn app-modal-btn-secondary"
-              onclick="closeAIGenModal()">Отмена</button>
-      <button type="button" class="app-modal-btn app-modal-btn-primary"
-              id="aiGenBtn" onclick="generateWithAI()">
-        <i class="bi bi-magic"></i> Сгенерировать
-      </button>
-      <button type="button" class="app-modal-btn app-modal-btn-primary"
-              id="aiGenAddBtn" onclick="addGeneratedTasks()" style="display:none;">
-        <i class="bi bi-check-lg"></i> Добавить все
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- Тост-контейнер -->
 <div id="toastContainer" class="toast-container"></div>
 
 {% endblock %}
 
 {% block extra_js %}
-{# json_script ДО инлайн-скрипта #}
 {{ tasks_json|json_script:"tasks-data" }}
 
 <script>
-// ==================== КОНСТАНТЫ ====================
 const WORDS_API_URL = "{% url 'competitions:api_words' %}";
 
-// ==================== УТИЛИТЫ ====================
 function showToast(message, type = 'info') {
   let container = document.getElementById('toastContainer');
   if (!container) {
@@ -411,14 +280,13 @@ function debounce(fn, ms) {
   };
 }
 
-// ==================== ДАННЫЕ ====================
 const TASK_TYPE_NAMES = {
-  text: '📝 Текстовый ответ',
-  choice: '🔘 Один вариант',
-  multiple_choice: '☑️ Несколько вариантов',
-  build: '🧩 Собери слово',
-  pairs: '🔗 Найди пару',
-  voice: '🎙️ Голосовой перевод',
+  text: 'Текстовый ответ',
+  choice: 'Один вариант',
+  multiple_choice: 'Несколько вариантов',
+  build: 'Собери слово',
+  pairs: 'Найди пару',
+  voice: 'Голосовой перевод',
 };
 
 let tasks = [];
@@ -438,11 +306,9 @@ let tasks = [];
 
 let editingTaskIndex = null;
 
-// ==================== МОДАЛКА ЗАДАЧИ ====================
 function openTaskModal(index = null) {
   editingTaskIndex = (typeof index === 'number') ? index : null;
 
-  // Сброс
   document.getElementById('taskTitle').value = '';
   document.getElementById('taskStatement').value = '';
   document.getElementById('taskCorrect').value = '';
@@ -489,7 +355,7 @@ function openTaskModal(index = null) {
     onTypeChange();
     addOption(); addOption();
     addPair(); addPair();
-    document.getElementById('taskModalTitle').textContent = 'Задача';
+    document.getElementById('taskModalTitle').textContent = 'Новая задача';
     document.getElementById('taskModalSubmitBtn').textContent = 'Добавить';
   }
 
@@ -538,7 +404,6 @@ function onTypeChange() {
   }
 }
 
-// ==================== ОПЦИИ / ПАРЫ ====================
 function addOption(text = '', isCorrect = false) {
   const list = document.getElementById('optionsList');
   const type = document.getElementById('taskType').value;
@@ -546,13 +411,13 @@ function addOption(text = '', isCorrect = false) {
   const nameAttr = inputType === 'radio' ? 'name="taskOptionCorrect"' : '';
 
   const row = document.createElement('div');
-  row.className = 'd-flex gap-2 align-items-center option-row';
+  row.className = 'cmpa-option-row option-row';
   row.innerHTML = `
-    <input class="form-check-input mt-0 option-correct" type="${inputType}" ${nameAttr}
-           style="width:22px;height:22px;flex-shrink:0;">
-    <input type="text" class="form-control option-text" value="${escapeAttr(text)}"
+    <input class="option-correct" type="${inputType}" ${nameAttr}>
+    <input type="text" class="cmpa-input option-text" value="${escapeAttr(text)}"
            placeholder="Вариант ответа">
-    <button type="button" class="btn btn-sm btn-outline-danger" onclick="this.parentElement.remove()">
+    <button type="button" class="cmpa-icon-btn cmpa-icon-danger"
+            onclick="this.parentElement.remove()">
       <i class="bi bi-x-lg"></i>
     </button>
   `;
@@ -563,19 +428,19 @@ function addOption(text = '', isCorrect = false) {
 function addPair(tt = '', ru = '') {
   const list = document.getElementById('pairsList');
   const row = document.createElement('div');
-  row.className = 'd-flex gap-2 align-items-center pair-row';
+  row.className = 'cmpa-pair-row pair-row';
   row.innerHTML = `
-    <input type="text" class="form-control pair-tt" value="${escapeAttr(tt)}" placeholder="Татарский">
-    <i class="bi bi-arrow-right"></i>
-    <input type="text" class="form-control pair-ru" value="${escapeAttr(ru)}" placeholder="Русский">
-    <button type="button" class="btn btn-sm btn-outline-danger" onclick="this.parentElement.remove()">
+    <input type="text" class="cmpa-input pair-tt" value="${escapeAttr(tt)}" placeholder="Татарский">
+    <span class="cmpa-pair-arrow">→</span>
+    <input type="text" class="cmpa-input pair-ru" value="${escapeAttr(ru)}" placeholder="Русский">
+    <button type="button" class="cmpa-icon-btn cmpa-icon-danger"
+            onclick="this.parentElement.remove()">
       <i class="bi bi-x-lg"></i>
     </button>
   `;
   list.appendChild(row);
 }
 
-// ==================== СОХРАНЕНИЕ ЗАДАЧИ ====================
 function applyTask() {
   const type = document.getElementById('taskType').value;
   const title = document.getElementById('taskTitle').value.trim();
@@ -645,30 +510,27 @@ function applyTask() {
 function renderTasks() {
   const list = document.getElementById('tasksList');
   if (!tasks.length) {
-    list.innerHTML = `<div class="alert alert-secondary text-center mb-0">
+    list.innerHTML = `<div class="cmpa-tasks-empty">
       Задач пока нет. Нажмите «Добавить задачу».
     </div>`;
     return;
   }
 
   list.innerHTML = tasks.map((t, i) => `
-    <div class="card border-0 shadow-sm">
-      <div class="card-body d-flex align-items-center gap-3">
-        <span class="badge bg-success-subtle text-success rounded-circle"
-              style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:16px;">
-          ${i + 1}
-        </span>
-        <div class="flex-grow-1">
-          <div class="fw-semibold">${escapeHtml(t.title)}</div>
-          <div class="small text-muted">
-            ${TASK_TYPE_NAMES[t.task_type] || t.task_type} · ${t.points} б. · ${t.max_attempts} попыток
-          </div>
+    <div class="cmpa-task">
+      <div class="cmpa-task-num">${String(i + 1).padStart(2, '0')}</div>
+      <div class="cmpa-task-info">
+        <div class="cmpa-task-title">${escapeHtml(t.title)}</div>
+        <div class="cmpa-task-meta">
+          ${TASK_TYPE_NAMES[t.task_type] || t.task_type} · ${t.points} б. · ${t.max_attempts} попыток
         </div>
-        <button type="button" class="btn btn-sm btn-outline-secondary"
+      </div>
+      <div class="cmpa-task-actions">
+        <button type="button" class="cmpa-icon-btn"
                 onclick="openTaskModal(${i})" title="Редактировать">
           <i class="bi bi-pencil"></i>
         </button>
-        <button type="button" class="btn btn-sm btn-outline-danger"
+        <button type="button" class="cmpa-icon-btn cmpa-icon-danger"
                 onclick="removeTask(${i})" title="Удалить">
           <i class="bi bi-trash"></i>
         </button>
@@ -682,7 +544,6 @@ function removeTask(i) {
   renderTasks();
 }
 
-// ==================== WORD PICKER ====================
 let wordPickerWords = [];
 
 function openWordPicker() {
@@ -699,33 +560,33 @@ function closeWordPicker() {
 
 async function loadWordPicker(q) {
   const list = document.getElementById('wordPickerList');
-  list.innerHTML = '<div class="text-muted text-center py-3">Загрузка...</div>';
+  list.innerHTML = '<div class="cmpa-word-hint">Загрузка...</div>';
   try {
     const res = await fetch(WORDS_API_URL + '?q=' + encodeURIComponent(q || ''));
     const data = await res.json();
     wordPickerWords = data.words || [];
     if (!wordPickerWords.length) {
-      list.innerHTML = '<div class="text-muted text-center py-3">Ничего не найдено</div>';
+      list.innerHTML = '<div class="cmpa-word-hint">Ничего не найдено</div>';
       return;
     }
     list.innerHTML = wordPickerWords.map((w, i) => `
-      <button type="button" class="word-picker-row" data-idx="${i}">
-        <div class="word-picker-main">
-          <div class="word-picker-tt">${escapeHtml(w.tatar)}</div>
-          <div class="word-picker-ru">${escapeHtml(w.russian)}</div>
+      <button type="button" class="cmpa-word-row" data-idx="${i}">
+        <div class="cmpa-word-main">
+          <div class="cmpa-word-tt">${escapeHtml(w.tatar)}</div>
+          <div class="cmpa-word-ru">${escapeHtml(w.russian)}</div>
         </div>
-        <div class="word-picker-meta">
-          ${w.transcription ? `<span class="badge bg-light text-dark">${escapeHtml(w.transcription)}</span>` : ''}
-          <span class="badge bg-success-subtle text-success">${escapeHtml(w.theme_display || '')}</span>
+        <div class="cmpa-word-meta">
+          ${w.transcription ? `<span class="cmpa-word-badge">${escapeHtml(w.transcription)}</span>` : ''}
+          ${w.theme_display ? `<span class="cmpa-word-badge">${escapeHtml(w.theme_display)}</span>` : ''}
         </div>
       </button>
     `).join('');
-    list.querySelectorAll('.word-picker-row').forEach(el => {
+    list.querySelectorAll('.cmpa-word-row').forEach(el => {
       el.addEventListener('click', () => applyPickedWord(wordPickerWords[+el.dataset.idx]));
     });
   } catch (e) {
     console.error(e);
-    list.innerHTML = '<div class="text-danger text-center py-3">Ошибка загрузки</div>';
+    list.innerHTML = '<div class="cmpa-word-hint cmpa-word-hint-danger">Ошибка загрузки</div>';
   }
 }
 
@@ -796,148 +657,45 @@ function applyPickedWord(word) {
   closeWordPicker();
 }
 
-// ==================== AI-ГЕНЕРАЦИЯ ЗАДАЧ ====================
-let aiGeneratedTasks = [];
-
-function openAIGenModal() {
-  document.getElementById('aiTheme').value = '';
-  document.getElementById('aiCount').value = 5;
-  document.getElementById('typeText').checked = true;
-  document.getElementById('typeChoice').checked = true;
-  document.getElementById('typeBuild').checked = true;
-  document.getElementById('typePairs').checked = false;
-  document.getElementById('typeVoice').checked = false;
-  document.getElementById('aiUseDict').checked = true;
-  document.getElementById('aiGenError').textContent = '';
-  document.getElementById('aiGenForm').style.display = 'block';
-  document.getElementById('aiGenLoader').style.display = 'none';
-  document.getElementById('aiGenResult').style.display = 'none';
-  document.getElementById('aiGenBtn').style.display = 'inline-flex';
-  document.getElementById('aiGenAddBtn').style.display = 'none';
-  aiGeneratedTasks = [];
-  document.getElementById('aiGenModal').classList.add('open');
-}
-
-function closeAIGenModal() {
-  document.getElementById('aiGenModal').classList.remove('open');
-}
-
-function backToAIGenForm() {
-  document.getElementById('aiGenForm').style.display = 'block';
-  document.getElementById('aiGenResult').style.display = 'none';
-  document.getElementById('aiGenBtn').style.display = 'inline-flex';
-  document.getElementById('aiGenAddBtn').style.display = 'none';
-}
-
-async function generateWithAI() {
-  const theme = document.getElementById('aiTheme').value.trim();
-  if (!theme) {
-    showToast('Введите тему', 'error');
-    return;
-  }
-
-  const taskTypes = [];
-  document.querySelectorAll('#aiGenModal input[type="checkbox"][id^="type"]').forEach(cb => {
-    if (cb.checked) taskTypes.push(cb.value);
-  });
-  if (!taskTypes.length) {
-    showToast('Выберите хотя бы один тип задачи', 'error');
-    return;
-  }
-
-  const payload = {
-    theme: theme,
-    n_tasks: parseInt(document.getElementById('aiCount').value) || 5,
-    task_types: taskTypes,
-    use_dictionary: document.getElementById('aiUseDict').checked,
-  };
-
-  document.getElementById('aiGenForm').style.display = 'none';
-  document.getElementById('aiGenLoader').style.display = 'block';
-  document.getElementById('aiGenError').textContent = '';
-
-  try {
-    const res = await fetch('/generation/competition-tasks/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': getCookie('csrftoken'),
-      },
-      body: JSON.stringify(payload),
+// Инициализация: пресеты тем, сегменты, типы
+(function initGenForm() {
+  // Пресеты тем
+  document.querySelectorAll('#genPresets .gen-preset').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const input = document.getElementById('aiTheme');
+      input.value = btn.dataset.theme;
+      document.querySelectorAll('#genPresets .gen-preset').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      input.focus();
     });
-    const data = await res.json();
+  });
 
-    document.getElementById('aiGenLoader').style.display = 'none';
+  // Сегменты количества
+  document.querySelectorAll('#genCount .gen-segment').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#genCount .gen-segment').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('aiCount').value = btn.dataset.count;
+    });
+  });
 
-    if (data.status !== 'ok') {
-      document.getElementById('aiGenError').textContent = data.error || 'Ошибка генерации';
-      document.getElementById('aiGenForm').style.display = 'block';
-      return;
-    }
+  // Типы задач
+  document.querySelectorAll('#genTypes .gen-type').forEach(label => {
+    const cb = label.querySelector('input[type="checkbox"]');
+    cb.addEventListener('change', () => {
+      label.classList.toggle('active', cb.checked);
+    });
+  });
 
-    aiGeneratedTasks = data.tasks || [];
-    renderAIGenPreview();
-  } catch (e) {
-    document.getElementById('aiGenLoader').style.display = 'none';
-    document.getElementById('aiGenForm').style.display = 'block';
-    document.getElementById('aiGenError').textContent = 'Ошибка сети: ' + e.message;
-  }
-}
+  // Снять подсветку пресета при ручном вводе
+  const themeInput = document.getElementById('aiTheme');
+  themeInput?.addEventListener('input', () => {
+    document.querySelectorAll('#genPresets .gen-preset').forEach(b => {
+      if (b.dataset.theme !== themeInput.value) b.classList.remove('active');
+    });
+  });
+})();
 
-function renderAIGenPreview() {
-  document.getElementById('aiGenResult').style.display = 'block';
-  document.getElementById('aiGenBtn').style.display = 'none';
-  document.getElementById('aiGenAddBtn').style.display = 'inline-flex';
-  document.getElementById('aiGenCount').textContent = aiGeneratedTasks.length;
-
-  const preview = document.getElementById('aiGenPreview');
-  preview.innerHTML = aiGeneratedTasks.map((t, i) => {
-    const typeName = TASK_TYPE_NAMES[t.task_type] || t.task_type;
-    let extra = '';
-    if (t.task_type === 'pairs' && t.pairs.length) {
-      extra = t.pairs.slice(0, 3).map(p => `${p[0]} → ${p[1]}`).join(', ');
-    } else if ((t.task_type === 'choice' || t.task_type === 'multiple_choice') && t.options.length) {
-      extra = t.options.map(o => o.text + (o.is_correct ? ' ✓' : '')).join(', ');
-    } else if (t.task_type === 'build') {
-      extra = `Слово: ${t.build_word}, подсказка: ${t.build_hint}`;
-    } else if (t.task_type === 'voice') {
-      extra = `Произнести: ${t.voice_text || t.correct_answer}`;
-    } else {
-      extra = `Ответ: ${t.correct_answer}`;
-    }
-    return `
-      <div class="border rounded p-3 bg-light">
-        <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
-          <div class="fw-semibold">${i + 1}. ${escapeHtml(t.title)}</div>
-          <span class="badge bg-success-subtle text-success small">${typeName}</span>
-        </div>
-        <div class="small text-muted mb-1">${escapeHtml(t.statement)}</div>
-        <div class="small font-monospace text-secondary">${escapeHtml(extra)}</div>
-      </div>
-    `;
-  }).join('');
-}
-
-function addGeneratedTasks() {
-  if (!aiGeneratedTasks.length) return;
-  tasks.push(...aiGeneratedTasks);
-  renderTasks();
-  closeAIGenModal();
-  showToast(`Добавлено задач: ${aiGeneratedTasks.length}`, 'success');
-}
-
-// Escape закрытие
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && document.getElementById('aiGenModal').classList.contains('open')) {
-    closeAIGenModal();
-  }
-});
-
-document.getElementById('aiGenModal')?.addEventListener('click', function (e) {
-  if (e.target === this) closeAIGenModal();
-});
-
-// ==================== СОХРАНЕНИЕ СОРЕВНОВАНИЯ ====================
 async function saveCompetition() {
   const btn = document.getElementById('saveBtn');
   const errorBox = document.getElementById('saveError');
@@ -958,7 +716,7 @@ async function saveCompetition() {
 
   btn.disabled = true;
   const originalText = btn.innerHTML;
-  btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Сохранение...';
+  btn.innerHTML = 'Сохранение...';
 
   try {
     const res = await fetch('/competitions/manage/save/', {
@@ -984,14 +742,13 @@ async function saveCompetition() {
       btn.innerHTML = originalText;
     }
   } catch (e) {
-    console.error('🔴 Ошибка:', e);
+    console.error(e);
     showToast('Ошибка сети: ' + e.message, 'error');
     btn.disabled = false;
     btn.innerHTML = originalText;
   }
 }
 
-// ==================== ИНИЦИАЛИЗАЦИЯ ====================
 document.addEventListener('DOMContentLoaded', () => {
   renderTasks();
 

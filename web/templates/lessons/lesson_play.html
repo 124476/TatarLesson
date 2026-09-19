@@ -10,70 +10,62 @@
 
 {% block content %}
 
-{# ==================== УЖЕ ПРОЙДЕН ==================== #}
+{# ══════════════════════ УЖЕ ПРОЙДЕН ══════════════════════ #}
 {% if already_finished %}
-<div class="container" style="max-width:760px;padding:60px 20px;">
+<div class="lp lp-done">
 
-  <div style="text-align:center;margin-bottom:32px;">
-    <div style="font-size:64px;margin-bottom:16px;">✅</div>
-    <h1 style="font-size:28px;margin:0 0 12px;color:var(--text-primary);">Урок уже пройден</h1>
-    <p style="color:var(--text-secondary);margin:0;">
-      Ваш результат: <strong style="color:#0B6E4F;font-size:20px;">{{ progress.score }}</strong> баллов
-    </p>
+  <div class="lp-done-hero">
+    <h1 class="lp-done-title">Урок уже пройден</h1>
+    <p class="lp-done-sub">Ваш результат сохранён</p>
+
+    <div class="lp-done-score">
+      <strong>{{ progress.score }}</strong>
+      <span>баллов</span>
+    </div>
   </div>
 
   {% if answers_summary %}
-    <div style="margin-bottom:20px;">
-      <h2 style="font-size:20px;margin:0 0 4px;color:var(--text-primary);">Разбор ответов</h2>
-      <p style="color:var(--text-secondary);font-size:14px;margin:0;">
-        Сравните свои ответы с правильными
-      </p>
+    <div class="lp-section-head">
+      <h2>Разбор ответов</h2>
+      <p>Сравните свои ответы с правильными</p>
     </div>
 
-    <div style="display:flex;flex-direction:column;gap:12px;">
+    <div class="lp-summary-list">
       {% for item in answers_summary %}
-        <div style="background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:14px;padding:18px;
-          {% if item.is_correct %}border-left:4px solid #16a34a;{% else %}border-left:4px solid #dc2626;{% endif %}">
-
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-            <div style="font-size:12px;text-transform:uppercase;color:var(--text-muted);font-weight:600;">
-              Задание {{ forloop.counter }} · {{ item.type_display }}
-            </div>
-            <div style="font-size:12px;color:var(--text-muted);">
-              {{ item.points }} / {{ item.max_points }} баллов
-            </div>
+        <div class="lp-summary-card {% if item.is_correct %}is-ok{% else %}is-fail{% endif %}">
+          <div class="lp-summary-head">
+            <span class="lp-summary-num">Задание {{ forloop.counter }}</span>
+            <span class="lp-summary-type">{{ item.type_display }}</span>
+            <span class="lp-summary-pts">{{ item.points }} / {{ item.max_points }}</span>
           </div>
 
           {% if item.type == 'pairs' %}
-            <div style="font-size:14px;color:var(--text-secondary);margin-bottom:6px;">
-              <strong>Ваш результат:</strong> {% if item.is_correct %}все пары найдены{% else %}не все пары найдены{% endif %}
+            <div class="lp-summary-pairs-status">
+              {% if item.is_correct %}Все пары найдены{% else %}Не все пары найдены{% endif %}
             </div>
-            <div style="margin-top:10px;">
-              <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Правильные пары:</div>
-              <div style="display:flex;flex-direction:column;gap:6px;">
-                {% for pair in item.pairs %}
-                  <div style="font-size:14px;padding:8px 12px;background:rgba(11,110,79,.06);border-radius:8px;">
-                    <span style="color:#0B6E4F;font-weight:600;">{{ pair.0 }}</span>
-                    <span style="color:var(--text-muted);"> → </span>
-                    <span style="color:var(--text-primary);">{{ pair.1 }}</span>
-                  </div>
-                {% endfor %}
-              </div>
+            <div class="lp-summary-pairs">
+              {% for pair in item.pairs %}
+                <div class="lp-summary-pair">
+                  <span class="lp-pair-tt">{{ pair.0 }}</span>
+                  <span class="lp-pair-arrow">→</span>
+                  <span class="lp-pair-ru">{{ pair.1 }}</span>
+                </div>
+              {% endfor %}
             </div>
           {% else %}
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="lp-summary-grid">
               <div>
-                <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">Ваш ответ:</div>
-                <div style="font-size:15px;font-weight:600;
-                  {% if item.is_correct %}color:#16a34a;{% else %}color:#dc2626;{% endif %}">
+                <span class="lp-summary-label">Ваш ответ</span>
+                <span class="lp-summary-val {% if item.is_correct %}ok{% else %}fail{% endif %}">
                   {{ item.user_answer|default:"—" }}
-                </div>
+                </span>
               </div>
               <div>
-                <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">Правильный ответ:</div>
-                <div style="font-size:15px;font-weight:600;color:#0B6E4F;">
-                  {{ item.correct }}
-                </div>
+                <span class="lp-summary-label">Правильный ответ</span>
+                <span class="lp-summary-val accent">{{ item.correct }}</span>
+                {% if item.hint %}
+                  <span class="lp-summary-hint">Перевод: {{ item.hint }}</span>
+                {% endif %}
               </div>
             </div>
           {% endif %}
@@ -81,14 +73,11 @@
       {% endfor %}
     </div>
   {% else %}
-    <div style="text-align:center;padding:24px;color:var(--text-muted);font-size:14px;">
-      Разбор ответов недоступен для этого урока
-    </div>
+    <div class="lp-empty">Разбор ответов недоступен для этого урока</div>
   {% endif %}
 
-  <div style="text-align:center;margin-top:32px;">
-    <a href="{% url 'dashboard:home' %}"
-       style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:#0B6E4F;color:#fff;border-radius:12px;text-decoration:none;font-weight:600;">
+  <div class="lp-done-actions">
+    <a href="{% url 'dashboard:home' %}" class="lp-btn lp-btn-primary">
       <i class="bi bi-house"></i> На главную
     </a>
   </div>
@@ -96,144 +85,161 @@
 
 {% else %}
 
-{# ==================== ПРОХОЖДЕНИЕ ==================== #}
-<div class="container play-page" style="max-width:820px;padding:40px 20px;"
+{# ══════════════════════ ПРОХОЖДЕНИЕ ══════════════════════ #}
+<div class="lp"
      id="playApp"
      data-lesson-id="{{ lesson.id }}"
      data-submit-url="{% url 'lessons:lesson_submit' %}">
 
-  <div style="margin-bottom:28px;">
-    <h1 style="font-size:28px;margin:0 0 8px;color:var(--text-primary);">{{ lesson.title }}</h1>
-    <p style="color:var(--text-secondary);margin:0;">
-      Заданий: {{ blocks|length }} · Всего баллов: {{ lesson.total_points }}
-    </p>
-  </div>
+  <header class="lp-header">
+    <h1 class="lp-title">{{ lesson.title }}</h1>
+    <div class="lp-header-meta">
+      <span>{{ blocks|length }} заданий</span>
+      <span class="lp-sep">·</span>
+      <span>{{ lesson.total_points }} баллов</span>
+    </div>
 
-  <div id="blocksContainer">
+    <div class="lp-progress">
+      <div class="lp-progress-info">
+        <span>Прогресс</span>
+        <span id="progressCount">0 / {{ blocks|length }}</span>
+      </div>
+      <div class="lp-progress-track">
+        <div class="lp-progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="lp-blocks" id="blocksContainer">
     {% for block in blocks %}
-      <div class="block-play" data-block-id="{{ block.id }}" data-type="{{ block.type }}" data-points="{{ block.points }}"
-           data-correct="{{ block.config.correct|default:'' }}"
-           data-word="{{ block.config.word|default:'' }}"
-           data-pairs='{{ block.config.pairs_json|default:"[]"|safe }}'
-           style="background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:16px;padding:28px;margin-bottom:20px;">
+      <article class="lp-block"
+               data-block-id="{{ block.id }}"
+               data-type="{{ block.type }}"
+               data-points="{{ block.points }}"
+               data-correct="{{ block.config.correct|default:'' }}"
+               data-word="{{ block.config.word|default:'' }}"
+               data-pairs='{{ block.config.pairs_json|default:"[]"|safe }}'>
 
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-          <div style="font-size:12px;text-transform:uppercase;color:var(--text-muted);font-weight:600;">
-            Задание {{ forloop.counter }}
-          </div>
-          <div style="font-size:12px;color:var(--text-muted);">
-            {{ block.points }} баллов
-          </div>
+        <div class="lp-block-head">
+          <span class="lp-block-num">{{ forloop.counter|stringformat:"02d" }}</span>
+          <span class="lp-block-type">{{ block.get_type_display }}</span>
+          <span class="lp-block-points">{{ block.points }} баллов</span>
         </div>
 
-        <div style="font-size:20px;font-weight:600;margin-bottom:20px;color:var(--text-primary);">
-          {{ block.get_type_display }}
-        </div>
-
-        {# ================ AUDIO ================ #}
+        {# ─── AUDIO ─── #}
         {% if block.type == 'audio' %}
-          <p style="color:var(--text-secondary);margin:0 0 16px;">Послушай слово и введи перевод:</p>
-          <button type="button" onclick="playAudio('{{ block.config.word|default:"" }}')"
-                  style="padding:14px 24px;background:#0B6E4F;color:#fff;border:none;border-radius:12px;font-weight:600;cursor:pointer;margin-bottom:16px;font-size:16px;">
-            <i class="bi bi-volume-up-fill"></i> Послушать
-          </button>
-          <input type="text" class="answer-input" placeholder="Введите перевод"
-                 style="width:100%;padding:14px 18px;border:1px solid var(--border-color);border-radius:12px;font-size:16px;background:var(--bg-page);color:var(--text-primary);outline:none;">
-
-        {# ================ TRANSLATE ================ #}
-        {% elif block.type == 'translate' %}
-          <p style="color:var(--text-secondary);margin:0 0 16px;">
-            Переведи на русский: <strong style="color:var(--text-primary);font-size:20px;">{{ block.config.word }}</strong>
-          </p>
-          <input type="text" class="answer-input" placeholder="Введите перевод"
-                 style="width:100%;padding:14px 18px;border:1px solid var(--border-color);border-radius:12px;font-size:16px;background:var(--bg-page);color:var(--text-primary);outline:none;">
-
-        {# ================ BUILD ================ #}
-        {% elif block.type == 'build' %}
-          <p style="color:var(--text-secondary);margin:0 0 8px;">
-            Перевод: <strong style="color:var(--text-primary);font-size:20px;">{{ block.config.correct }}</strong>
-          </p>
-          <p style="color:var(--text-secondary);margin:0 0 16px;font-size:14px;">
-            Собери татарское слово из букв:
-          </p>
-          <div class="build-area" style="padding:20px;background:var(--bg-page);border-radius:12px;min-height:80px;margin-bottom:16px;text-align:center;">
-            <div class="build-target" style="font-size:28px;letter-spacing:8px;color:#0B6E4F;font-weight:700;min-height:40px;"></div>
+          <p class="lp-prompt">Послушайте слово и введите перевод</p>
+          <div class="lp-audio-row">
+            <button type="button" class="lp-audio-btn"
+                    onclick="playAudio('{{ block.config.word|default:"" }}')">
+              <i class="bi bi-volume-up"></i>
+              <span>Послушать</span>
+            </button>
+            <input type="text" class="lp-input answer-input" placeholder="Введите перевод" autocomplete="off">
           </div>
-          <div class="build-letters" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;"></div>
 
-        {# ================ PAIRS ================ #}
+        {# ─── TRANSLATE ─── #}
+        {% elif block.type == 'translate' %}
+          <p class="lp-prompt">Переведите на русский</p>
+          <div class="lp-question-word">{{ block.config.word }}</div>
+          <input type="text" class="lp-input answer-input" placeholder="Введите перевод" autocomplete="off">
+
+        {# ─── BUILD ─── #}
+        {% elif block.type == 'build' %}
+          <p class="lp-prompt">Соберите татарское слово</p>
+          <div class="lp-hint-word">
+            <span class="lp-hint-label">Перевод</span>
+            <span class="lp-hint-value">{{ block.config.correct }}</span>
+          </div>
+
+          <div class="lp-build">
+            <div class="lp-build-slots build-target" aria-label="Собранное слово"></div>
+            <div class="lp-build-pool build-letters" aria-label="Доступные буквы"></div>
+
+            <div class="lp-build-actions">
+              <button type="button" class="lp-icon-btn build-undo" title="Убрать последнюю">
+                <i class="bi bi-backspace"></i>
+                <span>Стереть</span>
+              </button>
+              <button type="button" class="lp-icon-btn build-clear" title="Очистить всё">
+                <i class="bi bi-x-circle"></i>
+                <span>Очистить</span>
+              </button>
+            </div>
+          </div>
+
+        {# ─── PAIRS ─── #}
         {% elif block.type == 'pairs' %}
-          <p style="color:var(--text-secondary);margin:0 0 16px;">
-            Найди пары: соедини татарское слово с русским переводом
-          </p>
-          <div class="pairs-wrap" style="position:relative;">
-            <svg class="pairs-svg" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;overflow:visible;">
+          <p class="lp-prompt">Соедините татарские слова с их переводом</p>
+          <div class="lp-pairs-wrap pairs-wrap">
+            <svg class="lp-pairs-svg pairs-svg" aria-hidden="true">
               <defs>
-                <marker id="arrow-green-{{ block.id }}" markerWidth="10" markerHeight="10"
-                        refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
-                  <path d="M0,0 L6,3 L0,6 z" fill="#0B6E4F"></path>
+                <marker id="lp-arrow-{{ block.id }}"
+                        markerWidth="8" markerHeight="8"
+                        refX="7" refY="4" orient="auto"
+                        markerUnits="strokeWidth">
+                  <path d="M0,0 L8,4 L0,8 Z" fill="currentColor"></path>
                 </marker>
               </defs>
             </svg>
-            <div class="pairs-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:64px;position:relative;z-index:1;"></div>
+            <div class="lp-pairs-grid pairs-grid"></div>
           </div>
 
-        {# ================ QUICK ================ #}
+        {# ─── QUICK ─── #}
         {% elif block.type == 'quick' %}
-          <p style="color:var(--text-secondary);margin:0 0 16px;">
-            Выбери правильный перевод:
-            <strong style="color:var(--text-primary);font-size:20px;">{{ block.config.word }}</strong>
-          </p>
-          <div class="quick-options" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"></div>
+          <p class="lp-prompt">Выберите правильный перевод</p>
+          <div class="lp-question-word">{{ block.config.word }}</div>
+          <div class="lp-quick quick-options"></div>
 
-        {# ================ GAP ================ #}
+        {# ─── GAP ─── #}
         {% elif block.type == 'gap' %}
-          <p style="color:var(--text-secondary);margin:0 0 12px;">Вставь пропущенное слово:</p>
-          {% if block.config.word %}
-            <p style="font-size:18px;color:var(--text-primary);margin:0 0 16px;font-weight:500;">
-              {{ block.config.word }}
-            </p>
+          <p class="lp-prompt">Вставьте пропущенное слово</p>
+
+          {% if block.config.sentence %}
+            <div class="lp-gap-sentence">{{ block.config.sentence }}</div>
+          {% elif block.config.word %}
+            <div class="lp-gap-sentence">{{ block.config.word }}</div>
           {% endif %}
-          <input type="text" class="answer-input" placeholder="Введите слово"
-                 style="width:100%;padding:14px 18px;border:1px solid var(--border-color);border-radius:12px;font-size:16px;background:var(--bg-page);color:var(--text-primary);outline:none;">
+
+            {% if block.config.hint %}
+              <p class="lp-gap-hint">{{ block.config.hint }}</p>
+            {% endif %}
+
+            <input type="text" class="lp-input answer-input"
+                   placeholder="Введите слово" autocomplete="off">
 
         {% else %}
-          <input type="text" class="answer-input" placeholder="Введите ответ"
-                 style="width:100%;padding:14px 18px;border:1px solid var(--border-color);border-radius:12px;font-size:16px;background:var(--bg-page);color:var(--text-primary);outline:none;">
+          <input type="text" class="lp-input answer-input" placeholder="Введите ответ" autocomplete="off">
         {% endif %}
-      </div>
+      </article>
     {% endfor %}
   </div>
 
-  <button type="button" onclick="submitLesson()" id="submitBtn"
-          style="width:100%;padding:18px;background:#0B6E4F;color:#fff;border:none;border-radius:14px;font-weight:600;font-size:16px;cursor:pointer;margin-top:32px;">
-    <i class="bi bi-check-lg"></i> Завершить урок
-  </button>
+  <div class="lp-submit-wrap">
+    <button type="button" onclick="submitLesson()" id="submitBtn" class="lp-submit">
+      <i class="bi bi-check2"></i>
+      Завершить урок
+    </button>
+    <p id="submitError" class="lp-submit-error"></p>
+  </div>
 
-  <p id="submitError" style="color:#dc2626;text-align:center;margin-top:12px;font-size:14px;min-height:20px;"></p>
 </div>
 
 {% endif %}
 
+{# ══════════════════════ РЕЗУЛЬТАТ ══════════════════════ #}
 <div class="app-modal-overlay" id="resultModal">
   <div class="app-modal-box">
-
     <div class="app-modal-header">
-      <div style="font-size:48px;margin-bottom:8px;">🎉</div>
-      <h2 class="app-modal-title">Урок завершён!</h2>
+      <h2 class="app-modal-title">Урок завершён</h2>
       <p class="app-modal-subtitle">
-        Ваш результат: <strong id="resultScore" style="color:#0B6E4F;font-size:20px;">0</strong>
-        / <span id="resultMax">0</span> баллов
+        Ваш результат:
+        <strong id="resultScore">0</strong> / <span id="resultMax">0</span> баллов
       </p>
     </div>
-
-    <div id="resultBody" class="app-modal-body">
-    </div>
-
+    <div id="resultBody" class="app-modal-body"></div>
     <div class="app-modal-footer">
-      <a href="/dashboard/" class="app-modal-btn-primary">
-        На главную
-      </a>
+      <a href="/dashboard/" class="app-modal-btn-primary">На главную</a>
     </div>
   </div>
 </div>
@@ -241,7 +247,25 @@
 <script>
 {% if not already_finished %}
 const SUBMIT_URL = '{% url "lessons:lesson_submit" %}';
-const LESSON_ID = {{ lesson.id }};
+const LESSON_ID  = {{ lesson.id }};
+const TOTAL_BLOCKS = {{ blocks|length }};
+
+const collectedAnswers = {};
+const answeredSet = new Set();
+
+function updateProgress() {
+  const n = answeredSet.size;
+  const pct = TOTAL_BLOCKS ? (n / TOTAL_BLOCKS) * 100 : 0;
+  const fill = document.getElementById('progressFill');
+  const count = document.getElementById('progressCount');
+  if (fill)  fill.style.width = pct + '%';
+  if (count) count.textContent = n + ' / ' + TOTAL_BLOCKS;
+}
+function markAnswered(blockId, hasAnswer) {
+  if (hasAnswer) answeredSet.add(String(blockId));
+  else           answeredSet.delete(String(blockId));
+  updateProgress();
+}
 
 function playAudio(word) {
   if (!word) { showToast('Слово не задано', 'error'); return; }
@@ -249,169 +273,186 @@ function playAudio(word) {
   new Audio(url).play().catch(() => showToast('Ошибка озвучки', 'error'));
 }
 
-// ===== Хранилище ответов =====
-const collectedAnswers = {}; // { block_id: answer }
-
-// =================== BUILD ===================
-document.querySelectorAll('.block-play[data-type="build"]').forEach(block => {
+/* ═══════════ BUILD ═══════════ */
+document.querySelectorAll('.lp-block[data-type="build"]').forEach(block => {
   const word = (block.dataset.word || '').trim();
-  if (!word) return;
+  const blockId = block.dataset.blockId;
+  const slots = block.querySelector('.build-target');
+  const pool  = block.querySelector('.build-letters');
 
-  const letters = word.split('');
+  if (!word) {
+    slots.innerHTML = '<span class="lp-build-empty">Слово не задано</span>';
+    return;
+  }
+
+  const letters = word.split('').map((ch, i) => ({ ch, id: i }));
   const shuffled = [...letters].sort(() => Math.random() - 0.5);
 
-  const target = block.querySelector('.build-target');
-  const lettersArea = block.querySelector('.build-letters');
-  let current = '';
+  let placed = [];
 
-  shuffled.forEach(letter => {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.textContent = letter;
-    btn.style.cssText =
-      'width:48px;height:48px;border:1px solid var(--border-color);border-radius:10px;' +
-      'background:var(--bg-page);color:var(--text-primary);font-size:20px;' +
-      'font-weight:600;cursor:pointer;transition:all .15s;';
-    btn.onclick = () => {
-      current += letter;
-      target.textContent = current;
-      btn.disabled = true;
-      btn.style.opacity = '0.3';
-      collectedAnswers[block.dataset.blockId] = current;
-    };
-    lettersArea.appendChild(btn);
-  });
+  function render() {
+    slots.innerHTML = '';
+    pool.innerHTML  = '';
+
+    if (!placed.length) {
+      slots.innerHTML = '<span class="lp-build-empty">Нажимайте на буквы ниже</span>';
+    } else {
+      placed.forEach(id => {
+        const letter = letters.find(l => l.id === id);
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'lp-letter-chip is-placed';
+        chip.textContent = letter.ch;
+        chip.title = 'Вернуть в пул';
+        chip.onclick = () => {
+          placed = placed.filter(pid => pid !== id);
+          render(); sync();
+        };
+        slots.appendChild(chip);
+      });
+    }
+
+    shuffled.forEach(letter => {
+      if (placed.includes(letter.id)) return;
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'lp-letter-chip';
+      chip.textContent = letter.ch;
+      chip.onclick = () => {
+        placed.push(letter.id);
+        render(); sync();
+      };
+      pool.appendChild(chip);
+    });
+  }
+
+  function sync() {
+    const text = placed.map(id => letters.find(l => l.id === id).ch).join('');
+    collectedAnswers[blockId] = text;
+    markAnswered(blockId, text.length === word.length);
+  }
+
+  block.querySelector('.build-undo').onclick = () => { placed.pop(); render(); sync(); };
+  block.querySelector('.build-clear').onclick = () => { placed = []; render(); sync(); };
+
+  render();
+  sync();
 });
 
-// =================== PAIRS (только линии, без проверки) ===================
-document.querySelectorAll('.block-play[data-type="pairs"]').forEach(block => {
+/* ═══════════ PAIRS ═══════════ */
+document.querySelectorAll('.lp-block[data-type="pairs"]').forEach(block => {
+  const blockId = block.dataset.blockId;
   let pairs = [];
-  try {
-    pairs = JSON.parse(block.dataset.pairs || '[]');
-  } catch (e) {
-    pairs = [];
-  }
+  try { pairs = JSON.parse(block.dataset.pairs || '[]'); } catch (e) { pairs = []; }
   if (!pairs.length) return;
 
   const wrap = block.querySelector('.pairs-wrap');
-  const svg = block.querySelector('.pairs-svg');
+  const svg  = block.querySelector('.pairs-svg');
   const grid = block.querySelector('.pairs-grid');
   const shuffle = arr => [...arr].sort(() => Math.random() - 0.5);
-  const leftItems = shuffle(pairs.map(p => ({ text: p[0], side: 'left' })));
+
+  const leftItems  = shuffle(pairs.map(p => ({ text: p[0], side: 'left'  })));
   const rightItems = shuffle(pairs.map(p => ({ text: p[1], side: 'right' })));
 
   grid.innerHTML = '';
 
-  const leftCol = document.createElement('div');
-  leftCol.style.cssText = 'display:flex;flex-direction:column;gap:12px;';
+  const leftCol  = document.createElement('div');
   const rightCol = document.createElement('div');
-  rightCol.style.cssText = 'display:flex;flex-direction:column;gap:12px;';
+  leftCol.className  = 'lp-pairs-col';
+  rightCol.className = 'lp-pairs-col';
 
-  let selectedLeft = null;
-  let selectedRight = null;
-  const connections = []; // { leftBtn, rightBtn, line }
+  let selLeft = null, selRight = null;
+  const connections = [];
 
   function makeCard(item) {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.textContent = item.text;
+    btn.className = 'lp-pair-card';
     btn.dataset.side = item.side;
-    btn.style.cssText =
-      'padding:18px;border:1px solid var(--border-color);border-radius:12px;' +
-      'background:var(--bg-page);color:var(--text-primary);font-size:16px;' +
-      'font-weight:500;cursor:pointer;transition:all .15s;position:relative;z-index:3;';
+    btn.innerHTML = `<span class="lp-pair-text">${escapeHtml(item.text)}</span>
+                     <span class="lp-pair-node"></span>`;
     btn.onclick = () => onCardClick(btn, item);
     return btn;
   }
 
-  function drawLine(leftBtn, rightBtn) {
+  function drawPath(leftBtn, rightBtn) {
     const wrapRect = wrap.getBoundingClientRect();
     const lRect = leftBtn.getBoundingClientRect();
     const rRect = rightBtn.getBoundingClientRect();
 
-    const x1 = lRect.right - wrapRect.left;
+    const x1 = lRect.right - wrapRect.left - 2;
     const y1 = lRect.top + lRect.height / 2 - wrapRect.top;
-    const x2 = rRect.left - wrapRect.left;
+    const x2 = rRect.left  - wrapRect.left + 2;
     const y2 = rRect.top + rRect.height / 2 - wrapRect.top;
 
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', x1);
-    line.setAttribute('y1', y1);
-    line.setAttribute('x2', x2);
-    line.setAttribute('y2', y2);
-    line.setAttribute('stroke', '#0B6E4F');
-    line.setAttribute('stroke-width', '2');
-    line.setAttribute('marker-end', `url(#arrow-green-${block.id})`);
-    svg.appendChild(line);
-    return line;
+    const midX = (x1 + x2) / 2;
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`);
+    path.setAttribute('class', 'lp-pair-line');
+    path.setAttribute('marker-end', `url(#lp-arrow-${blockId})`);
+    svg.appendChild(path);
+    return path;
   }
 
-  function updateLine(c) {
+  function updatePath(c) {
     const wrapRect = wrap.getBoundingClientRect();
     const lRect = c.leftBtn.getBoundingClientRect();
     const rRect = c.rightBtn.getBoundingClientRect();
-    c.line.setAttribute('x1', lRect.right - wrapRect.left);
-    c.line.setAttribute('y1', lRect.top + lRect.height / 2 - wrapRect.top);
-    c.line.setAttribute('x2', rRect.left - wrapRect.left);
-    c.line.setAttribute('y2', rRect.top + rRect.height / 2 - wrapRect.top);
+    const x1 = lRect.right - wrapRect.left - 2;
+    const y1 = lRect.top + lRect.height / 2 - wrapRect.top;
+    const x2 = rRect.left  - wrapRect.left + 2;
+    const y2 = rRect.top + rRect.height / 2 - wrapRect.top;
+    const midX = (x1 + x2) / 2;
+    c.path.setAttribute('d', `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`);
   }
 
-  function saveConnections() {
-    // Собираем пары как [[leftText, rightText], ...]
+  function save() {
     const result = connections.map(c => [
-      c.leftBtn.textContent.trim(),
-      c.rightBtn.textContent.trim(),
+      c.leftBtn.querySelector('.lp-pair-text').textContent.trim(),
+      c.rightBtn.querySelector('.lp-pair-text').textContent.trim(),
     ]);
-    collectedAnswers[block.dataset.blockId] = JSON.stringify(result);
-    if (!result.length) {
-      delete collectedAnswers[block.dataset.blockId];
-    }
+    collectedAnswers[blockId] = JSON.stringify(result);
+    markAnswered(blockId, result.length === pairs.length);
   }
 
-  function removeConnection(cardA) {
+  function removeFor(cardA) {
     for (let i = connections.length - 1; i >= 0; i--) {
       const c = connections[i];
       if (c.leftBtn === cardA || c.rightBtn === cardA) {
-        c.line.remove();
-        c.leftBtn.style.borderColor = 'var(--border-color)';
-        c.rightBtn.style.borderColor = 'var(--border-color)';
+        c.path.remove();
+        c.leftBtn.classList.remove('is-linked');
+        c.rightBtn.classList.remove('is-linked');
         connections.splice(i, 1);
       }
     }
-    saveConnections();
+    save();
   }
 
-  function isConnected(btn) {
-    return connections.some(c => c.leftBtn === btn || c.rightBtn === btn);
-  }
+  const isConnected = btn =>
+    connections.some(c => c.leftBtn === btn || c.rightBtn === btn);
 
   function onCardClick(btn, item) {
-    // Клик по связанной карточке — разрываем связь
-    if (isConnected(btn)) {
-      removeConnection(btn);
-      return;
-    }
+    if (isConnected(btn)) { removeFor(btn); return; }
 
     if (item.side === 'left') {
-      if (selectedLeft) selectedLeft.btn.style.borderColor = 'var(--border-color)';
-      selectedLeft = { btn, item };
-      btn.style.borderColor = '#0B6E4F';
+      if (selLeft) selLeft.classList.remove('is-selected');
+      selLeft = btn; btn.classList.add('is-selected');
     } else {
-      if (selectedRight) selectedRight.btn.style.borderColor = 'var(--border-color)';
-      selectedRight = { btn, item };
-      btn.style.borderColor = '#0B6E4F';
+      if (selRight) selRight.classList.remove('is-selected');
+      selRight = btn; btn.classList.add('is-selected');
     }
 
-    if (selectedLeft && selectedRight) {
-      const l = selectedLeft;
-      const r = selectedRight;
-      selectedLeft = null;
-      selectedRight = null;
+    if (selLeft && selRight) {
+      const l = selLeft, r = selRight;
+      l.classList.remove('is-selected');
+      r.classList.remove('is-selected');
+      selLeft = selRight = null;
 
-      // Просто рисуем линию — без проверки правильности
-      const line = drawLine(l.btn, r.btn);
-      connections.push({ leftBtn: l.btn, rightBtn: r.btn, line });
-      saveConnections();
+      const path = drawPath(l, r);
+      l.classList.add('is-linked');
+      r.classList.add('is-linked');
+      connections.push({ leftBtn: l, rightBtn: r, path });
+      save();
     }
   }
 
@@ -420,67 +461,68 @@ document.querySelectorAll('.block-play[data-type="pairs"]').forEach(block => {
   grid.appendChild(leftCol);
   grid.appendChild(rightCol);
 
-  window.addEventListener('resize', () => {
-    connections.forEach(updateLine);
-  });
+  window.addEventListener('resize', () => connections.forEach(updatePath));
+  save();
 });
 
-// =================== QUICK ===================
-document.querySelectorAll('.block-play[data-type="quick"]').forEach(block => {
+/* ═══════════ QUICK ═══════════ */
+document.querySelectorAll('.lp-block[data-type="quick"]').forEach(block => {
+  const blockId = block.dataset.blockId;
   const area = block.querySelector('.quick-options');
-  const correct = block.dataset.correct;
+  const correct = block.dataset.correct || '';
 
-  const pool = ['Дом', 'Стол', 'Окно', 'Книга', 'Вода', 'Мама', 'Папа', 'Собака', 'Кошка', 'Хлеб', 'Чай'];
-  const distractors = pool.filter(x => x !== correct).sort(() => Math.random() - 0.5).slice(0, 3);
+  const pool = ['Дом','Стол','Окно','Книга','Вода','Мама','Папа','Собака','Кошка','Хлеб','Чай','Небо','Река','Друг'];
+  const distractors = pool.filter(x => x !== correct)
+                          .sort(() => Math.random() - 0.5)
+                          .slice(0, 3);
   const options = [correct, ...distractors].sort(() => Math.random() - 0.5);
 
   options.forEach(opt => {
     const btn = document.createElement('button');
     btn.type = 'button';
+    btn.className = 'lp-quick-opt';
     btn.textContent = opt;
-    btn.style.cssText = 'padding:16px;border:1px solid var(--border-color);border-radius:12px;background:var(--bg-page);color:var(--text-primary);font-size:16px;cursor:pointer;font-weight:500;transition:all .15s;';
     btn.onclick = () => {
-      area.querySelectorAll('button').forEach(b => {
-        b.style.borderColor = 'var(--border-color)';
-        b.style.background = 'var(--bg-page)';
-      });
-      btn.style.borderColor = '#0B6E4F';
-      btn.style.background = 'rgba(11,110,79,.08)';
-      collectedAnswers[block.dataset.blockId] = opt;
+      area.querySelectorAll('.lp-quick-opt').forEach(b => b.classList.remove('is-selected'));
+      btn.classList.add('is-selected');
+      collectedAnswers[blockId] = opt;
+      markAnswered(blockId, true);
     };
     area.appendChild(btn);
   });
 });
 
-// =================== ОТПРАВКА ===================
+/* ═══════════ INPUTS ═══════════ */
+document.querySelectorAll('.lp-block .answer-input').forEach(input => {
+  const block = input.closest('.lp-block');
+  const blockId = block.dataset.blockId;
+  input.addEventListener('input', () => {
+    const v = input.value.trim();
+    collectedAnswers[blockId] = v;
+    markAnswered(blockId, v.length > 0);
+  });
+});
+
+/* ═══════════ SUBMIT ═══════════ */
 async function submitLesson() {
   const btn = document.getElementById('submitBtn');
-  const errorBox = document.getElementById('submitError');
-  errorBox.textContent = '';
+  const err = document.getElementById('submitError');
+  err.textContent = '';
 
-  // Собираем текстовые ответы (input) со всех блоков
-  document.querySelectorAll('.block-play').forEach(block => {
-    const input = block.querySelector('.answer-input');
-    if (input) {
-      collectedAnswers[block.dataset.blockId] = input.value.trim();
-    }
+  document.querySelectorAll('.lp-block .answer-input').forEach(input => {
+    const block = input.closest('.lp-block');
+    collectedAnswers[block.dataset.blockId] = input.value.trim();
   });
 
-  // Проверка: все ли ответы даны
-  let missing = 0;
-  document.querySelectorAll('.block-play').forEach(block => {
-    const id = block.dataset.blockId;
-    if (!collectedAnswers[id]) missing++;
-  });
-
+  const missing = TOTAL_BLOCKS - answeredSet.size;
   if (missing > 0) {
-    errorBox.textContent = `Ответьте на все задания (осталось ${missing})`;
+    err.textContent = `Ответьте на все задания (осталось ${missing})`;
     return;
   }
 
   btn.disabled = true;
-  const originalText = btn.innerHTML;
-  btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Проверка...';
+  const orig = btn.innerHTML;
+  btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Проверяем';
 
   try {
     const res = await fetch(SUBMIT_URL, {
@@ -489,115 +531,94 @@ async function submitLesson() {
         'Content-Type': 'application/json',
         'X-CSRFToken': getCookie('csrftoken'),
       },
-      body: JSON.stringify({
-        lesson_id: LESSON_ID,
-        answers: collectedAnswers,
-      }),
+      body: JSON.stringify({ lesson_id: LESSON_ID, answers: collectedAnswers }),
     });
     const data = await res.json();
 
     if (data.status !== 'ok') {
-      errorBox.textContent = data.error || 'Ошибка проверки';
-      btn.disabled = false;
-      btn.innerHTML = originalText;
+      err.textContent = data.error || 'Ошибка проверки';
+      btn.disabled = false; btn.innerHTML = orig;
       return;
     }
-
     showResult(data);
   } catch (e) {
-    errorBox.textContent = 'Ошибка сети: ' + e.message;
-    btn.disabled = false;
-    btn.innerHTML = originalText;
+    err.textContent = 'Ошибка сети: ' + e.message;
+    btn.disabled = false; btn.innerHTML = orig;
   }
 }
 
+/* ═══════════ RESULT ═══════════ */
 function showResult(data) {
   document.getElementById('resultScore').textContent = data.score;
-  document.getElementById('resultMax').textContent = data.total_points;
+  document.getElementById('resultMax').textContent   = data.total_points;
 
   const body = document.getElementById('resultBody');
-
   if (data.show_summary && data.summary) {
     body.innerHTML = `
-      <h3 style="margin:0 0 16px;font-size:16px;color:var(--text-primary);">Разбор ответов</h3>
-      <div style="display:flex;flex-direction:column;gap:12px;">
-        ${data.summary.map((item, i) => renderSummaryItem(item, i + 1)).join('')}
-      </div>
-    `;
+      <h3 class="lp-result-h">Разбор ответов</h3>
+      <div class="lp-result-list">
+        ${data.summary.map((it, i) => renderSummaryItem(it, i + 1)).join('')}
+      </div>`;
   } else {
-    body.innerHTML = `
-      <p style="text-align:center;color:var(--text-secondary);margin:20px 0;">
-        Разбор ответов недоступен для этого урока
-      </p>
-    `;
+    body.innerHTML = `<p class="lp-result-empty">Разбор ответов недоступен для этого урока</p>`;
   }
-
   document.getElementById('resultModal').style.display = 'flex';
 }
 
 function renderSummaryItem(item, num) {
-  const borderColor = item.is_correct ? '#16a34a' : '#dc2626';
-
+  const ok = item.is_correct;
   let content = '';
 
   if (item.type === 'pairs') {
     content = `
-      <div style="font-size:14px;color:var(--text-secondary);margin-bottom:6px;">
-        <strong>Ваш результат:</strong> ${item.is_correct ? 'все пары найдены' : 'не все пары найдены'}
-      </div>
-      <div style="margin-top:10px;">
-        <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Правильные пары:</div>
-        <div style="display:flex;flex-direction:column;gap:6px;">
-          ${(item.pairs || []).map(p => `
-            <div style="font-size:14px;padding:8px 12px;background:rgba(11,110,79,.06);border-radius:8px;">
-              <span style="color:#0B6E4F;font-weight:600;">${escapeHtml(p[0])}</span>
-              <span style="color:var(--text-muted);"> → </span>
-              <span style="color:var(--text-primary);">${escapeHtml(p[1])}</span>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `;
+      <div class="lp-result-pairs-status">${ok ? 'Все пары найдены' : 'Не все пары найдены'}</div>
+      <div class="lp-result-pairs">
+        ${(item.pairs || []).map(p => `
+          <div class="lp-result-pair">
+            <span class="lp-pair-tt">${escapeHtml(p[0])}</span>
+            <span class="lp-pair-arrow">→</span>
+            <span class="lp-pair-ru">${escapeHtml(p[1])}</span>
+          </div>`).join('')}
+      </div>`;
   } else {
     content = `
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="lp-result-grid">
         <div>
-          <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">Ваш ответ:</div>
-          <div style="font-size:15px;font-weight:600;color:${item.is_correct ? '#16a34a' : '#dc2626'};">
-            ${escapeHtml(item.user_answer || '—')}
-          </div>
+          <span class="lp-result-label">Ваш ответ</span>
+          <span class="lp-result-val ${ok ? 'ok' : 'fail'}">${escapeHtml(item.user_answer || '—')}</span>
         </div>
         <div>
-          <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">Правильный ответ:</div>
-          <div style="font-size:15px;font-weight:600;color:#0B6E4F;">
-            ${escapeHtml(item.correct || '')}
-          </div>
+          <span class="lp-result-label">Правильный ответ</span>
+          <span class="lp-result-val accent">${escapeHtml(item.correct || '')}</span>
+          ${item.hint ? `<span class="lp-result-hint">Перевод: ${escapeHtml(item.hint)}</span>` : ''}
+          ${item.hint ? `<span class="lp-result-hint">Перевод: ${escapeHtml(item.hint)}</span>` : ''}
         </div>
-      </div>
-    `;
+      </div>`;
   }
 
   return `
-    <div style="background:var(--bg-sidebar);border:1px solid var(--border-color);border-left:4px solid ${borderColor};border-radius:14px;padding:18px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-        <div style="font-size:12px;text-transform:uppercase;color:var(--text-muted);font-weight:600;">
-          Задание ${num} · ${escapeHtml(item.type_display)}
-        </div>
-        <div style="font-size:12px;color:var(--text-muted);">
-          ${item.points} / ${item.max_points} баллов
-        </div>
+    <div class="lp-result-item ${ok ? 'is-ok' : 'is-fail'}">
+      <div class="lp-result-head">
+        <span>Задание ${num} · ${escapeHtml(item.type_display)}</span>
+        <span>${item.points} / ${item.max_points}</span>
       </div>
       ${content}
-    </div>
-  `;
+    </div>`;
 }
 
+/* ═══════════ HELPERS ═══════════ */
 function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text ?? '';
   return div.innerHTML;
 }
-
+function getCookie(name) {
+  for (let c of document.cookie.split(';')) {
+    c = c.trim();
+    if (c.startsWith(name + '=')) return decodeURIComponent(c.slice(name.length + 1));
+  }
+  return '';
+}
 function showToast(message, type = 'info') {
   let container = document.getElementById('toastContainer');
   if (!container) {
@@ -620,13 +641,8 @@ function showToast(message, type = 'info') {
   }, 3000);
 }
 
-function getCookie(name) {
-  for (let c of document.cookie.split(';')) {
-    c = c.trim();
-    if (c.startsWith(name + '=')) return decodeURIComponent(c.slice(name.length + 1));
-  }
-  return '';
-}
+updateProgress();
 {% endif %}
 </script>
+
 {% endblock %}

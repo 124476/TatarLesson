@@ -140,6 +140,16 @@ class LessonPlayView(TemplateView):
                 summary = []
                 for block in lesson.blocks.all().order_by("order_index"):
                     a = answers.get(block.id)
+                    if block.type == "build":
+                        correct_display = block.config.get("word", "")
+                        hint_display = block.config.get("correct", "")
+                    elif block.type == "gap":
+                        correct_display = block.config.get("correct", "")
+                        hint_display = block.config.get("hint", "")
+                    else:
+                        correct_display = block.config.get("correct", "")
+                        hint_display = ""
+
                     summary.append({
                         "type_display": block.get_type_display(),
                         "type": block.type,
@@ -147,7 +157,8 @@ class LessonPlayView(TemplateView):
                         "is_correct": a.is_correct if a else False,
                         "points": a.points_earned if a else 0,
                         "max_points": block.points,
-                        "correct": block.config.get("correct", ""),
+                        "correct": correct_display,
+                        "hint": hint_display,
                         "pairs": block.config.get("pairs", []),
                     })
                 ctx["answers_summary"] = summary
@@ -260,6 +271,13 @@ class LessonSubmitView(View):
                 earned = block.points
                 total_score += earned
 
+            if block.type == "build":
+                correct_display = block.config.get("word", "")
+                hint_display = block.config.get("correct", "")
+            else:
+                correct_display = block.config.get("correct", "")
+                hint_display = ""
+
             summary.append({
                 "block_id": block.id,
                 "type": block.type,
@@ -268,7 +286,8 @@ class LessonSubmitView(View):
                 "is_correct": is_correct,
                 "points": earned,
                 "max_points": block.points,
-                "correct": block.config.get("correct", ""),
+                "correct": correct_display,
+                "hint": hint_display,
                 "word": block.config.get("word", ""),
                 "pairs": block.config.get("pairs", []),
             })

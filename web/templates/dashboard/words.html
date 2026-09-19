@@ -5,86 +5,144 @@
 
 {% block extra_css %}
 {{ block.super }}
-<link rel="stylesheet" href="{% static 'css/dashboard/modal_words.css' %}">
+<link rel="stylesheet" href="{% static 'css/dashboard/words.css' %}">
 {% endblock %}
 
 {% block dashboard_content %}
-<div class="dashboard-home">
+<div class="wd">
 
-  <div class="dashboard-header">
-    <h1>Словарь</h1>
-  </div>
-
-  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px;">
-    <form method="get" style="display:flex;gap:12px;flex:1;min-width:240px;">
-      <input type="text" name="q" value="{{ search }}" placeholder="Поиск по слову..."
-             style="flex:1;padding:11px 14px;border:1px solid var(--border-color);border-radius:10px;background:var(--bg-sidebar);color:var(--text-primary);outline:none;">
-      <select name="theme" style="padding:11px 14px;border:1px solid var(--border-color);border-radius:10px;background:var(--bg-sidebar);color:var(--text-primary);outline:none;">
-        <option value="">Все темы</option>
-        {% for code, name in themes %}
-          <option value="{{ code }}" {% if selected_theme == code %}selected{% endif %}>{{ name }}</option>
-        {% endfor %}
-      </select>
-      <button type="submit" style="padding:11px 20px;background:#0B6E4F;color:#fff;border:none;border-radius:10px;font-weight:600;cursor:pointer;">
-        Найти
-      </button>
-    </form>
+  <header class="wd-head">
+    <div>
+      <h1>Словарь</h1>
+      <p>
+        {% if total_count %}
+          Найдено: <strong>{{ total_count }}</strong>
+          {% if total_count == 1 %}слово{% elif total_count < 5 %}слова{% else %}слов{% endif %}
+        {% else %}
+          Слова, которые попадают в уроки и соревнования
+        {% endif %}
+      </p>
+    </div>
 
     {% if is_admin %}
-      <button onclick="openAddWordModal()"
-              style="padding:11px 20px;background:#0B6E4F;color:#fff;border:none;border-radius:10px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+      <button type="button" class="wd-add" onclick="openAddWordModal()">
         <i class="bi bi-plus-lg"></i> Добавить слово
       </button>
     {% endif %}
-  </div>
+  </header>
+
+  <form method="get" class="wd-filters" id="wordsFilterForm">
+    <div class="wd-search">
+      <i class="bi bi-search"></i>
+      <input type="text" name="q" value="{{ search }}" placeholder="Поиск по татарскому или русскому…" autocomplete="off">
+    </div>
+
+    <select name="theme" class="wd-select">
+      <option value="">Все темы</option>
+      {% for code, name in themes %}
+        <option value="{{ code }}" {% if selected_theme == code %}selected{% endif %}>{{ name }}</option>
+      {% endfor %}
+    </select>
+
+    <button type="submit" class="wd-submit">Найти</button>
+
+    {% if search or selected_theme %}
+      <a href="{% url 'dashboard:words' %}" class="wd-reset" title="Сбросить">
+        <i class="bi bi-x-lg"></i>
+      </a>
+    {% endif %}
+  </form>
 
   {% if words %}
-    <div id="wordsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;">
+    <div class="wd-grid">
       {% for word in words %}
-        <div class="word-card" data-word-id="{{ word.id }}"
-             style="background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:14px;padding:18px;">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
-            <div class="word-tatar" style="font-size:20px;font-weight:700;color:#0B6E4F;">{{ word.tatar }}</div>
-            <span class="word-theme" style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;">
-              {{ word.get_theme_display }}
-            </span>
+        <article class="wd-card" data-word-id="{{ word.id }}">
+
+          <div class="wd-card-top">
+            <div class="wd-tatar">{{ word.tatar }}</div>
+            <span class="wd-theme">{{ word.get_theme_display }}</span>
           </div>
-          <div class="word-russian" style="font-size:15px;color:var(--text-secondary);">{{ word.russian }}</div>
+
+          <div class="wd-russian">{{ word.russian }}</div>
           {% if word.transcription %}
-            <div class="word-transcription" style="font-size:13px;color:var(--text-muted);font-style:italic;margin-top:4px;">[{{ word.transcription }}]</div>
+            <div class="wd-transcription">{{ word.transcription }}</div>
           {% endif %}
+
           {% if word.example_tt %}
-            <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border-color);font-size:13px;color:var(--text-secondary);">
-              {{ word.example_tt }}
+            <div class="wd-example">
+              <div class="wd-example-tt">{{ word.example_tt }}</div>
+              {% if word.example_ru %}
+                <div class="wd-example-ru">{{ word.example_ru }}</div>
+              {% endif %}
             </div>
           {% endif %}
 
-          <div style="display:flex;gap:8px;margin-top:12px;">
-            <button onclick="playWord('{{ word.tatar|escapejs }}')"
-                    style="flex:1;padding:8px 12px;border:1px solid var(--border-color);border-radius:8px;background:transparent;color:var(--text-secondary);cursor:pointer;font-size:13px;">
-              <i class="bi bi-volume-up"></i> Слушать
+          <div class="wd-actions">
+            <button type="button" class="wd-btn wd-btn-sound"
+                    onclick="playWord('{{ word.tatar|escapejs }}')">
+              <i class="bi bi-volume-up"></i>
+              <span>Слушать</span>
             </button>
+
             {% if is_admin %}
-              <button onclick="openEditWordModal({{ word.id }}, '{{ word.tatar|escapejs }}', '{{ word.russian|escapejs }}', '{{ word.transcription|escapejs }}', '{{ word.example_tt|escapejs }}', '{{ word.example_ru|escapejs }}', '{{ word.theme }}')"
-                      style="padding:8px 12px;border:1px solid var(--border-color);border-radius:8px;background:transparent;color:var(--text-secondary);cursor:pointer;font-size:13px;">
+              <button type="button" class="wd-btn-icon"
+                      title="Редактировать"
+                      onclick="openEditWordModal({{ word.id }}, '{{ word.tatar|escapejs }}', '{{ word.russian|escapejs }}', '{{ word.transcription|escapejs }}', '{{ word.example_tt|escapejs }}', '{{ word.example_ru|escapejs }}', '{{ word.theme }}')">
                 <i class="bi bi-pencil"></i>
               </button>
-              <button onclick="openDeleteWordModal({{ word.id }}, '{{ word.tatar|escapejs }}')"
-                      style="padding:8px 12px;border:1px solid var(--border-color);border-radius:8px;background:transparent;color:#dc2626;cursor:pointer;font-size:13px;">
+              <button type="button" class="wd-btn-icon is-danger"
+                      title="Удалить"
+                      onclick="openDeleteWordModal({{ word.id }}, '{{ word.tatar|escapejs }}')">
                 <i class="bi bi-trash"></i>
               </button>
             {% endif %}
           </div>
-        </div>
+        </article>
       {% endfor %}
     </div>
+
+    {% if page_obj.has_other_pages %}
+      <nav class="wd-pager" aria-label="Пагинация">
+        {% if page_obj.has_previous %}
+          <a class="wd-pager-btn"
+             href="?{% if search %}q={{ search|urlencode }}&{% endif %}{% if selected_theme %}theme={{ selected_theme }}&{% endif %}page={{ page_obj.previous_page_number }}">
+            <i class="bi bi-arrow-left"></i>
+            <span>Назад</span>
+          </a>
+        {% else %}
+          <span class="wd-pager-btn is-disabled">
+            <i class="bi bi-arrow-left"></i>
+            <span>Назад</span>
+          </span>
+        {% endif %}
+
+        <span class="wd-pager-info">
+          Страница <strong>{{ page_obj.number }}</strong> из {{ paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+          <a class="wd-pager-btn"
+             href="?{% if search %}q={{ search|urlencode }}&{% endif %}{% if selected_theme %}theme={{ selected_theme }}&{% endif %}page={{ page_obj.next_page_number }}">
+            <span>Вперёд</span>
+            <i class="bi bi-arrow-right"></i>
+          </a>
+        {% else %}
+          <span class="wd-pager-btn is-disabled">
+            <span>Вперёд</span>
+            <i class="bi bi-arrow-right"></i>
+          </span>
+        {% endif %}
+      </nav>
+    {% endif %}
+
   {% else %}
-    <div id="wordsEmpty" style="padding:60px 20px;text-align:center;border:2px dashed var(--border-color);border-radius:20px;color:var(--text-muted);">
-      <i class="bi bi-journal" style="font-size:48px;display:block;margin-bottom:16px;opacity:.4;"></i>
-      <p>Слова не найдены</p>
+    <div class="wd-empty">
+      <i class="bi bi-journal"></i>
+      <h3>Ничего не найдено</h3>
+      <p>Попробуйте изменить запрос или выбрать другую тему</p>
       {% if is_admin %}
-        <button onclick="openAddWordModal()" style="background:none;border:none;color:#0B6E4F;cursor:pointer;font-size:14px;">
-          Добавить первое слово →
+        <button type="button" class="wd-add" onclick="openAddWordModal()">
+          <i class="bi bi-plus-lg"></i> Добавить слово
         </button>
       {% endif %}
     </div>
@@ -92,7 +150,7 @@
 
 </div>
 
-<!-- МОДАЛКА: добавить/редактировать слово -->
+<!-- ═══ МОДАЛКА: добавить/редактировать слово ═══ -->
 <div class="word-modal-overlay" id="wordModal">
   <div class="word-modal-box">
 
@@ -154,7 +212,7 @@
   </div>
 </div>
 
-<!-- МОДАЛКА: подтверждение удаления -->
+<!-- ═══ МОДАЛКА: подтверждение удаления ═══ -->
 <div class="word-modal-overlay" id="deleteModal">
   <div class="word-modal-box word-modal-box-sm">
 
@@ -166,12 +224,11 @@
     </div>
 
     <div class="word-modal-body">
-      <p style="margin:0;font-size:15px;color:var(--text-secondary);line-height:1.6;">
-        Вы собираетесь удалить слово <strong id="deleteWordName" style="color:var(--text-primary);"></strong>.
+      <p class="word-delete-text">
+        Вы собираетесь удалить слово
+        <strong id="deleteWordName"></strong>.
       </p>
-      <p style="margin:8px 0 0;font-size:13px;color:var(--text-muted);">
-        Это действие нельзя отменить.
-      </p>
+      <p class="word-delete-warn">Это действие нельзя отменить.</p>
     </div>
 
     <div class="word-modal-footer">
@@ -181,7 +238,6 @@
   </div>
 </div>
 
-<!-- КОНТЕЙНЕР ДЛЯ ТОСТОВ -->
 <div id="toastContainer" class="toast-container"></div>
 
 {% endblock %}
@@ -191,40 +247,30 @@
 const API_BASE = '/lessons/api';
 const ADD_URL = '{% url "dashboard:word_add" %}';
 
-// ===== ТОСТЫ (вместо alert) =====
+/* ═══ ТОСТЫ ═══ */
 function showToast(message, type = 'success') {
   const container = document.getElementById('toastContainer');
   const toast = document.createElement('div');
   toast.className = `app-toast app-toast-${type}`;
-
   const icon = type === 'success' ? 'check-circle-fill'
              : type === 'error'   ? 'x-circle-fill'
              : 'info-circle-fill';
-
-  toast.innerHTML = `
-    <i class="bi bi-${icon}"></i>
-    <span>${message}</span>
-  `;
-
+  toast.innerHTML = `<i class="bi bi-${icon}"></i><span>${message}</span>`;
   container.appendChild(toast);
-
   setTimeout(() => toast.classList.add('show'), 10);
-
   setTimeout(() => {
     toast.classList.remove('show');
     setTimeout(() => toast.remove(), 300);
   }, 3000);
 }
 
-// ===== ОЗВУЧКА =====
+/* ═══ ОЗВУЧКА ═══ */
 function playWord(text) {
   const url = `${API_BASE}/synthesize/?text=${encodeURIComponent(text)}&speaker=alsu`;
-  new Audio(url).play().catch(() => {
-    showToast('Озвучка недоступна', 'error');
-  });
+  new Audio(url).play().catch(() => showToast('Озвучка недоступна', 'error'));
 }
 
-// ===== МОДАЛКА: добавить/редактировать =====
+/* ═══ МОДАЛКА: открытие/закрытие ═══ */
 function openAddWordModal() {
   document.getElementById('wordModalTitle').textContent = 'Добавить слово';
   document.getElementById('wordId').value = '';
@@ -257,7 +303,7 @@ function closeWordModal() {
   document.getElementById('wordModal').classList.remove('open');
 }
 
-// ===== СОХРАНЕНИЕ =====
+/* ═══ СОХРАНЕНИЕ ═══ */
 async function saveWord() {
   const id = document.getElementById('wordId').value;
   const btn = document.getElementById('wordSaveBtn');
@@ -278,12 +324,11 @@ async function saveWord() {
   }
 
   btn.disabled = true;
-  btn.textContent = 'Сохранение...';
+  btn.textContent = 'Сохранение…';
   errorEl.textContent = '';
 
   try {
     const url = id ? '/dashboard/words/' + id + '/update/' : ADD_URL;
-
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -292,7 +337,6 @@ async function saveWord() {
       },
       body: JSON.stringify(data),
     });
-
     const result = await res.json();
 
     if (result.status === 'ok') {
@@ -311,7 +355,7 @@ async function saveWord() {
   }
 }
 
-// ===== МОДАЛКА: удаление =====
+/* ═══ УДАЛЕНИЕ ═══ */
 let deleteWordId = null;
 
 function openDeleteWordModal(id, tatar) {
@@ -319,7 +363,6 @@ function openDeleteWordModal(id, tatar) {
   document.getElementById('deleteWordName').textContent = tatar;
   document.getElementById('deleteModal').classList.add('open');
 }
-
 function closeDeleteModal() {
   deleteWordId = null;
   document.getElementById('deleteModal').classList.remove('open');
@@ -327,10 +370,9 @@ function closeDeleteModal() {
 
 async function confirmDeleteWord() {
   if (!deleteWordId) return;
-
   const btn = document.getElementById('deleteConfirmBtn');
   btn.disabled = true;
-  btn.textContent = 'Удаление...';
+  btn.textContent = 'Удаление…';
 
   try {
     const res = await fetch('/dashboard/words/' + deleteWordId + '/delete/', {
@@ -340,12 +382,12 @@ async function confirmDeleteWord() {
     const result = await res.json();
 
     if (result.status === 'ok') {
-      const card = document.querySelector(`.word-card[data-word-id="${deleteWordId}"]`);
+      const card = document.querySelector(`.wd-card[data-word-id="${deleteWordId}"]`);
       if (card) {
-        card.style.transition = 'opacity 0.3s, transform 0.3s';
+        card.style.transition = 'opacity .25s, transform .25s';
         card.style.opacity = '0';
-        card.style.transform = 'scale(0.9)';
-        setTimeout(() => card.remove(), 300);
+        card.style.transform = 'scale(.94)';
+        setTimeout(() => card.remove(), 250);
       }
       closeDeleteModal();
       showToast('Слово удалено', 'success');
@@ -362,20 +404,14 @@ async function confirmDeleteWord() {
   }
 }
 
-// ===== Закрытие модалок =====
+/* ═══ ЗАКРЫТИЕ ═══ */
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    closeWordModal();
-    closeDeleteModal();
-  }
+  if (e.key === 'Escape') { closeWordModal(); closeDeleteModal(); }
 });
-
-// Клик по фону закрывает модалку
-document.getElementById('wordModal')?.addEventListener('click', function(e) {
+document.getElementById('wordModal')?.addEventListener('click', function (e) {
   if (e.target === this) closeWordModal();
 });
-
-document.getElementById('deleteModal')?.addEventListener('click', function(e) {
+document.getElementById('deleteModal')?.addEventListener('click', function (e) {
   if (e.target === this) closeDeleteModal();
 });
 

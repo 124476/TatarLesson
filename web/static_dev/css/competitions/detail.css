@@ -1,0 +1,1235 @@
+/* ═══════════════════════════════════════════════════════
+   Соревнование — детальная страница и задача
+   ═══════════════════════════════════════════════════════ */
+
+.cmpd {
+  --cmp-bg:        #fafafa;
+  --cmp-surface:   #ffffff;
+  --cmp-line:      #e6e6e1;
+  --cmp-line-soft: #f0f0eb;
+  --cmp-text:      #111111;
+  --cmp-text-soft: #4a5250;
+  --cmp-text-mut:  #8f9694;
+  --cmp-accent:    #0B6E4F;
+  --cmp-accent-hi: #14A06E;
+  --cmp-live:      #16a34a;
+  --cmp-warn:      #d97706;
+  --cmp-danger:    #dc2626;
+
+  background: var(--cmp-bg);
+  color: var(--cmp-text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  transition: background 0.25s ease, color 0.2s ease;
+}
+
+[data-theme="dark"] .cmpd {
+  --cmp-bg:        #17171a;
+  --cmp-surface:   #1e1e22;
+  --cmp-line:      #2a2a30;
+  --cmp-line-soft: #232328;
+  --cmp-text:      #ececec;
+  --cmp-text-soft: #a6aead;
+  --cmp-text-mut:  #6f7674;
+  --cmp-accent:    #14A06E;
+  --cmp-accent-hi: #17b87e;
+  --cmp-live:      #22c55e;
+  --cmp-warn:      #f59e0b;
+}
+
+.cmpd *,
+.cmpd *::before,
+.cmpd *::after { box-sizing: border-box; }
+
+.cmpd-container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 56px 40px 96px;
+}
+
+/* ── Назад ── */
+.cmpd-back {
+  display: inline-block;
+  font-size: 13.5px;
+  color: var(--cmp-text-mut);
+  text-decoration: none;
+  margin-bottom: 32px;
+  transition: color 0.15s ease;
+}
+
+.cmpd-back:hover {
+  color: var(--cmp-accent);
+  text-decoration: none;
+}
+
+.cmpd-back-inline {
+  margin-bottom: 24px;
+  margin-top: 8px;
+}
+
+/* ═══════════════ HERO ═══════════════ */
+.cmpd-hero {
+  padding-bottom: 48px;
+  margin-bottom: 40px;
+  border-bottom: 1px solid var(--cmp-line);
+}
+
+.cmpd-hero-meta {
+  margin-bottom: 20px;
+}
+
+.cmpd-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.cmpd-status-running {
+  background: rgba(22, 163, 74, 0.1);
+  color: var(--cmp-live);
+}
+
+.cmpd-status-upcoming {
+  background: rgba(217, 119, 6, 0.1);
+  color: var(--cmp-warn);
+}
+
+.cmpd-status-finished {
+  background: var(--cmp-line-soft);
+  color: var(--cmp-text-mut);
+}
+
+[data-theme="dark"] .cmpd-status-running { background: rgba(34, 197, 94, 0.14); }
+[data-theme="dark"] .cmpd-status-upcoming { background: rgba(245, 158, 11, 0.14); }
+[data-theme="dark"] .cmpd-status-finished { background: #26262c; }
+
+.cmpd-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: cmpd-blink 2s ease-in-out infinite;
+}
+
+@keyframes cmpd-blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.35; }
+}
+
+.cmpd-title {
+  font-size: clamp(2rem, 4.5vw, 3.25rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  color: var(--cmp-text);
+  margin: 0 0 16px;
+}
+
+.cmpd-lead {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--cmp-text-soft);
+  margin: 0 0 40px;
+  max-width: 640px;
+}
+
+/* ── Статистика ── */
+.cmpd-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 24px;
+}
+
+.cmpd-stat {
+  padding-top: 16px;
+  border-top: 2px solid var(--cmp-text);
+}
+
+.cmpd-stat-accent {
+  border-top-color: var(--cmp-accent);
+}
+
+.cmpd-stat-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cmp-text-mut);
+  margin-bottom: 10px;
+}
+
+.cmpd-stat-value {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--cmp-text);
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+}
+
+.cmpd-stat-accent .cmpd-stat-value {
+  color: var(--cmp-accent);
+}
+
+/* ═══════════════ АЛЕРТЫ ═══════════════ */
+.cmpd-alert {
+  padding: 16px 20px;
+  margin-bottom: 32px;
+  border: 1px solid var(--cmp-line);
+  border-left: 3px solid var(--cmp-accent);
+  border-radius: 8px;
+  background: var(--cmp-surface);
+  font-size: 15px;
+  color: var(--cmp-text-soft);
+  line-height: 1.55;
+}
+
+.cmpd-alert strong {
+  color: var(--cmp-text);
+  font-weight: 600;
+}
+
+.cmpd-alert a {
+  color: var(--cmp-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ═══════════════ ЗАГОЛОВОК СЕКЦИИ ═══════════════ */
+.cmpd-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cmp-text-mut);
+  margin: 48px 0 20px;
+}
+
+/* ═══════════════ СПИСОК ЗАДАЧ ═══════════════ */
+.cmpd-task-list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--cmp-line);
+}
+
+.cmpd-task-row {
+  display: grid;
+  grid-template-columns: 64px 1fr auto auto;
+  gap: 20px;
+  align-items: center;
+  padding: 22px 8px;
+  border-bottom: 1px solid var(--cmp-line);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s ease;
+}
+
+.cmpd-task-row:hover {
+  background: var(--cmp-line-soft);
+  color: inherit;
+  text-decoration: none;
+}
+
+.cmpd-task-num {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-style: italic;
+  font-size: 22px;
+  color: var(--cmp-text-mut);
+}
+
+.cmpd-task-info {
+  min-width: 0;
+}
+
+.cmpd-task-name {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--cmp-text);
+  margin-bottom: 4px;
+}
+
+.cmpd-task-type {
+  font-size: 13px;
+  color: var(--cmp-text-mut);
+}
+
+.cmpd-task-points {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--cmp-text);
+}
+
+.cmpd-task-points span {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--cmp-text-mut);
+  margin-left: 2px;
+}
+
+.cmpd-task-arrow {
+  font-size: 16px;
+  color: var(--cmp-text-mut);
+  transition: color 0.15s ease, transform 0.2s ease;
+}
+
+.cmpd-task-row:hover .cmpd-task-arrow {
+  color: var(--cmp-accent);
+  transform: translateX(3px);
+}
+
+/* ═══════════════ ОДНА ЗАДАЧА ═══════════════ */
+.cmpd-task-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+
+.cmpd-task-title {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--cmp-text);
+  margin: 0;
+  max-width: 620px;
+}
+
+.cmpd-task-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cmpd-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.cmpd-badge-points {
+  background: rgba(11, 110, 79, 0.1);
+  color: var(--cmp-accent);
+}
+
+.cmpd-badge-attempts {
+  background: var(--cmp-line-soft);
+  color: var(--cmp-text-mut);
+}
+
+[data-theme="dark"] .cmpd-badge-points { background: rgba(20, 160, 110, 0.14); }
+[data-theme="dark"] .cmpd-badge-attempts { background: #26262c; }
+
+.cmpd-statement {
+  padding: 28px 32px;
+  background: var(--cmp-surface);
+  border: 1px solid var(--cmp-line);
+  border-radius: 14px;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--cmp-text);
+  white-space: pre-wrap;
+  margin-bottom: 24px;
+}
+
+/* ── Форма решения ── */
+.cmpd-solve {
+  padding: 28px 32px;
+  background: var(--cmp-surface);
+  border: 1px solid var(--cmp-line);
+  border-radius: 14px;
+}
+
+.cmpd-solve-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cmp-text-mut);
+  margin: 0 0 24px;
+}
+
+.cmpd-input {
+  width: 100%;
+  padding: 14px 18px;
+  border: 1px solid var(--cmp-line);
+  border-radius: 10px;
+  background: var(--cmp-bg);
+  color: var(--cmp-text);
+  font-family: inherit;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.cmpd-input:focus {
+  border-color: var(--cmp-accent);
+}
+
+.cmpd-hint {
+  font-size: 14px;
+  color: var(--cmp-text-mut);
+  margin: 0 0 16px;
+  line-height: 1.55;
+}
+
+.cmpd-hint strong {
+  color: var(--cmp-text);
+  font-weight: 600;
+}
+
+/* ── Опции (radio/checkbox) ── */
+.cmpd-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cmpd-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border: 1px solid var(--cmp-line);
+  border-radius: 10px;
+  background: var(--cmp-bg);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.cmpd-option:hover {
+  border-color: var(--cmp-accent);
+}
+
+.cmpd-option input[type="radio"],
+.cmpd-option input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--cmp-accent);
+  flex-shrink: 0;
+}
+
+.cmpd-option span {
+  font-size: 15px;
+  color: var(--cmp-text);
+}
+
+/* ── Build ── */
+.cmpd-build-target {
+  padding: 28px 24px;
+  background: var(--cmp-bg);
+  border: 1px solid var(--cmp-line);
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 20px;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cmpd-build-target > div {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 10px;
+  color: var(--cmp-accent);
+  line-height: 1;
+  min-height: 30px;
+}
+
+.cmpd-build-letters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.cmpd-build-btn {
+  width: 52px;
+  height: 52px;
+  border: 1px solid var(--cmp-line);
+  border-radius: 10px;
+  background: var(--cmp-bg);
+  color: var(--cmp-text);
+  font-family: inherit;
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.cmpd-build-btn:hover:not(:disabled) {
+  border-color: var(--cmp-accent);
+  color: var(--cmp-accent);
+}
+
+.cmpd-build-btn:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.cmpd-build-reset {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+/* ── Pairs ── */
+.cmpd-pairs-wrap {
+  position: relative;
+}
+
+.cmpd-pairs-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  overflow: visible;
+}
+
+.cmpd-pairs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  position: relative;
+  z-index: 1;
+}
+
+.cmpd-pairs-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cmpd-pair-card {
+  padding: 16px 20px;
+  border: 1px solid var(--cmp-line);
+  border-radius: 10px;
+  background: var(--cmp-bg);
+  color: var(--cmp-text);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  position: relative;
+  z-index: 3;
+}
+
+.cmpd-pair-card:hover {
+  border-color: var(--cmp-accent);
+}
+
+.cmpd-pair-card.active {
+  border-color: var(--cmp-accent);
+  background: rgba(11, 110, 79, 0.06);
+}
+
+/* ── Voice ── */
+.cmpd-voice-area {
+  margin: 20px 0;
+}
+
+.cmpd-voice-btn {
+  padding: 16px 32px;
+  border: 2px solid var(--cmp-accent);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--cmp-accent);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.cmpd-voice-btn:hover {
+  background: var(--cmp-accent);
+  color: #fff;
+}
+
+.cmpd-voice-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.cmpd-voice-result {
+  margin-top: 16px;
+  font-size: 14px;
+  color: var(--cmp-text-mut);
+}
+
+/* ═══════════════ КНОПКИ ═══════════════ */
+.cmpd-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: 1px solid var(--cmp-line);
+  background: var(--cmp-surface);
+  color: var(--cmp-text);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+  text-decoration: none;
+}
+
+.cmpd-btn:hover {
+  border-color: var(--cmp-text);
+  color: var(--cmp-text);
+  text-decoration: none;
+}
+
+.cmpd-btn-primary {
+  background: var(--cmp-text);
+  color: var(--cmp-bg);
+  border-color: var(--cmp-text);
+}
+
+.cmpd-btn-primary:hover {
+  background: var(--cmp-accent);
+  border-color: var(--cmp-accent);
+  color: #fff;
+}
+
+.cmpd-btn-lg {
+  padding: 14px 28px;
+  font-size: 16px;
+  margin-top: 24px;
+  width: 100%;
+}
+
+.cmpd-btn-sm {
+  padding: 8px 14px;
+  font-size: 13px;
+}
+
+.cmpd-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* ═══════════════ ТАБЛИЦА ═══════════════ */
+.cmpd-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--cmp-surface);
+  border: 1px solid var(--cmp-line);
+  border-radius: 12px;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+.cmpd-table thead {
+  background: var(--cmp-line-soft);
+}
+
+.cmpd-table th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cmp-text-mut);
+}
+
+.cmpd-table td {
+  padding: 12px 16px;
+  border-top: 1px solid var(--cmp-line);
+  color: var(--cmp-text);
+}
+
+.cmpd-mono {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 13px;
+}
+
+.cmpd-muted {
+  color: var(--cmp-text-mut);
+  font-size: 13px;
+}
+
+.cmpd-truncate {
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cmpd-tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.cmpd-tag-success {
+  background: rgba(22, 163, 74, 0.12);
+  color: var(--cmp-live);
+}
+
+.cmpd-tag-danger {
+  background: rgba(220, 38, 38, 0.12);
+  color: var(--cmp-danger);
+}
+
+[data-theme="dark"] .cmpd-tag-success { background: rgba(34, 197, 94, 0.16); }
+[data-theme="dark"] .cmpd-tag-danger { background: rgba(220, 38, 38, 0.16); }
+
+/* ═══════════════ ПУСТО ═══════════════ */
+.cmpd-empty {
+  padding: 80px 24px;
+  text-align: center;
+  border: 1px dashed var(--cmp-line);
+  border-radius: 16px;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--cmp-text-mut);
+}
+
+/* ═══════════════ АДАПТИВ ═══════════════ */
+@media (max-width: 960px) {
+  .cmpd-container { padding: 48px 24px 72px; }
+}
+
+@media (max-width: 640px) {
+  .cmpd-container { padding: 32px 20px 56px; }
+
+  .cmpd-hero { padding-bottom: 32px; margin-bottom: 28px; }
+
+  .cmpd-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .cmpd-stat-value { font-size: 15px; }
+
+  .cmpd-statement,
+  .cmpd-solve {
+    padding: 22px 20px;
+  }
+
+  .cmpd-task-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cmpd-task-row {
+    grid-template-columns: 40px 1fr auto;
+    gap: 14px;
+    padding: 18px 4px;
+  }
+
+  .cmpd-task-num { font-size: 18px; }
+
+  .cmpd-task-arrow { display: none; }
+
+  .cmpd-task-points { font-size: 15px; }
+
+  .cmpd-pairs-grid { gap: 12px; }
+
+  .cmpd-pair-card {
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+
+  .cmpd-build-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+  }
+
+  .cmpd-table {
+    font-size: 13px;
+  }
+
+  .cmpd-table th,
+  .cmpd-table td { padding: 10px 12px; }
+
+  .cmpd-truncate { max-width: 160px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cmpd-dot { animation: none; }
+}
+
+/* ═══════════════ ТАБЫ ═══════════════ */
+.cmpd-tabs {
+  display: flex;
+  gap: 32px;
+  border-bottom: 1px solid var(--cmp-line);
+  margin-bottom: 40px;
+}
+
+.cmpd-tab {
+  position: relative;
+  padding: 14px 0;
+  border: none;
+  background: transparent;
+  color: var(--cmp-text-mut);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.cmpd-tab:hover {
+  color: var(--cmp-text);
+}
+
+.cmpd-tab.active {
+  color: var(--cmp-text);
+}
+
+.cmpd-tab.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--cmp-text);
+}
+
+.cmpd-tab-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 7px;
+  border-radius: 8px;
+  background: var(--cmp-line-soft);
+  color: var(--cmp-text-mut);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .cmpd-tabs {
+    gap: 20px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .cmpd-tab { font-size: 14px; white-space: nowrap; }
+}
+
+.cmpd-link {
+  color: var(--cmp-text);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s ease;
+}
+.cmpd-link:hover {
+  color: var(--cmp-accent);
+  border-bottom-color: var(--cmp-accent);
+}
+
+.cmpd-tag-attempted {
+  background: rgba(59, 130, 246, 0.12);
+  color: #2563eb;
+}
+[data-theme="dark"] .cmpd-tag-attempted {
+  background: rgba(59, 130, 246, 0.18);
+  color: #60a5fa;
+}
+
+.cmpd-center { text-align: center; }
+.cmpd-right { text-align: right; }
+
+.cmpd-row-me {
+  background: rgba(11, 110, 79, 0.04);
+}
+[data-theme="dark"] .cmpd-row-me {
+  background: rgba(20, 160, 110, 0.08);
+}
+
+.cmpd-standings-name {
+  font-weight: 600;
+  color: var(--cmp-text);
+}
+
+.cmpd-standings-total {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--cmp-accent);
+}
+
+.cmpd-wrong {
+  display: block;
+  font-size: 11px;
+  color: var(--cmp-danger);
+  margin-top: 2px;
+  font-weight: 600;
+}
+
+.cmpd-link-muted {
+  color: var(--cmp-text-mut);
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 12px;
+  text-decoration: none;
+}
+.cmpd-link-muted:hover {
+  color: var(--cmp-accent);
+}
+
+.cmpd-standings-hint {
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--cmp-text-mut);
+  line-height: 1.55;
+}/* ═══════════════════════════════════════════════════════
+   Соревнования — админка
+   ═══════════════════════════════════════════════════════ */
+
+.cmpa {
+  --cmp-bg:        #fafafa;
+  --cmp-surface:   #ffffff;
+  --cmp-line:      #e6e6e1;
+  --cmp-line-soft: #f0f0eb;
+  --cmp-text:      #111111;
+  --cmp-text-soft: #4a5250;
+  --cmp-text-mut:  #8f9694;
+  --cmp-accent:    #0B6E4F;
+  --cmp-accent-hi: #14A06E;
+  --cmp-live:      #16a34a;
+  --cmp-warn:      #d97706;
+  --cmp-danger:    #dc2626;
+}
+
+[data-theme="dark"] .cmpa {
+  --cmp-bg:        #1a1a1e;
+  --cmp-surface:   #24242a;
+  --cmp-line:      #2a2a30;
+  --cmp-line-soft: #232328;
+  --cmp-text:      #e8e8e8;
+  --cmp-text-soft: #aaaaaa;
+  --cmp-text-mut:  #777777;
+  --cmp-accent:    #14A06E;
+  --cmp-accent-hi: #17b87e;
+  --cmp-live:      #22c55e;
+  --cmp-warn:      #f59e0b;
+}
+
+/* ── Шапка ── */
+.cmpa-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--cmp-line);
+}
+
+.cmpa-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cmp-text-mut);
+  margin-bottom: 14px;
+}
+
+.cmpa-title {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--cmp-text);
+  margin: 0 0 6px;
+}
+
+.cmpa-lead {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-style: italic;
+  font-size: 15px;
+  color: var(--cmp-text-soft);
+  margin: 0;
+}
+
+/* ── Кнопки ── */
+.cmpa-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: 1px solid var(--cmp-line);
+  background: var(--cmp-surface);
+  color: var(--cmp-text);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+  text-decoration: none;
+}
+
+.cmpa-btn:hover {
+  border-color: var(--cmp-text);
+  color: var(--cmp-text);
+  text-decoration: none;
+}
+
+.cmpa-btn-primary {
+  background: var(--cmp-text);
+  color: var(--cmp-bg);
+  border-color: var(--cmp-text);
+}
+
+.cmpa-btn-primary:hover {
+  background: var(--cmp-accent);
+  border-color: var(--cmp-accent);
+  color: #fff;
+}
+
+.cmpa-btn-arrow {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+.cmpa-btn:hover .cmpa-btn-arrow {
+  transform: translateX(3px);
+}
+
+/* ── Таблица ── */
+.cmpa-table-wrap {
+  background: var(--cmp-surface);
+  border: 1px solid var(--cmp-line);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.cmpa-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.cmpa-table thead {
+  background: var(--cmp-line-soft);
+}
+
+.cmpa-table th {
+  text-align: left;
+  padding: 14px 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cmp-text-mut);
+}
+
+.cmpa-table td {
+  padding: 18px 20px;
+  border-top: 1px solid var(--cmp-line);
+  vertical-align: top;
+}
+
+.cmpa-table tbody tr:hover {
+  background: var(--cmp-line-soft);
+}
+
+.cmpa-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--cmp-text);
+  letter-spacing: -0.01em;
+  margin-bottom: 4px;
+}
+
+.cmpa-desc {
+  font-size: 13px;
+  color: var(--cmp-text-mut);
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+
+.cmpa-muted-sm {
+  font-size: 12.5px;
+  color: var(--cmp-text-mut);
+  line-height: 1.5;
+}
+
+.cmpa-mono {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 13px;
+  color: var(--cmp-text-soft);
+}
+
+.cmpa-center { text-align: center; }
+.cmpa-right { text-align: right; }
+
+/* ── Теги ── */
+.cmpa-tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.cmpa-tag-live {
+  background: rgba(22, 163, 74, 0.12);
+  color: var(--cmp-live);
+}
+
+.cmpa-tag-warn {
+  background: rgba(217, 119, 6, 0.12);
+  color: var(--cmp-warn);
+}
+
+.cmpa-tag-muted {
+  background: var(--cmp-line-soft);
+  color: var(--cmp-text-mut);
+}
+
+[data-theme="dark"] .cmpa-tag-live { background: rgba(34, 197, 94, 0.16); }
+[data-theme="dark"] .cmpa-tag-warn { background: rgba(245, 158, 11, 0.16); }
+[data-theme="dark"] .cmpa-tag-muted { background: #2a2a30; }
+
+/* ── Действия ── */
+.cmpa-actions {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.cmpa-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--cmp-line);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--cmp-text-mut);
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+  font-size: 14px;
+}
+
+.cmpa-icon-btn:hover {
+  border-color: var(--cmp-text);
+  color: var(--cmp-text);
+  text-decoration: none;
+}
+
+.cmpa-icon-danger:hover {
+  border-color: var(--cmp-danger);
+  color: var(--cmp-danger);
+  background: rgba(220, 38, 38, 0.04);
+}
+
+/* ── Пусто ── */
+.cmpa-empty {
+  padding: 80px 32px;
+  text-align: center;
+  border: 1px dashed var(--cmp-line);
+  border-radius: 16px;
+}
+
+.cmpa-empty i {
+  font-size: 36px;
+  color: var(--cmp-text-mut);
+  opacity: 0.5;
+  display: block;
+  margin-bottom: 20px;
+}
+
+.cmpa-empty p {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-style: italic;
+  font-size: 1.125rem;
+  color: var(--cmp-text-soft);
+  margin: 0 0 24px;
+}
+
+/* ── Адаптив ── */
+@media (max-width: 768px) {
+  .cmpa-head {
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding-bottom: 24px;
+  }
+
+  .cmpa-title { font-size: 26px; }
+
+  .cmpa-table-wrap {
+    overflow-x: auto;
+  }
+
+  .cmpa-table {
+    min-width: 640px;
+    font-size: 13px;
+  }
+
+  .cmpa-table th,
+  .cmpa-table td {
+    padding: 12px 14px;
+  }
+}
+
+/* ═══════════════ ШАПКА ЗАДАЧИ (отдельная страница) ═══════════════ */
+.cmpd-task-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding-bottom: 32px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid var(--cmp-line);
+}
+
+.cmpd-task-hero-title {
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  color: var(--cmp-text);
+  margin: 0;
+  max-width: 720px;
+}
+
+.cmpd-eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cmp-text-mut);
+  margin-bottom: 12px;
+}

@@ -17,6 +17,18 @@ class Word(BaseModel):
         ("colors", "Цвета"),
         ("numbers", "Числа"),
         ("verbs", "Глаголы"),
+        ("abstract", "Абстрактные"),
+        ("adjectives", "Прилагательные"),
+        ("adverbs", "Наречия"),
+        ("phrases", "Фразы"),
+        ("clothes", "Одежда"),
+        ("weather", "Погода"),
+        ("time", "Время"),
+        ("professions", "Профессии"),
+        ("house", "Дом"),
+        ("emotions", "Эмоции"),
+        ("pronouns", "Местоимения"),
+        ("prepositions", "Предлоги"),
     )
     LEVELS = (
         ("beginner", "Начальный"),

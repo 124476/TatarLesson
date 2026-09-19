@@ -2,6 +2,8 @@ __all__ = ()
 
 import random
 
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+
 from apps.lessons.models import Answer, Lesson, LessonProgress
 from apps.words.models import Word
 
@@ -59,7 +61,8 @@ class LessonBuilderView(LoginRequiredMixin, TemplateView):
 
             blocks = list(lesson.blocks.prefetch_related("words").all())
             for block in blocks:
-                block.config_json = json.dumps(block.config or {}, ensure_ascii=False)
+                block.config_json = json.dumps(block.config or {},
+                                               ensure_ascii=False)
             ctx["blocks"] = blocks
 
         return ctx
@@ -74,7 +77,8 @@ class LessonStatsView(LoginRequiredMixin, TemplateView):
         lesson = get_object_or_404(
             Lesson, pk=self.kwargs["pk"], author=self.request.user,
         )
-        progress = LessonProgress.objects.filter(lesson=lesson).select_related("user")
+        progress = LessonProgress.objects.filter(lesson=lesson).select_related(
+            "user")
         ctx["lesson"] = lesson
         ctx["total_students"] = progress.count()
         ctx["finished"] = progress.filter(is_finished=True).count()
@@ -86,21 +90,32 @@ class LessonStatsView(LoginRequiredMixin, TemplateView):
 class WordsView(LoginRequiredMixin, TemplateView):
     template_name = "dashboard/words.html"
     login_url = "accounts:auth"
+    PER_PAGE = 24
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         search = self.request.GET.get("q", "").strip()
         theme = self.request.GET.get("theme", "").strip()
+        page = self.request.GET.get("page", 1)
 
-        words = Word.objects.all()
+        qs = Word.objects.all()
         if search:
-            words = words.filter(
-                Q(tatar__icontains=search) | Q(russian__icontains=search)
-            )
+            qs = qs.filter(
+                Q(tatar__icontains=search) | Q(russian__icontains=search))
         if theme:
-            words = words.filter(theme=theme)
+            qs = qs.filter(theme=theme)
+        qs = qs.order_by("tatar")
 
-        ctx["words"] = words.order_by("theme", "tatar")
+        paginator = Paginator(qs, self.PER_PAGE)
+        try:
+            page_obj = paginator.page(page)
+        except (PageNotAnInteger, EmptyPage):
+            page_obj = paginator.page(1)
+
+        ctx["words"] = page_obj.object_list
+        ctx["page_obj"] = page_obj
+        ctx["paginator"] = paginator
+        ctx["total_count"] = paginator.count
         ctx["themes"] = Word.THEMES
         ctx["search"] = search
         ctx["selected_theme"] = theme
@@ -127,7 +142,8 @@ class AddWordView(LoginRequiredMixin, View):
         theme = data.get("theme", "family").strip()
 
         if not tatar or not russian:
-            return JsonResponse({"error": "Заполните слово и перевод"}, status=400)
+            return JsonResponse({"error": "Заполните слово и перевод"},
+                                status=400)
 
         if Word.objects.filter(tatar__iexact=tatar).exists():
             return JsonResponse({"error": "Такое слово уже есть"}, status=400)
@@ -168,7 +184,8 @@ class UpdateWordView(LoginRequiredMixin, View):
 
         word.tatar = data.get("tatar", word.tatar).strip()
         word.russian = data.get("russian", word.russian).strip()
-        word.transcription = data.get("transcription", word.transcription).strip()
+        word.transcription = data.get("transcription",
+                                      word.transcription).strip()
         word.example_tt = data.get("example_tt", word.example_tt).strip()
         word.example_ru = data.get("example_ru", word.example_ru).strip()
         word.theme = data.get("theme", word.theme)

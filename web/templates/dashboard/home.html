@@ -3,76 +3,86 @@
 
 {% block title %}Рабочая панель{% endblock %}
 
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/dashboard/home_dashboard.css' %}">
+{% endblock %}
+
 {% block dashboard_content %}
-<div class="dashboard-home">
+<div class="dsh">
 
-  <!-- Приветствие -->
-  <div class="dashboard-header">
-    <h1>Привет, {{ user.username }}!</h1>
-    <p>Сегодня отличный день, чтобы выучить новое татарское слово.</p>
-  </div>
+  <header class="dsh-head">
+    <h1>Привет, {{ user.username }}</h1>
+    <p>Сегодня отличный день, чтобы выучить новое татарское слово</p>
+  </header>
 
-  <!-- Быстрые действия -->
-  <div class="dashboard-section">
-    <div class="section-label">Быстрые действия</div>
-    <div class="row g-3">
-      <div class="col-md-4 col-sm-6">
-        <a href="{% url 'dashboard:lesson_builder' %}" class="action-card">
-          <i class="bi bi-plus-circle"></i>
-          <span>Создать урок</span>
-        </a>
-      </div>
-      <div class="col-md-4 col-sm-6">
-        <a href="{% url 'dashboard:lessons' %}" class="action-card">
-          <i class="bi bi-book"></i>
-          <span>Мои уроки</span>
-        </a>
-      </div>
-      <div class="col-md-4 col-sm-6">
-        <a href="{% url 'competitions:list' %}" class="action-card">
-          <i class="bi bi-trophy"></i>
-          <span>Соревнования</span>
-        </a>
-      </div>
-      <div class="col-md-4 col-sm-6">
-        <a href="{% url 'dashboard:words' %}" class="action-card">
-          <i class="bi bi-journal-text"></i>
-          <span>Словарь</span>
-        </a>
-      </div>
-      <div class="col-md-4 col-sm-6">
-        <a href="#" onclick="openJoinModal(event)" class="action-card">
-          <i class="bi bi-box-arrow-in-right"></i>
-          <span>Войти по коду</span>
-        </a>
-      </div>
+  <section class="dsh-section">
+    <div class="dsh-section-label">Быстрые действия</div>
+
+    <div class="dsh-grid">
+      <a href="{% url 'dashboard:lesson_builder' %}" class="dsh-card">
+        <span class="dsh-card-icon"><i class="bi bi-plus-lg"></i></span>
+        <span class="dsh-card-title">Создать урок</span>
+        <span class="dsh-card-sub">Собрать из блоков за пару минут</span>
+      </a>
+
+      <a href="{% url 'dashboard:lessons' %}" class="dsh-card">
+        <span class="dsh-card-icon"><i class="bi bi-book"></i></span>
+        <span class="dsh-card-title">Мои уроки</span>
+        <span class="dsh-card-sub">Список и статистика</span>
+      </a>
+
+      <a href="{% url 'competitions:list' %}" class="dsh-card">
+        <span class="dsh-card-icon"><i class="bi bi-trophy"></i></span>
+        <span class="dsh-card-title">Соревнования</span>
+        <span class="dsh-card-sub">Турниры и лидерборды</span>
+      </a>
+
+      <a href="{% url 'dashboard:words' %}" class="dsh-card">
+        <span class="dsh-card-icon"><i class="bi bi-journal-text"></i></span>
+        <span class="dsh-card-title">Словарь</span>
+        <span class="dsh-card-sub">Слова, переводы, примеры</span>
+      </a>
+
+      <button type="button" onclick="openJoinModal(event)" class="dsh-card">
+        <span class="dsh-card-icon"><i class="bi bi-box-arrow-in-right"></i></span>
+        <span class="dsh-card-title">Войти по коду</span>
+        <span class="dsh-card-sub">Ученику — для быстрого старта</span>
+      </button>
+
       {% if user.is_staff %}
-        <div class="col-md-4 col-sm-6">
-          <a href="{% url 'competitions:admin_list' %}" class="action-card">
-            <i class="bi bi-trophy-fill"></i>
-            <span>Управление соревнованиями</span>
-          </a>
-        </div>
+        <a href="{% url 'competitions:admin_list' %}" class="dsh-card">
+          <span class="dsh-card-icon"><i class="bi bi-sliders"></i></span>
+          <span class="dsh-card-title">Управление соревнованиями</span>
+          <span class="dsh-card-sub">Создание и публикация</span>
+        </a>
       {% endif %}
     </div>
-  </div>
+  </section>
 
 </div>
 
-<!-- Модалка ввода кода -->
-<div class="modal-overlay" id="joinModal" style="display:none">
-  <div class="modal-box">
-    <h3>Введите код урока</h3>
+<!-- ═══ МОДАЛКА: код урока ═══ -->
+<div class="dsh-modal-overlay" id="joinModal">
+  <div class="dsh-modal-box">
+    <button type="button" class="dsh-modal-close" onclick="closeJoinModal()" aria-label="Закрыть">
+      <i class="bi bi-x-lg"></i>
+    </button>
+
+    <h3 class="dsh-modal-title">Введите код урока</h3>
+    <p class="dsh-modal-sub">Код можно получить у учителя</p>
+
     <input type="text" id="lessonCodeInput" maxlength="6" placeholder="000000"
-           class="code-input" inputmode="numeric">
-    <div class="modal-actions">
-      <button onclick="closeJoinModal()" class="btn-ghost">Отмена</button>
-      <button onclick="joinLesson()" class="btn-primary">Войти</button>
+           class="dsh-code" inputmode="numeric" autocomplete="off">
+
+    <div class="dsh-modal-actions">
+      <button onclick="closeJoinModal()" class="dsh-btn dsh-btn-ghost">Отмена</button>
+      <button onclick="joinLesson()" class="dsh-btn dsh-btn-primary">Войти</button>
     </div>
-    <p id="joinError" class="error-text"></p>
+
+    <p id="joinError" class="dsh-error"></p>
   </div>
 </div>
-
 {% endblock %}
 
 {% block extra_js %}
@@ -87,12 +97,12 @@ function getCookie(name) {
 
 function openJoinModal(e) {
   if (e) e.preventDefault();
-  document.getElementById('joinModal').style.display = 'flex';
+  document.getElementById('joinModal').classList.add('open');
   setTimeout(() => document.getElementById('lessonCodeInput').focus(), 100);
 }
 
 function closeJoinModal() {
-  document.getElementById('joinModal').style.display = 'none';
+  document.getElementById('joinModal').classList.remove('open');
   document.getElementById('lessonCodeInput').value = '';
   document.getElementById('joinError').textContent = '';
 }
@@ -101,11 +111,7 @@ async function joinLesson() {
   const code = document.getElementById('lessonCodeInput').value.trim();
   const errorBox = document.getElementById('joinError');
   errorBox.textContent = '';
-
-  if (!code) {
-    errorBox.textContent = 'Введите код урока';
-    return;
-  }
+  if (!code) { errorBox.textContent = 'Введите код урока'; return; }
 
   try {
     const res = await fetch('/lessons/join/', {
@@ -117,12 +123,8 @@ async function joinLesson() {
       body: 'code=' + encodeURIComponent(code),
     });
     const data = await res.json();
-
-    if (data.status === 'ok') {
-      window.location.href = data.url;
-    } else {
-      errorBox.textContent = data.error || 'Урок не найден';
-    }
+    if (data.status === 'ok') window.location.href = data.url;
+    else errorBox.textContent = data.error || 'Урок не найден';
   } catch (e) {
     errorBox.textContent = 'Ошибка сети. Попробуйте позже.';
   }
@@ -131,7 +133,6 @@ async function joinLesson() {
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeJoinModal();
 });
-
 document.getElementById('joinModal')?.addEventListener('click', function (e) {
   if (e.target === this) closeJoinModal();
 });

@@ -3,94 +3,96 @@
 
 {% block title %}{{ task.title }}{% endblock %}
 
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/competitions/detail.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="container py-5" style="max-width:900px;">
 
-  {% if error %}
-    <div class="alert alert-warning">{{ error }}</div>
-  {% else %}
+<div class="cmpd">
+  <div class="cmpd-container">
 
-    <a href="{% url 'competitions:detail' competition.pk %}" class="text-decoration-none text-muted small">
+    <a href="{% url 'competitions:detail' competition.pk %}" class="cmpd-back">
       ← К соревнованию
     </a>
 
-    <div class="d-flex justify-content-between align-items-center mt-3 mb-4 flex-wrap gap-3">
-      <h1 class="fw-bold mb-0">{{ task.title }}</h1>
-      <div class="text-muted small">
-        <span class="badge bg-success-subtle text-success">{{ task.points }} баллов</span>
-        <span class="badge bg-secondary-subtle text-secondary">
-          Попыток: {{ attempts_left }} / {{ task.max_attempts }}
-        </span>
-      </div>
-    </div>
+    {% if error %}
+      <div class="cmpd-alert">{{ error }}</div>
+    {% else %}
 
-    {% if not competition.is_upcoming %}
-      {% include "competitions/_tabs_nav.html" with active_tab="tasks" my_submissions_count=my_submissions_all.count %}
+      <!-- ═══════════════ ШАПКА ЗАДАЧИ ═══════════════ -->
+      <header class="cmpd-task-hero">
+        <div>
+          <div class="cmpd-eyebrow">ЗАДАЧА</div>
+          <h1 class="cmpd-task-hero-title">{{ task.title }}</h1>
+        </div>
 
-      <div class="tab-content">
+        <div class="cmpd-task-badges">
+          <span class="cmpd-badge cmpd-badge-points">{{ task.points }} баллов</span>
+          <span class="cmpd-badge cmpd-badge-attempts">
+            Попыток: {{ attempts_left }} / {{ task.max_attempts }}
+          </span>
+        </div>
+      </header>
 
-        <!-- ============== TASK ============== -->
-        <div class="tab-pane fade show active" id="tab-tasks">
+      {% if not competition.is_upcoming %}
+        {% include "competitions/_tabs_nav.html" with active_tab="tasks" my_submissions_count=my_submissions_all.count %}
 
-          <div class="card border-0 shadow-sm mb-4">
-            <div class="card-body p-4">
-              <div style="white-space:pre-wrap;line-height:1.7;">{{ task.statement }}</div>
-            </div>
-          </div>
+        <div class="tab-content">
 
-          {% if status == 'running' and user.is_authenticated and attempts_left > 0 %}
-            <div class="card border-0 shadow-sm">
-              <div class="card-body p-4">
-                <h5 class="mb-3">Отправить решение</h5>
+          <div class="tab-pane fade show active" id="tab-tasks">
+
+            <!-- Условие -->
+            <div class="cmpd-statement">{{ task.statement }}</div>
+
+            <!-- Форма решения -->
+            {% if status == 'running' and user.is_authenticated and attempts_left > 0 %}
+              <div class="cmpd-solve">
+                <h3 class="cmpd-solve-title">Отправить решение</h3>
 
                 {% if task.task_type == 'text' %}
-                  <input type="text" id="answerInput" class="form-control form-control-lg"
-                         placeholder="Введите ответ">
+                  <input type="text" id="answerInput" class="cmpd-input" placeholder="Введите ответ">
 
                 {% elif task.task_type == 'choice' %}
-                  <div id="options">
+                  <div id="options" class="cmpd-options">
                     {% for opt in task.options %}
-                      <div class="form-check mb-2 p-3 border rounded-3">
-                        <input class="form-check-input" type="radio" name="answer"
-                               value="{{ opt.text }}" id="opt{{ forloop.counter }}">
-                        <label class="form-check-label w-100" for="opt{{ forloop.counter }}">
-                          {{ opt.text }}
-                        </label>
-                      </div>
+                      <label class="cmpd-option">
+                        <input type="radio" name="answer" value="{{ opt.text }}">
+                        <span>{{ opt.text }}</span>
+                      </label>
                     {% endfor %}
                   </div>
 
                 {% elif task.task_type == 'multiple_choice' %}
-                  <div id="options">
+                  <div id="options" class="cmpd-options">
                     {% for opt in task.options %}
-                      <div class="form-check mb-2 p-3 border rounded-3">
-                        <input class="form-check-input" type="checkbox" name="answer"
-                               value="{{ opt.text }}" id="opt{{ forloop.counter }}">
-                        <label class="form-check-label w-100" for="opt{{ forloop.counter }}">
-                          {{ opt.text }}
-                        </label>
-                      </div>
+                      <label class="cmpd-option">
+                        <input type="checkbox" name="answer" value="{{ opt.text }}">
+                        <span>{{ opt.text }}</span>
+                      </label>
                     {% endfor %}
                   </div>
-                  <div class="form-text">Выберите все правильные варианты</div>
+                  <div class="cmpd-hint">Выберите все правильные варианты</div>
 
                 {% elif task.task_type == 'build' %}
-                  <p class="text-muted mb-2">
+                  <div class="cmpd-hint">
                     Подсказка: <strong>{{ task.build_hint }}</strong>
-                  </p>
-                  <p class="text-muted small mb-3">Собери слово из букв:</p>
-                  <div class="p-4 bg-light rounded-3 text-center mb-3">
-                    <div id="buildTarget" class="fs-3 fw-bold text-success" style="letter-spacing:8px;min-height:40px;"></div>
                   </div>
-                  <div id="buildLetters" class="d-flex flex-wrap gap-2 justify-content-center"></div>
+                  <div class="cmpd-build-target">
+                    <div id="buildTarget"></div>
+                  </div>
+                  <div id="buildLetters" class="cmpd-build-letters"></div>
+                  <div class="cmpd-build-reset">
+                    <button type="button" class="cmpd-btn cmpd-btn-sm" onclick="buildReset()">
+                      Сбросить
+                    </button>
+                  </div>
 
                 {% elif task.task_type == 'pairs' %}
-                  <p class="text-muted small mb-3">
-                    Соедини линиями пары: татарское слово → русский перевод
-                  </p>
-                  <div class="pairs-wrap position-relative">
-                    <svg class="pairs-svg position-absolute w-100 h-100"
-                         style="inset:0;pointer-events:none;z-index:2;overflow:visible;">
+                  <div class="cmpd-hint">Соедини пары: татарское слово → русский перевод</div>
+                  <div class="pairs-wrap cmpd-pairs-wrap">
+                    <svg class="pairs-svg cmpd-pairs-svg">
                       <defs>
                         <marker id="arrow-{{ task.id }}" markerWidth="10" markerHeight="10"
                                 refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
@@ -98,96 +100,93 @@
                         </marker>
                       </defs>
                     </svg>
-                    <div class="pairs-grid position-relative d-grid"
-                         style="grid-template-columns:1fr 1fr;gap:64px;z-index:1;"></div>
+                    <div class="pairs-grid cmpd-pairs-grid"></div>
                   </div>
 
                 {% elif task.task_type == 'voice' %}
-                  <p class="text-muted mb-3">
-                    Произнеси слово вслух: <strong>{{ task.voice_text|default:task.correct_answer }}</strong>
-                  </p>
-                  <button type="button" class="btn btn-success mb-3" onclick="playVoice()">
-                    🔊 Послушать образец
+                  <div class="cmpd-hint">
+                    Произнеси слово вслух:
+                    <strong>{{ task.voice_text|default:task.correct_answer }}</strong>
+                  </div>
+                  <button type="button" class="cmpd-btn" onclick="playVoice()">
+                    Послушать образец
                   </button>
-                  <div>
-                    <button type="button" class="btn btn-lg btn-success rounded-pill px-5" id="voiceBtn">
-                      🎙️ Говорить
+                  <div class="cmpd-voice-area">
+                    <button type="button" class="cmpd-voice-btn" id="voiceBtn">
+                      Говорить
                     </button>
                   </div>
-                  <div id="voiceResult" class="mt-3 small"></div>
+                  <div id="voiceResult" class="cmpd-voice-result"></div>
                 {% endif %}
 
                 {% if task.task_type != 'voice' %}
-                  <button type="button" class="btn btn-success btn-lg mt-4" id="submitBtn" onclick="submitSolution()">
+                  <button type="button" class="cmpd-btn cmpd-btn-primary cmpd-btn-lg"
+                          id="submitBtn" onclick="submitSolution()">
                     Отправить
                   </button>
                 {% endif %}
 
-                <div id="submitResult" class="mt-3"></div>
+                <div id="submitResult"></div>
               </div>
-            </div>
 
-          {% elif status == 'running' and not user.is_authenticated %}
-            <div class="alert alert-info">
-              <a href="{% url 'accounts:auth' %}?next={{ request.path }}" class="alert-link">Войдите</a>,
-              чтобы отправить решение.
-            </div>
-          {% elif attempts_left <= 0 %}
-            <div class="alert alert-secondary">Исчерпаны попытки ({{ task.max_attempts }})</div>
-          {% endif %}
+            {% elif status == 'running' and not user.is_authenticated %}
+              <div class="cmpd-alert">
+                <a href="{% url 'accounts:auth' %}?next={{ request.path }}">Войдите</a>,
+                чтобы отправить решение.
+              </div>
+            {% elif attempts_left <= 0 %}
+              <div class="cmpd-alert">Исчерпаны попытки ({{ task.max_attempts }})</div>
+            {% endif %}
 
-          {# Мои посылки по этой задаче — компактная таблица под условием #}
-          {% if my_submissions %}
-            <h5 class="mt-5 mb-3">📤 Мои посылки по задаче</h5>
-            <div class="table-responsive">
-              <table class="table table-sm table-hover bg-white shadow-sm rounded">
-                <thead class="table-light">
+            <!-- Мои посылки по задаче -->
+            {% if my_submissions %}
+              <h3 class="cmpd-section-label">Мои посылки по задаче</h3>
+              <table class="cmpd-table">
+                <thead>
                   <tr>
-                    <th>#</th>
+                    <th style="width:56px;">#</th>
                     <th>Ответ</th>
-                    <th>Результат</th>
-                    <th>Время</th>
+                    <th style="width:100px;">Результат</th>
+                    <th style="width:100px;">Время</th>
                   </tr>
                 </thead>
                 <tbody>
                   {% for s in my_submissions %}
                     <tr>
-                      <td>{{ s.attempt_number }}</td>
-                      <td class="font-monospace small">{{ s.answer|truncatechars:80 }}</td>
+                      <td class="cmpd-mono">{{ s.attempt_number }}</td>
+                      <td class="cmpd-mono cmpd-truncate">{{ s.answer|truncatechars:80 }}</td>
                       <td>
                         {% if s.is_correct %}
-                          <span class="badge bg-success-subtle text-success">✅ {{ s.points_earned }}</span>
+                          <span class="cmpd-tag cmpd-tag-success">{{ s.points_earned }}</span>
                         {% else %}
-                          <span class="badge bg-danger-subtle text-danger">❌ 0</span>
+                          <span class="cmpd-tag cmpd-tag-danger">0</span>
                         {% endif %}
                       </td>
-                      <td class="text-muted small">{{ s.created_at|date:"H:i:s" }}</td>
+                      <td class="cmpd-muted">{{ s.created_at|date:"H:i:s" }}</td>
                     </tr>
                   {% endfor %}
                 </tbody>
               </table>
-            </div>
-          {% endif %}
+            {% endif %}
+
+          </div>
+
+          {% include "competitions/_tab_my.html" with submissions=my_submissions_all active_tab="tasks" %}
+          {% include "competitions/_tab_standings.html" with standings_rows=standings_rows tasks=tasks competition=competition active_tab="tasks" %}
+
         </div>
-
-        {% include "competitions/_tab_my.html" with submissions=my_submissions_all active_tab="tasks" %}
-{% include "competitions/_tab_standings.html" with standings_rows=standings_rows tasks=tasks competition=competition active_tab="tasks" %}
-
-      </div>
-    {% else %}
-      <div class="alert alert-warning d-flex align-items-center gap-3">
-        <i class="bi bi-hourglass-split fs-4"></i>
-        <div>
+      {% else %}
+        <div class="cmpd-alert">
           <strong>Соревнование ещё не началось.</strong>
-          Задачи откроются {{ competition.start_time|date:"d.m Y H:i" }}.
+          Задачи откроются {{ competition.start_time|date:"d.m.Y H:i" }}.
         </div>
-      </div>
+      {% endif %}
+
     {% endif %}
 
-  {% endif %}
+  </div>
 </div>
 
-{# ---- прежний JS без изменений ---- #}
 <script>
 const TASK_TYPE = "{{ task.task_type }}";
 const TASK_ID = {{ task.id }};
@@ -206,17 +205,20 @@ const SUBMIT_URL = `/competitions/${COMP_ID}/submit/${TASK_ID}/`;
   shuffled.forEach(letter => {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = 'btn btn-outline-success';
-    btn.style.cssText = 'width:52px;height:52px;font-size:20px;font-weight:600;';
+    btn.className = 'cmpd-build-btn';
     btn.textContent = letter;
     btn.onclick = () => {
       current += letter;
       target.textContent = current;
       btn.disabled = true;
-      btn.classList.add('opacity-25');
     };
     lettersArea.appendChild(btn);
   });
+  window.buildReset = function () {
+    current = '';
+    target.textContent = '';
+    lettersArea.querySelectorAll('button').forEach(b => { b.disabled = false; });
+  };
 })();
 {% endif %}
 
@@ -232,18 +234,18 @@ const SUBMIT_URL = `/competitions/${COMP_ID}/submit/${TASK_ID}/`;
   const leftItems = shuffle(pairs.map(p => ({ text: p[0], side: 'left' })));
   const rightItems = shuffle(pairs.map(p => ({ text: p[1], side: 'right' })));
   const leftCol = document.createElement('div');
-  leftCol.className = 'd-flex flex-column gap-3';
+  leftCol.className = 'cmpd-pairs-col';
   const rightCol = document.createElement('div');
-  rightCol.className = 'd-flex flex-column gap-3';
+  rightCol.className = 'cmpd-pairs-col';
   let selLeft = null, selRight = null;
   const connections = [];
+
   function makeCard(item) {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = 'btn btn-outline-success py-3';
+    btn.className = 'cmpd-pair-card';
     btn.textContent = item.text;
     btn.dataset.side = item.side;
-    btn.style.cssText = 'position:relative;z-index:3;';
     btn.onclick = () => onClick(btn, item);
     return btn;
   }
@@ -271,8 +273,8 @@ const SUBMIT_URL = `/competitions/${COMP_ID}/submit/${TASK_ID}/`;
       const c = connections[i];
       if (c.l === card || c.r === card) {
         c.line.remove();
-        c.l.classList.remove('btn-success');
-        c.r.classList.remove('btn-success');
+        c.l.classList.remove('active');
+        c.r.classList.remove('active');
         connections.splice(i, 1);
       }
     }
@@ -284,13 +286,13 @@ const SUBMIT_URL = `/competitions/${COMP_ID}/submit/${TASK_ID}/`;
   function onClick(btn, item) {
     if (isConnected(btn)) { remove(btn); return; }
     if (item.side === 'left') {
-      if (selLeft) selLeft.classList.remove('btn-success');
+      if (selLeft) selLeft.classList.remove('active');
       selLeft = btn;
-      btn.classList.add('btn-success');
+      btn.classList.add('active');
     } else {
-      if (selRight) selRight.classList.remove('btn-success');
+      if (selRight) selRight.classList.remove('active');
       selRight = btn;
-      btn.classList.add('btn-success');
+      btn.classList.add('active');
     }
     if (selLeft && selRight) {
       const line = drawLine(selLeft, selRight);
@@ -328,7 +330,7 @@ document.getElementById('voiceBtn')?.addEventListener('click', async () => {
   const btn = document.getElementById('voiceBtn');
   const result = document.getElementById('voiceResult');
   btn.disabled = true;
-  result.innerHTML = '🎙️ Говорите...';
+  result.textContent = 'Говорите…';
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     const recorder = new MediaRecorder(stream);
@@ -344,14 +346,14 @@ document.getElementById('voiceBtn')?.addEventListener('click', async () => {
         body: form,
       });
       const data = await res.json();
-      result.innerHTML = `Распознано: <strong>${data.text || '—'}</strong>`;
+      result.textContent = 'Распознано: ' + (data.text || '—');
       await sendAnswer(data.text || '');
       btn.disabled = false;
     };
     recorder.start();
     setTimeout(() => { recorder.stop(); stream.getTracks().forEach(t => t.stop()); }, 3000);
   } catch (e) {
-    result.textContent = '❌ Нет доступа к микрофону';
+    result.textContent = 'Нет доступа к микрофону';
     btn.disabled = false;
   }
 });
@@ -392,7 +394,6 @@ async function submitSolution() {
 
 async function sendAnswer(answer) {
   const btn = document.getElementById('submitBtn');
-  const result = document.getElementById('submitResult');
   if (btn) { btn.disabled = true; btn.textContent = 'Отправка...'; }
   try {
     const res = await fetch(SUBMIT_URL, {

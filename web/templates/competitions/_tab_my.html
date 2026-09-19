@@ -1,47 +1,44 @@
 <div class="tab-pane fade {% if active_tab == 'my' %}show active{% endif %}" id="tab-my">
   {% if not user.is_authenticated %}
-    <div class="alert alert-info">Войдите, чтобы увидеть свои посылки.</div>
+    <div class="cmpd-empty">Войдите, чтобы увидеть свои посылки</div>
   {% elif submissions %}
-    <div class="table-responsive">
-      <table class="table table-hover align-middle bg-white shadow-sm rounded">
-        <thead class="table-light">
+    <table class="cmpd-table">
+      <thead>
+        <tr>
+          <th style="width:56px;">#</th>
+          <th>Задача</th>
+          <th>Ответ</th>
+          <th style="width:120px;">Результат</th>
+          <th style="width:100px;">Время</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in submissions %}
           <tr>
-            <th>#</th>
-            <th>Задача</th>
-            <th>Ответ</th>
-            <th>Результат</th>
-            <th>Время</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for s in submissions %}
-            <tr>
-              <td class="text-muted">{{ s.attempt_number }}</td>
-              <td class="fw-semibold">
-                <a href="{% url 'competitions:task' competition.pk s.task.pk %}"
-                   class="text-decoration-none">
-                  {{ s.task.title }}
-                </a>
-              </td>
-              <td class="font-monospace small">{{ s.answer|truncatechars:60 }}</td>
-              <td>
-                {% if s.is_correct %}
-                  {% if s.points_earned > 0 %}
-                    <span class="badge bg-success-subtle text-success">{{ s.points_earned }}</span>
-                  {% else %}
-                    <span class="badge bg-info-subtle text-info">принято</span>
-                  {% endif %}
+            <td class="cmpd-mono cmpd-muted">{{ s.attempt_number }}</td>
+            <td>
+              <a href="{% url 'competitions:task' competition.pk s.task.pk %}" class="cmpd-link">
+                {{ s.task.title }}
+              </a>
+            </td>
+            <td class="cmpd-mono cmpd-truncate">{{ s.answer|truncatechars:60 }}</td>
+            <td>
+              {% if s.is_correct %}
+                {% if s.points_earned > 0 %}
+                  <span class="cmpd-tag cmpd-tag-success">{{ s.points_earned }}</span>
                 {% else %}
-                  <span class="badge bg-danger-subtle text-danger">0</span>
+                  <span class="cmpd-tag cmpd-tag-attempted">принято</span>
                 {% endif %}
-              </td>
-              <td class="text-muted small">{{ s.created_at|date:"H:i:s" }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+              {% else %}
+                <span class="cmpd-tag cmpd-tag-danger">0</span>
+              {% endif %}
+            </td>
+            <td class="cmpd-muted">{{ s.created_at|date:"H:i:s" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   {% else %}
-    <div class="alert alert-secondary text-center">У вас пока нет посылок</div>
+    <div class="cmpd-empty">У вас пока нет посылок</div>
   {% endif %}
 </div>

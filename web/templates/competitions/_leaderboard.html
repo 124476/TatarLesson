@@ -1,25 +1,135 @@
-<div style="background:var(--bg-sidebar);border:1px solid var(--border-color);border-radius:16px;overflow:hidden;">
-  <div class="lb-row lb-header">
-    <span>#</span>
-    <span>Участник</span>
-    <span>Баллы</span>
-    <span>Время</span>
-  </div>
-  {% for p in leaderboard %}
-    <div class="lb-row {% if p.user == user %}lb-row-me{% endif %}">
-      <span class="lb-place">
-        {% if forloop.counter == 1 %}🥇
-        {% elif forloop.counter == 2 %}🥈
-        {% elif forloop.counter == 3 %}🥉
-        {% else %}{{ forloop.counter }}{% endif %}
-      </span>
-      <span class="lb-name">{{ p.user.username }}</span>
-      <span class="lb-score">{{ p.score }}</span>
-      <span class="lb-time">{{ p.created_at|date:"H:i" }}</span>
-    </div>
-  {% empty %}
-    <div style="padding:40px;text-align:center;color:var(--text-muted);">
-      Пока никто не участвует
-    </div>
-  {% endfor %}
+<div class="lbd">
+  {% if leaderboard %}
+    <table class="lbd-table">
+      <thead>
+        <tr>
+          <th style="width:64px;">#</th>
+          <th>Участник</th>
+          <th class="lbd-right" style="width:100px;">Баллы</th>
+          <th class="lbd-right" style="width:90px;">Время</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in leaderboard %}
+          <tr class="{% if p.user == user %}lbd-row-me{% endif %}">
+            <td class="lbd-place">
+              {% if forloop.counter == 1 %}🥇
+              {% elif forloop.counter == 2 %}🥈
+              {% elif forloop.counter == 3 %}🥉
+              {% else %}{{ forloop.counter|stringformat:"02d" }}{% endif %}
+            </td>
+            <td class="lbd-name">{{ p.user.username }}</td>
+            <td class="lbd-right lbd-score">{{ p.score }}</td>
+            <td class="lbd-right lbd-time">{{ p.created_at|date:"H:i" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="lbd-empty">Пока никто не участвует</div>
+  {% endif %}
 </div>
+
+<style>
+  .lbd {
+    --lbd-bg:        #ffffff;
+    --lbd-line:      #e6e6e1;
+    --lbd-line-soft: #f0f0eb;
+    --lbd-text:      #111111;
+    --lbd-text-soft: #4a5250;
+    --lbd-text-mut:  #8f9694;
+    --lbd-accent:    #0B6E4F;
+
+    background: var(--lbd-bg);
+    border: 1px solid var(--lbd-line);
+    border-radius: 14px;
+    overflow: hidden;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+                 Roboto, 'Helvetica Neue', Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  [data-theme="dark"] .lbd {
+    --lbd-bg:        #1e1e22;
+    --lbd-line:      #2a2a30;
+    --lbd-line-soft: #232328;
+    --lbd-text:      #ececec;
+    --lbd-text-soft: #a6aead;
+    --lbd-text-mut:  #6f7674;
+    --lbd-accent:    #14A06E;
+  }
+
+  .lbd-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  .lbd-table thead {
+    background: var(--lbd-line-soft);
+  }
+
+  .lbd-table th {
+    text-align: left;
+    padding: 12px 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--lbd-text-mut);
+  }
+
+  .lbd-table td {
+    padding: 14px 20px;
+    border-top: 1px solid var(--lbd-line);
+    color: var(--lbd-text);
+  }
+
+  .lbd-table tbody tr:hover {
+    background: var(--lbd-line-soft);
+  }
+
+  .lbd-row-me {
+    background: rgba(11, 110, 79, 0.04);
+  }
+
+  [data-theme="dark"] .lbd-row-me {
+    background: rgba(20, 160, 110, 0.08);
+  }
+
+  .lbd-place {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-style: italic;
+    font-size: 17px;
+    color: var(--lbd-text-soft);
+  }
+
+  .lbd-name {
+    font-weight: 600;
+    letter-spacing: -0.005em;
+  }
+
+  .lbd-right {
+    text-align: right;
+  }
+
+  .lbd-score {
+    font-weight: 700;
+    color: var(--lbd-accent);
+  }
+
+  .lbd-time {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 13px;
+    color: var(--lbd-text-mut);
+  }
+
+  .lbd-empty {
+    padding: 48px 24px;
+    text-align: center;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--lbd-text-mut);
+  }
+</style>

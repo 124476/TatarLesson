@@ -1,63 +1,56 @@
 <div class="tab-pane fade {% if active_tab == 'standings' %}show active{% endif %}" id="tab-standings">
   {% if standings_rows %}
-    <div class="table-responsive">
-      <table class="table table-hover align-middle bg-white shadow-sm rounded">
-        <thead class="table-light">
-          <tr>
-            <th style="width:60px;">#</th>
-            <th>Участник</th>
-            {% for task in tasks %}
-              <th class="text-center" style="min-width:80px;">
-                <a href="{% url 'competitions:task' competition.pk task.pk %}"
-                   class="text-decoration-none"
-                   title="{{ task.title }}">
-                  {{ forloop.counter }}
-                </a>
-              </th>
-            {% endfor %}
-            <th class="text-end" style="width:100px;">Итого</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for row in standings_rows %}
-            <tr {% if row.user == user %}class="table-success"{% endif %}>
-              <td class="fw-bold text-center">
-                {% if forloop.counter == 1 %}🥇
-                {% elif forloop.counter == 2 %}🥈
-                {% elif forloop.counter == 3 %}🥉
-                {% else %}{{ forloop.counter }}{% endif %}
-              </td>
-              <td class="fw-semibold">{{ row.user.username }}</td>
-              {% for cell in row.tasks %}
-                <td class="text-center">
-                  {% if cell.status == 'solved' %}
-                    <span class="badge bg-success-subtle text-success"
-                          title="Решено с {{ cell.points }} б.">
-                      {{ cell.points }}
-                    </span>
-                    {% if cell.wrong > 0 %}
-                      <div class="small text-muted" style="font-size:.75rem;">(-{{ cell.wrong }})</div>
-                    {% endif %}
-                  {% elif cell.status == 'attempted' %}
-                    <span class="text-danger fw-semibold">-{{ cell.wrong }}</span>
-                  {% else %}
-                    <span class="text-muted">—</span>
-                  {% endif %}
-                </td>
-              {% endfor %}
-              <td class="text-end fw-bold text-success">{{ row.score }}</td>
-            </tr>
+    <table class="cmpd-table">
+      <thead>
+        <tr>
+          <th style="width:64px;">#</th>
+          <th>Участник</th>
+          {% for task in tasks %}
+            <th class="cmpd-center" style="min-width:70px;">
+              <a href="{% url 'competitions:task' competition.pk task.pk %}"
+                 class="cmpd-link-muted" title="{{ task.title }}">
+                {{ forloop.counter|stringformat:"02d" }}
+              </a>
+            </th>
           {% endfor %}
-        </tbody>
-      </table>
-    </div>
+          <th class="cmpd-right" style="width:100px;">Итого</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in standings_rows %}
+          <tr {% if row.user == user %}class="cmpd-row-me"{% endif %}>
+            <td class="cmpd-mono cmpd-muted">
+              {% if forloop.counter == 1 %}🥇
+              {% elif forloop.counter == 2 %}🥈
+              {% elif forloop.counter == 3 %}🥉
+              {% else %}{{ forloop.counter|stringformat:"02d" }}{% endif %}
+            </td>
+            <td class="cmpd-standings-name">{{ row.user.username }}</td>
+            {% for cell in row.tasks %}
+              <td class="cmpd-center">
+                {% if cell.status == 'solved' %}
+                  <span class="cmpd-tag cmpd-tag-success">{{ cell.points }}</span>
+                  {% if cell.wrong > 0 %}
+                    <span class="cmpd-wrong">(−{{ cell.wrong }})</span>
+                  {% endif %}
+                {% elif cell.status == 'attempted' %}
+                  <span class="cmpd-wrong">−{{ cell.wrong }}</span>
+                {% else %}
+                  <span class="cmpd-muted">·</span>
+                {% endif %}
+              </td>
+            {% endfor %}
+            <td class="cmpd-right cmpd-standings-total">{{ row.score }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 
-    <div class="small text-muted mt-2">
-      В ячейках: <span class="badge bg-success-subtle text-success">очки</span> — решено,
-      <span class="text-danger fw-semibold">-N</span> — N неверных попыток, без правильного ответа.
-      В скобках после очков — количество неверных попыток до правильного.
-    </div>
+    <p class="cmpd-standings-hint">
+      Число в ячейке — баллы за задачу (после штрафа за попытки).
+      <span class="cmpd-wrong">−N</span> — N неверных попыток без верного ответа.
+    </p>
   {% else %}
-    <div class="alert alert-secondary text-center">Пока никто не участвует</div>
+    <div class="cmpd-empty">Пока никто не участвует</div>
   {% endif %}
 </div>
