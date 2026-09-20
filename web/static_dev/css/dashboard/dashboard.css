@@ -253,7 +253,7 @@
   }
 
   .dashboard-sidebar {
-    top: 55px;
+    top: 67px;
     position: fixed;
     height: calc(100vh - 49px - 101.2px);
     width: 250px !important;
